@@ -27,10 +27,10 @@
 ## 📸 Screenshots
 
 ### 🔑 Login Page
-![Login Screenshot](./image/background.png)
+![Login Screenshot](./image/Loginpage.png)
 
 ### 📝 Register Page
-![Register Screenshot](./screenshots/register.png)
+![Register Screenshot](./image/registationpage.png)
 
 ---
 
