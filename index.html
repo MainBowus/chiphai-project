@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UV-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website With Login And Register | Codehal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <header class="header">
+        <a href="#" class="logo">Chiphai</a>
+
+        <nav class="navbar">
+            <a href="#">Khong</a>
+            <a href="#">Hai</a>
+            <a href="#">Eek</a>
+            <a href="#">Laew</a>
+            <button class="btnLogin-popup">Login</button>
+        </nav>
+    </header>
+
+    <section class="section">
+        <div class="wrapper">
+            <span class="icon-close">
+               <i class='bx bx-x'></i>
+            </span>
+
+            <div class="logreg-box">
+                <!-- login form -->
+                <div class="form-box login">
+                    <div class="logreg-little">
+                        <h2>Login</h2>
+                        <p>Please login to use the platform</p>
+                    </div>
+
+
+                    <form id="loginForm" action="#">
+                        <div class="input-box">
+                            <span class="icon"><i class='bx bxs-user'></i></span>
+                            <input id="loginUsername" type="text" required>
+                            <label>Username</label>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+                            <input id="loginPassword" type="password" required>
+                            <label>Password</label>
+                        </div>
+
+                        <div class="remember-forgot">
+                            <label><input type="checkbox">Remember me</label>
+                            <a href="#">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn">Login</button>
+
+                        <div class="logreg-link">
+                            <p>Don't have an account? <a href="#" class="register-link">Create Account</a></p>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="form-box register">
+                    <div class="logreg-little">
+                        <h2>Create Account</h2>
+                        <p>Please provide the following to verify your identity</p>
+                    </div>
+
+                    <form id="registerForm" action="#">
+                        <div class="input-box">
+                            <span class="icon"><i class='bx bxs-user'></i></span>
+                            <input id="regUsername" type="text" required>
+                            <label>Username</label>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="icon"><i class='bx bx-code'></i></span>
+                            <input id="regStudentId" type="text" required>
+                            <label>Student ID</label>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="icon"><i class='bx bxs-envelope'></i></span>
+                            <input id="regEmail" type="email" required>
+                            <label>Email</label>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="icon"><i class='bx bxs-lock-alt'></i></span>
+                            <input id="regPassword" type="password" required>
+                            <label>Password</label>
+                        </div>
+
+                        <div class="remember-forgot">
+                            <label><input id="agreeTos" type="checkbox" required> I agree to the terms & conditions</label>
+                        </div>
+
+                        <button type="submit" class="btn">Create Account</button>
+
+                        <div class="logreg-link">
+                            <p>Already have an account? <a href="#" class="login-link">login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="script.js"></script>
+
+
+    <script type="module" src="firebase.js"></script>
+</body>
+</html>
