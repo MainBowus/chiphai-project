@@ -17,133 +17,14 @@
 
   <h1>Post of founded item</h1>
 
-  <div class="items">
-    <div class="card">
-      <div class="meta">
-        <div class="avatar">👤</div>
-        <div class="username">TestUser</div>
-      </div>
-      <div class="placeholder">
-        <img src="" alt="">
-      </div>
-      <div class="item-name">กระเป๋าสตางค์</div>
-      <div class="desc">กระเป๋าสตางค์สีน้ำตาล มีบัตรประชาชนและเงินสด</div>
-      <div class="lines">
-        <div class="line">พบที่หน้าห้องน้ำ ชั้น 2</div>
-        <div class="line">วันที่ 27/09/2025 เวลา 15:30</div>
-      </div>
-      <button class="view-btn">View</button>
-    </div>
 
-    <div class="card">
-      <div class="meta">
-        <div class="avatar">👤</div>
-        <div class="username">JaneDoe</div>
-      </div>
-      <div class="placeholder">
-        <img src="" alt="">
-      </div>
-      <div class="item-name">กุญแจรถยนต์</div>
-      <div class="desc">กุญแจ Toyota พร้อมพวงกุญแจสีแดง</div>
-      <div class="lines">
-        <div class="line">พบที่ลานจอดรถ</div>
-        <div class="line">วันที่ 25/09/2025 เวลา 12:00</div>
-      </div>
-      <button class="view-btn">View</button>
-    </div>
-
-    <div class="card">
-      <div class="meta">
-        <div class="avatar">👤</div>
-        <div class="username">Somchai</div>
-      </div>
-      <div class="placeholder">
-        <img src="" alt="">
-      </div>
-      <div class="item-name">โทรศัพท์มือถือ</div>
-      <div class="desc">iPhone สีดำ มีรอยขีดข่วนที่มุม</div>
-      <div class="lines">
-        <div class="line">เจอที่ห้องสมุด</div>
-        <div class="line">วันที่ 20/09/2025 เวลา 09:45</div>
-      </div>
-      <button class="view-btn">View</button>
-    </div>
-
-    <div class="card">
-      <div class="meta">
-        <div class="avatar">👤</div>
-        <div class="username">Nattaya</div>
-      </div>
-      <div class="placeholder">
-        <img src="" alt="">
-      </div>
-      <div class="item-name">กระเป๋าเป้</div>
-      <div class="desc">กระเป๋าเป้สีเขียว มีหนังสือเรียนอยู่ข้างใน</div>
-      <div class="lines">
-        <div class="line">พบที่โรงอาหาร</div>
-        <div class="line">วันที่ 18/09/2025 เวลา 11:20</div>
-      </div>
-      <button class="view-btn">View</button>
-    </div>
-
-    <div class="card">
-      <div class="meta">
-        <div class="avatar">👤</div>
-        <div class="username">Ploy</div>
-      </div>
-      <div class="placeholder">
-        <img src="" alt="">
-      </div>
-      <div class="item-name">สมุดโน้ต</div>
-      <div class="desc">สมุดโน้ตปกชมพู มีลายการ์ตูน</div>
-      <div class="lines">
-        <div class="line">เจอที่ห้องเรียน 305</div>
-        <div class="line">วันที่ 15/09/2025 เวลา 13:10</div>
-      </div>
-      <button class="view-btn">View</button>
-    </div>
-
-    <div class="card">
-      <div class="meta">
-        <div class="avatar">👤</div>
-        <div class="username">Golf</div>
-      </div>
-      <div class="placeholder">
-        <img src="" alt="">
-      </div>
-      <div class="item-name">นาฬิกาข้อมือ</div>
-      <div class="desc">นาฬิกาข้อมือสีเงิน สายเหล็ก</div>
-      <div class="lines">
-        <div class="line">พบที่สนามกีฬา</div>
-        <div class="line">วันที่ 10/09/2025 เวลา 17:00</div>
-      </div>
-      <button class="view-btn">View</button>
-    </div>
-  </div>
+  <div class="items" id="items"></div>
 
   <div class="create-wrap">
     <button class="create" id="createBtn">✏️ Create Post</button>
   </div>
-  <script>
-    document.getElementById('createBtn').addEventListener('click', () => {
-      window.location.href = '../PostCreate/CreatePost.html';
-    });
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      window.location.href = '../index.html';
-    });
-    document.getElementById('logoBtn').addEventListener('click', () => {
-    window.location.href = '../index.html';
-    });
-    document.getElementById('logoBtn').addEventListener('click', () => {
-    window.location.href = '../index.html';
-    });
 
-
-    document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      window.location.href = '../Postview/Postview.html';
-    });
-  });
-  </script>
+  <!-- โหลดสคริปต์ที่ดึงข้อมูลจาก Firestore -->
+  <script type="module" src="Post.js"></script>
 </body>
 </html>

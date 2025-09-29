@@ -1,4 +1,4 @@
-
+// firebase.auth.addon.js
 import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
@@ -19,7 +19,7 @@ if (getApps().length) {
     apiKey: "AIzaSyBQlq_ZgG1eUVrMGXo178wNW7GMr6imCDk",
     authDomain: "chiphailogin01.firebaseapp.com",
     projectId: "chiphailogin01",
-    storageBucket: "chiphailogin01.firebasestorage.app",
+    storageBucket: "chiphailogin01.appspot.com",
     messagingSenderId: "122413223952",
     appId: "1:122413223952:web:35a1f19668bf22be13fa95",
     measurementId: "G-2B1K7VV4ZT"
@@ -39,7 +39,7 @@ const wrapper      = document.querySelector(".wrapper");
 function openPopup(){ wrapper?.classList?.add("active-popup"); }
 function closePopup(){ wrapper?.classList?.remove("active"); wrapper?.classList?.remove("active-popup"); }
 
-/* ---- Render navbar ---- */
+/* ---- Navbar renderer ---- */
 function renderNavbar(user) {
   if (!navbarUser) return;
   if (user) {
@@ -58,10 +58,11 @@ function renderNavbar(user) {
     logoutBtn?.addEventListener("click", async (e) => { e.stopPropagation(); await signOut(auth); });
   } else {
     navbarUser.innerHTML = `<button class="btnLogin-popup">Login</button>`;
+    navbarUser.querySelector(".btnLogin-popup")?.addEventListener("click", openPopup);
   }
 }
 
-/* ---- Write profile to users_google/{uid} ---- */
+/* ---- upsert users_google/{uid} ---- */
 async function upsertGoogleProfile(user, extra = {}) {
   const ref  = doc(db, "users_google", user.uid);
   const prev = await getDoc(ref);
@@ -75,13 +76,12 @@ async function upsertGoogleProfile(user, extra = {}) {
   };
   const created = prev.exists() ? {} : { createdAt: serverTimestamp() };
   const data = { ...created, ...base, ...extra };
-
   console.log("[auth.addon] upsert users_google/", user.uid, data);
   await setDoc(ref, data, { merge: true });
   console.log("[auth.addon] upsert OK users_google/", user.uid);
 }
 
-/* ---- Google Sign-In + migrate from users_create ---- */
+/* ---- Google Sign-In (with legacy migrate) ---- */
 googleAnchor?.addEventListener("click", async (e) => {
   e.preventDefault();
   console.log("[auth.addon] click Google");
@@ -107,11 +107,8 @@ googleAnchor?.addEventListener("click", async (e) => {
       }
     }
 
-    try {
-      await upsertGoogleProfile(user, { providerPrimary: "google" });
-    } catch (eUp) {
-      console.error("[auth.addon] UPSERT FAILED", eUp);
-    }
+    try { await upsertGoogleProfile(user, { providerPrimary: "google" }); }
+    catch (eUp) { console.error("[auth.addon] UPSERT FAILED", eUp); }
 
     closePopup();
     alert("ล็อกอินผ่านแล้ว ✅");
@@ -145,13 +142,12 @@ googleAnchor?.addEventListener("click", async (e) => {
   }
 });
 
-
+/* ---- auth state ---- */
 onAuthStateChanged(auth, async (user) => {
   console.log("[auth.addon] auth state:", user?.uid || null);
   renderNavbar(user);
   if (user) {
     try {
-      // ถ้า สร้างusers_google
       const ref = doc(db, "users_google", user.uid);
       const snap = await getDoc(ref);
       if (!snap.exists()) {
@@ -164,7 +160,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-/* ---- Ensure popup open when Login button recreated ---- */
+/* ---- Ensure popup opens when Login button recreated ---- */
 navbarUser?.addEventListener("click", (e) => {
   const t = e.target;
   if (!(t instanceof Element)) return;

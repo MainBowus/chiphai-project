@@ -10,23 +10,18 @@
   <header>
     <div class="logo" id="logoBtn">CHIPHAI</div>
     <div class="header-right">
-      <a href="../Post/Post.html" class="back-link" id="backBtn">
-        <span class="icon">←</span> Back to Lost Item
-      </a>
-      <button class="login" id="loginBtn">Log in</button>
+      <a href="../Post/Post.html" class="back-link" id="backBtn"><span class="icon">←</span> Back to Lost Item</a>
     </div>
   </header>
 
   <main>
     <div class="create-main">
-      <!-- ซ้าย -->
+
       <div class="create-left">
         <div class="meta">
           <div class="avatar">👤</div>
-          <div class="username">Founder's Username</div>
+          <div class="username" id="username">Guest</div>
         </div>
-
-        <!-- Upload -->
         <label for="imageUpload" class="upload-box">
           <span class="upload-text">Upload Image</span>
           <input type="file" id="imageUpload" accept="image/*" hidden>
@@ -34,64 +29,47 @@
         </label>
       </div>
 
-      <!-- ขวา -->
+
       <div class="create-right">
         <h1 class="form-title">Create Lost Item Post</h1>
 
         <label class="form-group">
-          <span class="form-label">Location</span>
-          <input type="text" id="location" placeholder="Enter location">
+          <span class="form-label">Item</span>
+          <input type="text" id="Item" placeholder="Enter Item" required>
         </label>
 
         <label class="form-group">
-          <span class="form-label">Date Founded</span>
-          <input type="date" id="dateFounded">
+          <span class="form-label">Location</span>
+          <input type="text" id="location" placeholder="Enter location" required>
+        </label>
+
+        <label class="form-group">
+          <span class="form-label">Date Found</span>
+          <input type="date" id="dateFounded" required>
         </label>
 
         <label class="form-group">
           <span class="form-label">Time</span>
-          <input type="time" id="timeFounded">
+          <input type="time" id="timeFounded" required>
         </label>
 
         <label class="form-group">
           <span class="form-label">Description</span>
-          <textarea id="description" placeholder="Enter item description"></textarea>
+          <textarea id="description" placeholder="Enter item description" required></textarea>
         </label>
 
         <div class="btn-wrapper">
           <button id="PostBtn" class="post-btn">
-            <span class="icon">📌</span> Post
+            <span class="icon">📌</span>
+            <span id="postBtnText">Post</span>
           </button>
         </div>
       </div>
     </div>
   </main>
 
-  <script>
-    const input = document.getElementById('imageUpload');
-    const preview = document.getElementById('preview');
 
-    input.addEventListener('change', () => {
-      const file = input.files[0];
-      if (file) {
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = "block";
-      }
-    });
-
-    document.getElementById('logoBtn').addEventListener('click', () => {
-      window.location.href = '../index.html';
-    });
-    document.getElementById('backBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = '../Post/Post.html';
-    });
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      window.location.href = '../index.html';
-    });
-    document.getElementById('PostBtn').addEventListener('click', () => {
-    window.location.href = '../Post/Post.html';
-    });
-  </script>
+  <script type="module" src="CreataPostfirebase.js"></script>
+  <script type="module" src="CreatePost.js"></script>
 </body>
 </html>
