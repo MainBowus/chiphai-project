@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>รายละเอียดโพสต์ | CHIPHAI</title>
+  <link rel="stylesheet" href="Postview.css">
+</head>
+<body>
+  <header>
+    <div class="logo" id="logoBtn">CHIPHAI</div>
+    <div class="header-right">
+      <a href="#" class="back-link" id="backBtn">
+        <span class="icon">←</span> Back to Lost Item
+      </a>
+      <button class="login" id="loginBtn">Log in</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="postview-main">
+      <div class="postview-left">
+        <div class="meta">
+          <div class="avatar">👤</div>
+          <div class="username">Founder's Username</div>
+        </div>
+        <div class="placeholder">
+          <img src="" alt="item image">
+        </div>
+        <button class="message-btn">
+          <span class="icon">💬</span> Message
+        </button>
+      </div>
+      <div class="postview-right">
+        <h1 class="item-name">Item name</h1>
+        <div class="info-group">
+          <div class="info-label">Location</div>
+          <div class="info-value">หน้าห้องน้ำ ชั้น 2</div>
+        </div>
+        <div class="info-group">
+          <div class="info-label">Date founded</div>
+          <div class="info-value">27/09/2025</div>
+        </div>
+        <div class="info-group">
+          <div class="info-label">Time</div>
+          <div class="info-value">15:30</div>
+        </div>
+        <div class="info-group">
+          <div class="info-label">Description</div>
+          <div class="info-value">กระเป๋าสตางค์สีน้ำตาล มีบัตรประชาชนและเงินสด</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('logoBtn').addEventListener('click', () => {
+      window.location.href = '../index.html';
+    });
+    document.getElementById('backBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = '../Post/Post.html';
+    });
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      window.location.href = '../index.html';
+    });
+  </script>
+</body>
+</html>

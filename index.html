@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UV-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website With Login And Register | Codehal</title>
+    <title>Chiphai</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
@@ -14,16 +14,27 @@
         <a href="#" class="logo">Chiphai</a>
 
         <nav class="navbar">
-            <a href="#">Khong</a>
-            <a href="#">Hai</a>
-            <a href="#">Eek</a>
-            <a href="#">Laew</a>
+            <a href="message.html" class="nav-link">Message</a>
+            <a href="./Post/Post.html" class="nav-link">Post</a>
             <span id="navbarUser">
                 <button class="btnLogin-popup">Login</button>
             </span>
         </nav>
     </header>
 
+    <!-- Hero section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Find your missing items <br> with <span class="highlight">CHIPHAI</span></h1>
+        <p>
+          Chiphai is a platform designed to help users post and find missing items.
+          It allows individuals to quickly report lost items or search for ones they've found,
+          making it easier to reunite people with their belongings.
+        </p>
+      </div>
+    </section>
+
+    <!-- login/register popup -->
     <section class="section">
         <div class="wrapper">
             <span class="icon-close">
@@ -64,6 +75,7 @@
                     </form>
                 </div>
 
+                <!-- register form -->
                 <div class="form-box register">
                     <div class="logreg-little">
                         <h2>Create Account</h2>
@@ -119,10 +131,7 @@
     </section>
 
     <script src="script.js"></script>
-
-    <!-- ของเดิม -->
     <script type="module" src="firebase.js"></script>
-    <!-- เพิ่มบรรทัดนี้ (ไฟล์เสริม Google + migrate) -->
     <script type="module" src="firebase.auth.addon.js"></script>
 </body>
 </html>
