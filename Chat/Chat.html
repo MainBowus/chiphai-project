@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message | CHIPHAI</title>
+  <link rel="stylesheet" href="Chat.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="chat-header-bar">
+    <div class="logo" id="logoBtn">CHIPHAI</div>
+    <nav class="nav-links">
+      <a href="#">About</a>
+      <a href="#" class="active">Message</a>
+      <a href="../Post/Post.html">Post</a>
+    </nav>
+    <button class="profile" id="profileBtn">
+      <span class="avatar">👤</span>
+      <span class="profile-name">Username</span>
+    </button>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="chat-main-layout">
+    <!-- Sidebar -->
+    <aside class="chat-sidebar">
+      <h3 class="sidebar-title"><span>💬</span> Messages</h3>
+      <div class="chat-list" id="chatList">
+        <div class="chat-item active">
+          <span class="avatar">👥</span>
+          <div class="chat-info">
+            <p class="chat-name">Username</p>
+            <p class="chat-preview">Message • Time</p>
+          </div>
+        </div>
+        <div class="chat-item">
+          <span class="avatar">👥</span>
+          <div class="chat-info">
+            <p class="chat-name">Username</p>
+            <p class="chat-preview">Message • Time</p>
+          </div>
+        </div>
+        <div class="chat-item">
+          <span class="avatar">👥</span>
+          <div class="chat-info">
+            <p class="chat-name">Username</p>
+            <p class="chat-preview">Message • Time</p>
+          </div>
+        </div>
+        <div class="chat-item">
+          <span class="avatar">👥</span>
+          <div class="chat-info">
+            <p class="chat-name">Username</p>
+            <p class="chat-preview">Message • Time</p>
+          </div>
+        </div>
+        <div class="chat-item">
+          <span class="avatar">👥</span>
+          <div class="chat-info">
+            <p class="chat-name">Username</p>
+            <p class="chat-preview">Message • Time</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Chat Section -->
+    <section class="chat-section">
+      <div class="chat-topbar">
+        <span class="avatar">👥</span>
+        <span class="chat-username">Username</span>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="message received">ข้อความจากอีกฝ่าย</div>
+        <div class="message received">...</div>
+        <div class="message received">...</div>
+        <div class="message sent">ข้อความของเรา</div>
+        <div class="message sent">...</div>
+      </div>
+      <div class="chat-footer">
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <button id="sendBtn">➤</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="Chat.js"></script>
+</body>
+</html>

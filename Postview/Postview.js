@@ -126,7 +126,7 @@ async function loadPost(docId) {
 
     // ปุ่ม Message
     document.querySelector(".message-btn")?.addEventListener("click", () => {
-      alert("comming soon");
+      window.location.href = "../Chat/Chat.html";
     });
   } catch (err) {
     console.error("[postview] load error:", err);
