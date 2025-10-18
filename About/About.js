@@ -9,11 +9,11 @@ document.getElementById("loginBtn")?.addEventListener("click", () => {
 
 
 const team = [
-  { name: "วรินทร แก้วสอาด", role: "Project Lead", avatar: "../image/background.png" },
+  { name: "วรินทร แก้วสอาด", role: "Project Lead", avatar: "../image/f0b81d84a65ab018b1d05323dcb4de29_0.jpg" },
   { name: "อมรเทพ จีระมานะพงศ์", role: "Frontend", avatar: "../image/f5b1b6a3-2d97-45b6-96d5-c07a62f49722.jpg" },
-  { name: "ปรัตภกร ดีทองอ่อน", role: "Backend", avatar: "👩‍🎨" },
+  { name: "ปรัตภกร ดีทองอ่อน", role: "Backend", avatar: "../image/SPOILER_1702956801823.jpg" },
   { name: "จอมภัช ตรีธรปณธิ", role: "Designer", avatar: "../image/IMG_9048.jpg" },
-  { name: "ธนกร เลขะวัฒนะ", role: "Designer", avatar: "👩‍🎨" } // emoji fallback
+  { name: "ธนกร เลขะวัฒนะ", role: "Designer", avatar: "../image/IMG_2057.jpg" } 
 ];
 
 const grid = document.getElementById("teamGrid");
