@@ -23,6 +23,9 @@ body{
   color:#222;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
+    display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Header */
@@ -91,6 +94,7 @@ body{
   display:flex;
   flex-direction:column;
   gap:32px;
+  flex: 1 0 auto;
 }
 
 /* Hero / Intro */
@@ -122,6 +126,7 @@ body{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:18px;
+  padding: 10px 0;
 }
 .feature{
   background:var(--card);
@@ -147,6 +152,7 @@ body{
   grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
   gap:22px;
   align-items:start;
+    padding: 20px 0;
 }
 
 /* Member card */
@@ -202,4 +208,68 @@ body{
   .nav{display:none}
   .about-main{margin:12px 12px;padding:12px}
   .logo{font-size:20px}
+}
+
+
+/* ...existing code... */
+
+.site-footer{
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgba(67,160,71,0.03);
+  padding: 18px 0;
+  margin-top: 0;
+}
+
+.site-footer-inner{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.site-footer .footer-left{
+  color: #666;
+  font-weight: 600;
+}
+
+.footer-nav{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-nav a{
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+.footer-nav a:hover{
+  background: rgba(67,160,71,0.06);
+  color: var(--accent-600);
+  transform: translateY(-2px);
+}
+
+.footer-nav .sep{
+  color: var(--border);
+  margin: 0 4px;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width:560px){
+  .site-footer-inner{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+  .footer-nav{gap:8px}
 }

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact | CHIPHAI</title>
+  <link rel="stylesheet" href="Contact.css">
+</head>
+<body>
+  <header class="site-header" role="banner">
+    <div class="logo" id="logoBtn">CHIPHAI</div>
+
+    <nav class="nav" role="navigation" aria-label="Main">
+      <a href="../About/About.html" class="nav-item">About</a>
+      <a href="../Chat/Chat.html" class="nav-item">Message</a>
+      <a href="../Post/Post.html" class="nav-item">Post</a>
+    </nav>
+
+    <div class="header-right">
+      <button class="login" id="loginBtn">Log in</button>
+    </div>
+  </header>
+
+  <main class="contact-main">
+    <section class="hero">
+      <div class="hero-visual" aria-hidden="true">
+        <div class="xmark"></div>
+      </div>
+    </section>
+
+    <section class="contact-panel" aria-labelledby="contact-title">
+      <h1 id="contact-title">Contact us</h1>
+
+      <div class="contact-grid">
+        <div class="contact-col">
+          <label class="contact-line" aria-hidden="true"></label>
+          <label class="contact-line" aria-hidden="true"></label>
+          <label class="contact-line" aria-hidden="true"></label>
+        </div>
+
+        <div class="contact-col">
+          <label class="contact-line" aria-hidden="true"></label>
+          <label class="contact-line" aria-hidden="true"></label>
+          <label class="contact-line" aria-hidden="true"></label>
+        </div>
+      </div>
+
+      <p class="help-text">If you want more help</p>
+
+      <div class="actions">
+        <button class="btn-primary" id="submitTicket">Submit a ticket</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+  <div class="site-footer-inner">
+    <div class="footer-left">
+      <span class="brand">CHIPHAI</span> © 2025 All rights reserved.
+    </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="../Privacy/Privacy.html">Privacy Policy</a>
+        <span class="sep" aria-hidden="true">|</span>
+        <a href="../About/About.html">About Us</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('logoBtn')?.addEventListener('click', () => location.href = '../index.html');
+    document.getElementById('loginBtn')?.addEventListener('click', () => location.href = '../index.html');
+    document.getElementById('submitTicket')?.addEventListener('click', () => alert('เปิดฟอร์มส่ง ticket (ต่อเติมด้วยฟอร์มจริง)'));
+  </script>
+</body>
+</html>
