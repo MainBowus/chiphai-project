@@ -1,17 +1,21 @@
 /* ...existing code... */
-:root{
+:root {
   --bg: #f7fafc;
   --card: #fff;
   --accent: #43a047;
   --accent-600: #388e3c;
+  --accent-dark: #2e7d32; /* สีเขียวเข้มสำหรับ header */
   --muted: #6b7a7a;
   --border: #e0e6e0;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
-  --glass: rgba(255,255,255,0.6);
+  --shadow-sm: 0 6px 18px rgba(67,160,71,0.04);
   --max-width: 1200px;
   --gap: 20px;
   --radius: 14px;
-  --transition: 180ms cubic-bezier(.4,.0,.2,1);
+  --pad: 24px;
+  --transition: 180ms cubic-bezier(.4, .0, .2, 1);
+  --text-dark: #222;
+  --header-height: 72px; /* ความสูง header */
 }
 
 *{box-sizing:border-box}
@@ -29,62 +33,78 @@ body{
 }
 
 /* Header */
-.site-header{
-  position:sticky;
-  top:0;
-  z-index:40;
-  height:72px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding:0 28px;
-  background:var(--card);
-  box-shadow:var(--shadow);
-  border-bottom:1px solid var(--border);
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 100px; /* ปรับตาม layout ของคุณ */
+  background: var(--accent-dark);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 99;
+  transition: background 180ms ease, box-shadow 180ms ease;
 }
 
-.logo{
-  font-weight:900;
-  font-size:24px;
-  color:var(--accent);
-  cursor:pointer;
-  letter-spacing:1px;
-  transition:transform var(--transition);
+/* Logo effect */
+.logo {
+  font-weight: 900;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: transform 180ms ease, color 180ms ease;
 }
-.logo:hover{transform:scale(1.04); color:var(--accent-600)}
+.logo:hover {
+  transform: scale(1.15);
+  color: #c8e6c9;
+}
 
-.nav{
-  display:flex;
-  gap:24px;
-  align-items:center;
+/* Navigation */
+.nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
 }
-.nav-item{
-  color:var(--muted);
-  text-decoration:none;
-  font-weight:600;
-  padding:8px 6px;
-  border-bottom:3px solid transparent;
-  transition:all var(--transition);
+.nav-item {
+  color: #e8f5e9;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 6px;
+  border-bottom: 3px solid transparent;
+  transition: all 180ms ease;
 }
 .nav-item:hover,
-.nav-item.active{
-  color:var(--accent);
-  border-bottom-color:var(--accent);
+.nav-item.active {
+  color: #fff;
+  border-bottom-color: #c8e6c9;
 }
 
-/* header right */
-.header-right .login{
-  background:linear-gradient(90deg,var(--accent) 60%, var(--accent-600) 100%);
-  color:#fff;
-  border:none;
-  padding:9px 16px;
-  border-radius:12px;
-  font-weight:700;
-  cursor:pointer;
-  box-shadow:0 6px 18px rgba(67,160,71,0.08);
+/* Header Right Button */
+.header-right .login {
+  background: linear-gradient(90deg, #43a047 60%, #388e3c 100%);
+  color: #fff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transition: transform 180ms ease;
 }
-.header-right .login:hover{transform:translateY(-1px)}
+.header-right .login:hover {
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width:640px){
+  .nav { display: none; }
+  .logo { font-size: 20px; }
+  .site-header { padding: 16px 24px; }
+}
 
 /* Main wrapper */
 .about-main{
