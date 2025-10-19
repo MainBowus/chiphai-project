@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>About | CHIPHAI</title>
   <link rel="stylesheet" href="About.css">
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 </head>
 <body>
+  <div id="particles-js"></div>
   <header class="site-header">
     <div class="logo" id="logoBtn">CHIPHAI</div>
 
@@ -15,7 +17,6 @@
       <a href="../Chat/Chat.html" class="nav-item">Message</a>
       <a href="../Post/Post.html" class="nav-item">Post</a>
     </nav>
-
     <div class="header-right">
       <button class="login" id="loginBtn">Log in</button>
     </div>
@@ -26,8 +27,7 @@
     <section class="hero" id="about">
       <h1>About Us</h1>
       <p class="lead">
-        CHIPHAI คือแพลตฟอร์มออนไลน์สำหรับการ “โพสต์ของหาย” และ “แจ้งเจอของหาย”  
-        เพื่อช่วยให้ทุกคนสามารถตามหาสิ่งของสำคัญของตนได้อย่างรวดเร็ว ปลอดภัย และน่าเชื่อถือ
+        <span id="typed-text"></span>
       </p>
       <div class="divider"></div>
 
@@ -119,5 +119,6 @@
 </footer>
 
   <script type="module" src="About.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 </body>
 </html>

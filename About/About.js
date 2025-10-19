@@ -8,6 +8,7 @@ document.getElementById("loginBtn")?.addEventListener("click", () => {
 });
 
 
+
 const team = [
   { name: "วรินทร แก้วสอาด", role: "Project Lead", avatar: "../image/f0b81d84a65ab018b1d05323dcb4de29_0.jpg" },
   { name: "อมรเทพ จีระมานะพงศ์", role: "Frontend", avatar: "../image/f5b1b6a3-2d97-45b6-96d5-c07a62f49722.jpg" },
@@ -60,3 +61,27 @@ if (grid) {
     grid.appendChild(a);
   });
 }
+var typed = new Typed('#typed-text', {
+    strings: [
+      "CHIPHAI คือแพลตฟอร์มออนไลน์สำหรับการ “โพสต์ของหาย” และ “แจ้งเจอของหาย” เพื่อช่วยให้ทุกคนสามารถตามหาสิ่งของสำคัญของตนได้อย่างรวดเร็ว ปลอดภัย และน่าเชื่อถือ"
+    ],
+    typeSpeed: 20,
+    backSpeed: 15,
+    backDelay: 4000,
+    loop: true
+  });
+
+  particlesJS('particles-js', {
+  "particles": {
+    "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
+    "color": { "value": "#a3ec9c" },
+    "shape": { "type": "circle" },
+    "opacity": { "value": 0.8, "random": true },
+    "size": { "value": 6  , "random": true },
+    "line_linked": { "enable": false },
+    "move": { "enable": true, "speed": 1, "direction": "bottom", "straight": false, "out_mode": "out" }
+  },
+  "interactivity": {
+    "events": { "onhover": { "enable": false }, "onclick": { "enable": false } }
+  }
+});
