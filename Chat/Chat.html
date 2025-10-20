@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,22 +17,22 @@
       <a href="../Post/Post.html">Post</a>
     </nav>
 
-
     <button class="profile" id="profileBtn" aria-label="Open profile">
       <span class="avatar">👤</span>
-      <span class="profile-name">Username</span>
+      <span class="profile-name">Guest</span>
     </button>
   </header>
 
 
   <main class="chat-main-layout">
-    <!-- Sidebar (Inbox) -->
+
     <aside class="chat-sidebar">
       <h3 class="sidebar-title">
         <span>💬</span> Messages
       </h3>
       <div class="chat-list" id="chatList"></div>
     </aside>
+
 
     <section class="chat-section" aria-live="polite">
       <div class="chat-topbar">
@@ -55,10 +55,9 @@
     </section>
   </main>
 
-
   <script type="module" src="Chat.js"></script>
-  <script>
 
+  <script>
     document.getElementById("logoBtn")?.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
