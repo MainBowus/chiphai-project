@@ -1,4 +1,4 @@
-// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create + โปรไฟล์ผู้ใช้มุมขวา
+// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, query, where,
@@ -43,7 +43,7 @@ const USE_ANON_FOR_DEV = true;
 const MAX_MESSAGES = 200;
 
 /* ===== users_create helpers ===== */
-const userProfileCache = new Map();
+const userProfileCache = new Map(); // uid => { name, photo }
 
 function pickBestName(u) {
   return (
@@ -72,7 +72,9 @@ async function resolveUserProfile(uid) {
       userProfileCache.set(uid, prof);
       return prof;
     }
-  } catch {}
+  } catch (err) {
+    console.warn("❗️Error reading profile:", err);
+  }
 
   try {
     const qSnap = await getDocs(query(collection(db, "users_create"), where("uid", "==", uid)));
@@ -81,25 +83,28 @@ async function resolveUserProfile(uid) {
       userProfileCache.set(uid, prof);
       return prof;
     }
-  } catch {}
+  } catch (err) {
+    console.warn("❗️Error query profile:", err);
+  }
 
   const fallback = { name: "ผู้ใช้", photo: null };
   userProfileCache.set(uid, fallback);
   return fallback;
 }
 
-/* ===== Auth ===== */
+/* ===== Boot / Auth ===== */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     if (USE_ANON_FOR_DEV) { await signInAnonymously(auth); return; }
-    alert("กรุณาเข้าสู่ระบบก่อนใช้งานแชต"); 
-    location.href="../index.html"; 
+    alert("กรุณาเข้าสู่ระบบก่อนใช้งานแชต");
+    location.href = "../index.html";
     return;
   }
 
   currentUserId = user.uid;
+  console.log("✅ ผู้ใช้ที่ล็อกอินตอนนี้:", currentUserId);
 
-  /* 🟢 แสดงชื่อ + รูปผู้ใช้ใน header */
+  /* 🟢 โหลดชื่อผู้ใช้บน header */
   const profileNameEl = document.querySelector(".profile-name");
   const profileAvatarEl = document.querySelector(".profile .avatar");
 
@@ -118,17 +123,18 @@ onAuthStateChanged(auth, async (user) => {
           profileAvatarEl.textContent = "👤";
         }
       }
+
+      console.log("✅ โหลดข้อมูลโปรไฟล์สำเร็จ:", displayName);
     } else {
+      console.warn("⚠️ ไม่พบเอกสาร users_create สำหรับ:", currentUserId);
       if (profileNameEl) profileNameEl.textContent = user.isAnonymous ? "ผู้ใช้ชั่วคราว" : "ไม่ทราบชื่อ";
-      if (profileAvatarEl) profileAvatarEl.textContent = "👤";
     }
   } catch (err) {
     console.error("โหลดชื่อผู้ใช้ล้มเหลว:", err);
     if (profileNameEl) profileNameEl.textContent = "ไม่ทราบชื่อ";
-    if (profileAvatarEl) profileAvatarEl.textContent = "👤";
   }
 
-  /* ===== โหลดโหมดแชต ===== */
+  /* 🧭 โหลดหน้า */
   if (partnerId) {
     await openDirectChat(partnerId);
     const partnerProf = await resolveUserProfile(partnerId);
@@ -142,7 +148,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-/* ===== Direct Chat ===== */
+/* ===== Open Direct Chat ===== */
 async function openDirectChat(partner) {
   try {
     const qy = query(collection(db, "conversations"), where("participants", "array-contains", currentUserId));
@@ -158,13 +164,11 @@ async function openDirectChat(partner) {
     } else {
       const ref = await addDoc(collection(db, "conversations"), {
         participants: [currentUserId, partner],
-        userA: currentUserId,
-        userB: partner,
         postId: postId,
         postTitle: title || "(ไม่มีชื่อโพสต์)",
+        messages: [],
         lastMessage: "",
-        updatedAt: serverTimestamp(),
-        messages: []
+        updatedAt: serverTimestamp()
       });
       conversationId = ref.id;
     }
@@ -205,13 +209,9 @@ function renderInboxGrouped(convos) {
 
   const groups = new Map();
   for (const c of convos) {
-    const gKey = c.postId || `__title__:${c.postTitle || "(ไม่มีชื่อโพสต์)"}`;
-    if (!groups.has(gKey)) groups.set(gKey, { title: c.postTitle || "(ไม่มีชื่อโพสต์)", items: [] });
+    const gKey = c.postId || `__title__:${c.postTitle}`;
+    if (!groups.has(gKey)) groups.set(gKey, { title: c.postTitle, items: [] });
     groups.get(gKey).items.push(c);
-  }
-
-  for (const g of groups.values()) {
-    g.items.sort((a,b) => (b.updatedAt?.seconds||0) - (a.updatedAt?.seconds||0));
   }
 
   for (const [key, group] of groups) {
@@ -221,28 +221,24 @@ function renderInboxGrouped(convos) {
     chatList.appendChild(header);
 
     for (const c of group.items) {
-      const otherUid   = (c.participants || []).find(uid => uid !== currentUserId) || null;
-      const prof       = otherUid ? (userProfileCache.get(otherUid) || { name: "ผู้ใช้", photo: null }) : { name: "ผู้ใช้", photo: null };
+      const otherUid = (c.participants || []).find(uid => uid !== currentUserId);
+      const prof = userProfileCache.get(otherUid) || { name: "ผู้ใช้", photo: null };
 
       const item = document.createElement("div");
       item.className = "chat-item";
       item.innerHTML = `
-        <div class="avatar">
-          ${prof.photo ? `<img src="${prof.photo}" alt="${prof.name}" />` : "👤"}
-        </div>
+        <div class="avatar">${prof.photo ? `<img src="${prof.photo}" />` : "👤"}</div>
         <div class="meta">
           <div class="name">${prof.name}</div>
           <div class="preview">${c.lastMessage || ""}</div>
         </div>
       `;
-      item.addEventListener("click", async () => {
+      item.addEventListener("click", () => {
         [...chatList.querySelectorAll(".chat-item")].forEach(el => el.classList.remove("active"));
         item.classList.add("active");
-
-        partnerId = otherUid || null;
-        chatPartner.textContent = `โพสต์: ${group.title}${prof.name ? " · " + prof.name : ""}`;
+        partnerId = otherUid;
+        chatPartner.textContent = `โพสต์: ${group.title} · ${prof.name}`;
         updateTopbarAvatar(prof.photo);
-
         conversationId = c.id;
         listenConversationDoc(conversationId);
       });
@@ -250,30 +246,25 @@ function renderInboxGrouped(convos) {
       chatList.appendChild(item);
     }
   }
-
-  const first = chatList.querySelector(".chat-item");
-  if (first) first.click();
 }
 
-/* ===== Avatar บน topbar ===== */
+/* ===== Update Topbar Avatar ===== */
 function updateTopbarAvatar(photoURL) {
   const avatarEl = document.querySelector(".chat-topbar .avatar");
   if (!avatarEl) return;
-  if (photoURL) {
-    avatarEl.innerHTML = `<img src="${photoURL}" alt="avatar" />`;
-  } else {
-    avatarEl.textContent = "👥";
-  }
+  if (photoURL) avatarEl.innerHTML = `<img src="${photoURL}" />`;
+  else avatarEl.textContent = "👥";
 }
 
-/* ===== ฟังข้อความในแชต ===== */
+/* ===== Listen Messages ===== */
 function listenConversationDoc(cid) {
-  if (unsubConversation) { unsubConversation(); unsubConversation = null; }
+  if (unsubConversation) unsubConversation();
 
   const ref = doc(db, "conversations", cid);
   unsubConversation = onSnapshot(ref, (snap) => {
     const data = snap.data();
-    const msgs = (data?.messages || []).sort((a, b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
+    const msgs = (data?.messages || []).sort((a,b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
+
     chatBody.innerHTML = "";
     for (const m of msgs) {
       const div = document.createElement("div");
@@ -285,7 +276,7 @@ function listenConversationDoc(cid) {
   });
 }
 
-/* ===== ส่งข้อความ ===== */
+/* ===== Send Message ===== */
 sendBtn.addEventListener("click", sendMessage);
 messageInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -295,31 +286,10 @@ async function sendMessage() {
   const text = messageInput.value.trim();
   if (!text || !conversationId) return;
   const ref = doc(db, "conversations", conversationId);
-
-  await appendMessage(ref, {
-    senderId: currentUserId,
-    text,
-    createdAt: Timestamp.now()
-  });
-
-  messageInput.value = "";
-}
-
-async function appendMessage(ref, msgObj) {
   await updateDoc(ref, {
-    messages: arrayUnion(msgObj),
-    lastMessage: msgObj.text,
+    messages: arrayUnion({ senderId: currentUserId, text, createdAt: Timestamp.now() }),
+    lastMessage: text,
     updatedAt: serverTimestamp()
   });
-
-  try {
-    const cur = await getDoc(ref);
-    const arr = cur.data()?.messages || [];
-    if (arr.length > MAX_MESSAGES) {
-      const trimmed = arr.slice(-MAX_MESSAGES);
-      await setDoc(ref, { messages: trimmed }, { merge: true });
-    }
-  } catch (e) {
-    console.warn("trim messages error:", e);
-  }
+  messageInput.value = "";
 }
