@@ -131,7 +131,7 @@ onAuthStateChanged(auth, async (user) => {
     updateTopbarAvatar(partnerProf.photo);
     if (firstMsg) await sendFirstMessageIfEmpty(firstMsg);
   } else {
-    chatPartner.textContent = "เลือกบทสนทนาทางซ้ายเพื่อเริ่มคุยยยยย";
+    chatPartner.textContent = "เลือกบทสนทนาทางซ้ายเพื่อเริ่มคุย";
     updateTopbarAvatar(null);
     await loadInbox();
   }
