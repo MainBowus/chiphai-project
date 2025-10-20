@@ -1,16 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>รายละเอียดโพสต์ | CHIPHAI</title>
-  <link rel="stylesheet" href="postview.css">
+  <link rel="stylesheet" href="Postview.css">
 </head>
 <body>
-  <header class="site-header">
+  <header>
     <div class="logo" id="logoBtn">CHIPHAI</div>
     <div class="header-right">
-      <a href="../Post/Post.html" class="back-link" id="backBtn">← Back to Lost Item</a>
+      <a href="#" class="back-link" id="backBtn">
+        <span class="icon">←</span> Back to Lost Item
+      </a>
     </div>
   </header>
 
@@ -18,17 +20,19 @@
     <div class="postview-main">
       <div class="postview-left">
         <div class="meta">
-          <div class="avatar">👤</div>
-          <div class="username">User</div>
+          <div class="avatar" id="userAvatar">👤</div>
+          <div class="username" id="username">User</div>
         </div>
         <div class="placeholder">
-          <img src="" alt="item image">
+          <img src="" alt="item image" />
         </div>
-        <button class="message-btn">Message</button>
+        <button class="message-btn" id="messageBtn">
+          <span class="icon">💬</span> Message
+        </button>
       </div>
 
       <div class="postview-right">
-        <h1 class="item-name">Loading…</h1>
+        <h1 class="item-name" id="itemName">Loading…</h1>
 
         <div class="info-group">
           <div class="info-label">Location</div>
