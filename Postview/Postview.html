@@ -4,15 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>รายละเอียดโพสต์ | CHIPHAI</title>
-  <link rel="stylesheet" href="Postview.css">
+  <link rel="stylesheet" href="postview.css">
 </head>
 <body>
-  <header>
+  <header class="site-header">
     <div class="logo" id="logoBtn">CHIPHAI</div>
     <div class="header-right">
-      <a href="#" class="back-link" id="backBtn">
-        <span class="icon">←</span> Back to Lost Item
-      </a>
+      <a href="../Post/Post.html" class="back-link" id="backBtn">← Back to Lost Item</a>
     </div>
   </header>
 
@@ -26,9 +24,7 @@
         <div class="placeholder">
           <img src="" alt="item image">
         </div>
-        <button class="message-btn">
-          <span class="icon">💬</span> Message
-        </button>
+        <button class="message-btn">Message</button>
       </div>
 
       <div class="postview-right">
@@ -57,7 +53,6 @@
     </div>
   </main>
 
-  <!-- ใช้ไฟล์ JS แยกเพื่อดึงข้อมูลจาก Firestore -->
   <script type="module" src="Postview.js"></script>
 </body>
 </html>
