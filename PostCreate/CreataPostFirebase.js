@@ -35,4 +35,4 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-console.log("[CreatePostFirebase] loaded ✅");
+console.log("[CreataPostFirebase] loaded ✅");

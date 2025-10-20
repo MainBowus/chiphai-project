@@ -1,8 +1,8 @@
-import { auth, db } from "./CreatePostFirebase.js";
+import { auth, db } from "./CreataPostFirebase.js";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-// Cloudinary config
+// 🌤️ Cloudinary config
 const CLOUD_NAME = "djlilcqzd";
 const UPLOAD_PRESET = "chiphai_unsigned";
 const TRANSFORM = "f_webp,q_auto,w_1200";
@@ -19,6 +19,7 @@ const usernameEl = $id("username");
 let authReady = false;
 if (postBtn) postBtn.disabled = true;
 
+/* ---------- Auth ---------- */
 onAuthStateChanged(auth, (user) => {
   authReady = !!user;
   if (postBtn) postBtn.disabled = !authReady;
@@ -32,7 +33,7 @@ function getUserDisplayName(user) {
   return "Guest";
 }
 
-// Preview image
+/* ---------- Preview ---------- */
 let objectUrl;
 input?.addEventListener("change", () => {
   const file = input.files?.[0];
@@ -48,7 +49,7 @@ input?.addEventListener("change", () => {
   preview.style.display = "block";
 });
 
-// Upload to Cloudinary
+/* ---------- Upload to Cloudinary ---------- */
 async function uploadFileToCloudinary(file, uid) {
   const fd = new FormData();
   fd.append("file", file);
@@ -65,7 +66,7 @@ async function uploadFileToCloudinary(file, uid) {
   return data.secure_url.replace("/upload/", `/upload/${TRANSFORM}/`);
 }
 
-// Create post
+/* ---------- Post handler ---------- */
 postBtn?.addEventListener("click", async () => {
   if (!authReady) {
     alert("ระบบกำลังเตรียมล็อกอิน ลองใหม่อีกครั้ง");
