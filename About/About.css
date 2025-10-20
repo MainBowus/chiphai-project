@@ -1,10 +1,9 @@
-/* ...existing code... */
 :root {
   --bg: #f7fafc;
   --card: #fff;
   --accent: #43a047;
   --accent-600: #388e3c;
-  --accent-dark: #2e7d32; /* สีเขียวเข้มสำหรับ header */
+  --accent-dark: #2e7d32; 
   --muted: #6b7a7a;
   --border: #e0e6e0;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
@@ -15,7 +14,7 @@
   --pad: 24px;
   --transition: 180ms cubic-bezier(.4, .0, .2, 1);
   --text-dark: #222;
-  --header-height: 72px; /* ความสูง header */
+  --header-height: 72px; 
 }
 
 *{box-sizing:border-box}
