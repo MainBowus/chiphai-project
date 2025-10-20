@@ -1,4 +1,4 @@
-// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create
+// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create + ชื่อผู้ใช้บน header
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, query, where,
@@ -65,7 +65,7 @@ async function resolveUserProfile(uid) {
   if (!uid) return { name: "ผู้ใช้", photo: null };
   if (userProfileCache.has(uid)) return userProfileCache.get(uid);
 
-  // 1) ลอง doc id = uid (เคสที่ users_create ใช้ uid เป็น docId)
+  // 1) ลอง doc id = uid
   try {
     const snap = await getDoc(doc(db, "users_create", uid));
     if (snap.exists()) {
@@ -75,7 +75,7 @@ async function resolveUserProfile(uid) {
     }
   } catch {}
 
-  // 2) ลอง query ฟิลด์ uid (เคสที่เอกสารถูกสร้างแบบ random id แต่มี field uid)
+  // 2) ลอง query ฟิลด์ uid
   try {
     const qSnap = await getDocs(query(collection(db, "users_create"), where("uid", "==", uid)));
     if (!qSnap.empty) {
@@ -98,6 +98,24 @@ onAuthStateChanged(auth, async (user) => {
   }
   currentUserId = user.uid;
 
+  /* 🟢 แสดงชื่อผู้ใช้ใน header (.profile-name) */
+  const profileNameEl = document.querySelector(".profile-name");
+  if (profileNameEl) {
+    try {
+      const myDoc = await getDoc(doc(db, "users_create", currentUserId));
+      if (myDoc.exists()) {
+        const myData = myDoc.data();
+        profileNameEl.textContent = myData.displayName || "ผู้ใช้";
+      } else {
+        profileNameEl.textContent = user.isAnonymous ? "ผู้ใช้ชั่วคราว" : "ไม่ทราบชื่อ";
+      }
+    } catch (err) {
+      console.error("โหลดชื่อผู้ใช้ล้มเหลว:", err);
+      profileNameEl.textContent = "ไม่ทราบชื่อ";
+    }
+  }
+
+  /* ===== กำหนดโหมด ===== */
   if (partnerId) {
     // โหมด A: เปิดห้องกับ partner โดยตรง
     await openDirectChat(partnerId);
@@ -162,14 +180,13 @@ async function sendFirstMessageIfEmpty(text) {
   }
 }
 
-/* ===== โหมด B: Inbox (จัดกลุ่มตาม postId/postTitle + แสดง displayName + avatar) ===== */
+/* ===== โหมด B: Inbox ===== */
 async function loadInbox() {
   try {
     const qy = query(collection(db, "conversations"), where("participants", "array-contains", currentUserId));
     const snap = await getDocs(qy);
     const convos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    // Prefetch โปรไฟล์ของทุก otherUid
     const uidSet = new Set();
     for (const c of convos) {
       const otherUid = (c.participants || []).find(uid => uid !== currentUserId);
@@ -191,7 +208,6 @@ function renderInboxGrouped(convos) {
     return;
   }
 
-  // กลุ่มตาม postId ถ้ามี ไม่งั้นใช้ postTitle
   const groups = new Map();
   for (const c of convos) {
     const gKey = c.postId || `__title__:${c.postTitle || "(ไม่มีชื่อโพสต์)"}`;
@@ -199,12 +215,10 @@ function renderInboxGrouped(convos) {
     groups.get(gKey).items.push(c);
   }
 
-  // เรียงในกลุ่มตาม updatedAt ใหม่ก่อน
   for (const g of groups.values()) {
     g.items.sort((a,b) => (b.updatedAt?.seconds||0) - (a.updatedAt?.seconds||0));
   }
 
-  // วาด UI
   for (const [key, group] of groups) {
     const header = document.createElement("div");
     header.className = "chat-group-title";
@@ -227,7 +241,6 @@ function renderInboxGrouped(convos) {
         </div>
       `;
       item.addEventListener("click", async () => {
-        // active state
         [...chatList.querySelectorAll(".chat-item")].forEach(el => el.classList.remove("active"));
         item.classList.add("active");
 
@@ -243,12 +256,11 @@ function renderInboxGrouped(convos) {
     }
   }
 
-  // auto เลือกบทสนทนาแรกของกลุ่มแรก
   const first = chatList.querySelector(".chat-item");
   if (first) first.click();
 }
 
-/* ===== ฟังก์ชันอัปเดตรูป avatar บนแถบ topbar ===== */
+/* ===== Avatar บน topbar ===== */
 function updateTopbarAvatar(photoURL) {
   const avatarEl = document.querySelector(".chat-topbar .avatar");
   if (!avatarEl) return;
@@ -259,7 +271,7 @@ function updateTopbarAvatar(photoURL) {
   }
 }
 
-/* ===== Listen เอกสาร conversations/{cid} แล้วเรนเดอร์จาก messages array ===== */
+/* ===== Listen ข้อความ ===== */
 function listenConversationDoc(cid) {
   if (unsubConversation) { unsubConversation(); unsubConversation = null; }
 
@@ -306,7 +318,6 @@ async function sendMessage() {
   messageInput.value = "";
 }
 
-/* helper: append + อัปเดต lastMessage/updatedAt และจำกัดจำนวนข้อความต่อห้อง */
 async function appendMessage(ref, msgObj) {
   await updateDoc(ref, {
     messages: arrayUnion(msgObj),
