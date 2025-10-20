@@ -1,4 +1,4 @@
-// Chat.js — Realtime Chat ของ CHIPHAI (เวอร์ชันแก้ชื่อไม่ทราบชื่อ + รองรับ users_google)
+// Chat.js — Realtime Chat ของ CHIPHAI Project
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, doc, getDoc, getDocs, query, where,
