@@ -112,6 +112,14 @@ body{
 }
 
 /* --- 4.1 ปุ่ม Login (Ghost Button) --- */
+#navbarUser {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+/* นี่คือสไตล์สำหรับปุ่ม .login ที่อยู่ใน Header */
 .header-right .login {
   background: transparent; 
   border: 2px solid var(--text-light-gray);
@@ -132,18 +140,12 @@ body{
 }
 
 /* --- 4.2 สไตล์สำหรับ User Dropdown (Letter Avatar) --- */
-#navbarUser {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-}
-
+/* สไตล์นี้จะถูกใช้กับ HTML ที่ JavaScript สร้างขึ้นมาแทนที่ปุ่ม Login */
 .user-menu {
   position: relative;
-  display: flex; /* เปลี่ยนเป็น flex */
-  align-items: center; /* จัดกลางแนวตั้ง */
-  gap: 10px; /* ระยะห่างระหว่าง Avatar กับ ชื่อ */
+  display: flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
   padding: 5px;
   border-radius: 8px;
@@ -158,7 +160,7 @@ body{
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: #c90058; /* สีชมพู/แดง จากในรูป */
+  background-color: #c90058; /* สีชมพู/แดง */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,7 +171,7 @@ body{
   text-transform: uppercase;
 }
 .user-avatar span {
-  padding-bottom: 2px; /* ขยับตัวอักษรลงเล็กน้อยให้ดูอยู่กลาง */
+  padding-bottom: 2px;
 }
 
 /* สไตล์สำหรับชื่อ */
@@ -194,14 +196,13 @@ body{
   overflow: hidden;
   padding: 5px;
 }
-.user-menu .dropdown.hidden { /* สไตล์ .hidden จาก JS ของคุณ */
+.user-menu .dropdown.hidden { /* สไตล์ .hidden จาก JS */
   display: none;
 }
-.user-menu:hover .dropdown.hidden { /* ป้องกันการแสดงผล .hidden */
+.user-menu:hover .dropdown.hidden {
   display: none;
 }
-/* เมื่อคลิก (JS จะลบ .hidden ออก) */
-.user-menu .dropdown:not(.hidden) { 
+.user-menu .dropdown:not(.hidden) { /* เมื่อ JS ลบ .hidden ออก */
   display: block;
 }
 
@@ -385,6 +386,8 @@ body{
   text-decoration: none;
 }
 .remember-forgot a:hover { text-decoration: underline; }
+
+/* นี่คือสไตล์สำหรับปุ่ม .btn ที่อยู่ใน Popup */
 .logreg-box .btn {
   width: 100%;
   height: 45px;
