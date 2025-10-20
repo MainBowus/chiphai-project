@@ -1,4 +1,4 @@
-// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create + ชื่อผู้ใช้บน header
+// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create + โปรไฟล์ผู้ใช้มุมขวา
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, query, where,
@@ -30,7 +30,7 @@ const chatPartner  = document.getElementById("chatPartner");
 
 /* ===== URL Params ===== */
 const params   = new URLSearchParams(location.search);
-let partnerId  = params.get("partner"); // ถ้ามี = direct chat, ถ้าไม่มี = inbox
+let partnerId  = params.get("partner");
 const postId   = params.get("post") || null;
 const title    = params.get("title") || "(ไม่มีชื่อโพสต์)";
 const firstMsg = params.get("msg")   || null;
@@ -42,8 +42,8 @@ let unsubConversation = null;
 const USE_ANON_FOR_DEV = true;
 const MAX_MESSAGES = 200;
 
-/* ===== users_create helpers (เอา displayName + photoURL) ===== */
-const userProfileCache = new Map(); // uid => { name, photo }
+/* ===== users_create helpers ===== */
+const userProfileCache = new Map();
 
 function pickBestName(u) {
   return (
@@ -65,7 +65,6 @@ async function resolveUserProfile(uid) {
   if (!uid) return { name: "ผู้ใช้", photo: null };
   if (userProfileCache.has(uid)) return userProfileCache.get(uid);
 
-  // 1) ลอง doc id = uid
   try {
     const snap = await getDoc(doc(db, "users_create", uid));
     if (snap.exists()) {
@@ -75,7 +74,6 @@ async function resolveUserProfile(uid) {
     }
   } catch {}
 
-  // 2) ลอง query ฟิลด์ uid
   try {
     const qSnap = await getDocs(query(collection(db, "users_create"), where("uid", "==", uid)));
     if (!qSnap.empty) {
@@ -90,50 +88,61 @@ async function resolveUserProfile(uid) {
   return fallback;
 }
 
-/* ===== Boot / Auth ===== */
+/* ===== Auth ===== */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     if (USE_ANON_FOR_DEV) { await signInAnonymously(auth); return; }
-    alert("กรุณาเข้าสู่ระบบก่อนใช้งานแชต"); location.href="../index.html"; return;
+    alert("กรุณาเข้าสู่ระบบก่อนใช้งานแชต"); 
+    location.href="../index.html"; 
+    return;
   }
+
   currentUserId = user.uid;
 
-  /* 🟢 แสดงชื่อผู้ใช้ใน header (.profile-name) */
+  /* 🟢 แสดงชื่อ + รูปผู้ใช้ใน header */
   const profileNameEl = document.querySelector(".profile-name");
-  if (profileNameEl) {
-    try {
-      const myDoc = await getDoc(doc(db, "users_create", currentUserId));
-      if (myDoc.exists()) {
-        const myData = myDoc.data();
-        profileNameEl.textContent = myData.displayName || "ผู้ใช้";
-      } else {
-        profileNameEl.textContent = user.isAnonymous ? "ผู้ใช้ชั่วคราว" : "ไม่ทราบชื่อ";
+  const profileAvatarEl = document.querySelector(".profile .avatar");
+
+  try {
+    const myDoc = await getDoc(doc(db, "users_create", currentUserId));
+    if (myDoc.exists()) {
+      const myData = myDoc.data();
+      const displayName = myData.displayName || "ผู้ใช้";
+      const photo = myData.photoURL || null;
+
+      if (profileNameEl) profileNameEl.textContent = displayName;
+      if (profileAvatarEl) {
+        if (photo) {
+          profileAvatarEl.innerHTML = `<img src="${photo}" alt="${displayName}" />`;
+        } else {
+          profileAvatarEl.textContent = "👤";
+        }
       }
-    } catch (err) {
-      console.error("โหลดชื่อผู้ใช้ล้มเหลว:", err);
-      profileNameEl.textContent = "ไม่ทราบชื่อ";
+    } else {
+      if (profileNameEl) profileNameEl.textContent = user.isAnonymous ? "ผู้ใช้ชั่วคราว" : "ไม่ทราบชื่อ";
+      if (profileAvatarEl) profileAvatarEl.textContent = "👤";
     }
+  } catch (err) {
+    console.error("โหลดชื่อผู้ใช้ล้มเหลว:", err);
+    if (profileNameEl) profileNameEl.textContent = "ไม่ทราบชื่อ";
+    if (profileAvatarEl) profileAvatarEl.textContent = "👤";
   }
 
-  /* ===== กำหนดโหมด ===== */
+  /* ===== โหลดโหมดแชต ===== */
   if (partnerId) {
-    // โหมด A: เปิดห้องกับ partner โดยตรง
     await openDirectChat(partnerId);
-
     const partnerProf = await resolveUserProfile(partnerId);
     chatPartner.textContent = `โพสต์: ${title} · ${partnerProf.name}`;
     updateTopbarAvatar(partnerProf.photo);
-
     if (firstMsg) { await sendFirstMessageIfEmpty(firstMsg); }
   } else {
-    // โหมด B: Inbox
     chatPartner.textContent = "เลือกบทสนทนาทางซ้ายเพื่อเริ่มคุย";
     updateTopbarAvatar(null);
     await loadInbox();
   }
 });
 
-/* ===== โหมด A: หา/สร้างห้อง + listen เอกสารเดียว ===== */
+/* ===== Direct Chat ===== */
 async function openDirectChat(partner) {
   try {
     const qy = query(collection(db, "conversations"), where("participants", "array-contains", currentUserId));
@@ -155,7 +164,7 @@ async function openDirectChat(partner) {
         postTitle: title || "(ไม่มีชื่อโพสต์)",
         lastMessage: "",
         updatedAt: serverTimestamp(),
-        messages: [] // เก็บข้อความเป็น array
+        messages: []
       });
       conversationId = ref.id;
     }
@@ -166,21 +175,7 @@ async function openDirectChat(partner) {
   }
 }
 
-/* ส่งข้อความตั้งต้น ถ้า array ยังว่าง */
-async function sendFirstMessageIfEmpty(text) {
-  const ref = doc(db, "conversations", conversationId);
-  const cur = await getDoc(ref);
-  const arr = (cur.data()?.messages || []);
-  if (arr.length === 0) {
-    await appendMessage(ref, {
-      senderId: currentUserId,
-      text,
-      createdAt: Timestamp.now()
-    });
-  }
-}
-
-/* ===== โหมด B: Inbox ===== */
+/* ===== Inbox ===== */
 async function loadInbox() {
   try {
     const qy = query(collection(db, "conversations"), where("participants", "array-contains", currentUserId));
@@ -271,19 +266,14 @@ function updateTopbarAvatar(photoURL) {
   }
 }
 
-/* ===== Listen ข้อความ ===== */
+/* ===== ฟังข้อความในแชต ===== */
 function listenConversationDoc(cid) {
   if (unsubConversation) { unsubConversation(); unsubConversation = null; }
 
   const ref = doc(db, "conversations", cid);
   unsubConversation = onSnapshot(ref, (snap) => {
     const data = snap.data();
-    const msgs = (data?.messages || []).sort((a, b) => {
-      const ta = a.createdAt?.seconds || 0;
-      const tb = b.createdAt?.seconds || 0;
-      return ta - tb;
-    });
-
+    const msgs = (data?.messages || []).sort((a, b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
     chatBody.innerHTML = "";
     for (const m of msgs) {
       const div = document.createElement("div");
@@ -292,9 +282,6 @@ function listenConversationDoc(cid) {
       chatBody.appendChild(div);
     }
     chatBody.scrollTop = chatBody.scrollHeight;
-  }, (err) => {
-    console.error("listenConversationDoc error:", err);
-    alert("ไม่สามารถโหลดบทสนทนาได้: " + (err?.message || err));
   });
 }
 
