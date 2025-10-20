@@ -1,28 +1,15 @@
 import { auth, db } from "./CreatePostFirebase.js";
-import {
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-/* ---------- Cloudinary config ---------- */
+// Cloudinary config
 const CLOUD_NAME = "djlilcqzd";
 const UPLOAD_PRESET = "chiphai_unsigned";
 const TRANSFORM = "f_webp,q_auto,w_1200";
 
-/* ---------- Helper ---------- */
 const $id = (id) => document.getElementById(id);
 const read = (id) => ($id(id)?.value?.trim() || "");
 
-function getUserDisplayName(user) {
-  if (!user) return "Guest";
-  if (user.displayName) return user.displayName;
-  if (user.email) return user.email.split("@")[0];
-  return "Guest";
-}
-
-/* ---------- Elements ---------- */
 const input = $id("imageUpload");
 const preview = $id("preview");
 const postBtn = $id("PostBtn");
@@ -32,14 +19,20 @@ const usernameEl = $id("username");
 let authReady = false;
 if (postBtn) postBtn.disabled = true;
 
-/* ---------- Auth ---------- */
 onAuthStateChanged(auth, (user) => {
   authReady = !!user;
   if (postBtn) postBtn.disabled = !authReady;
   if (usernameEl) usernameEl.textContent = getUserDisplayName(user);
 });
 
-/* ---------- Preview ---------- */
+function getUserDisplayName(user) {
+  if (!user) return "Guest";
+  if (user.displayName) return user.displayName;
+  if (user.email) return user.email.split("@")[0];
+  return "Guest";
+}
+
+// Preview image
 let objectUrl;
 input?.addEventListener("change", () => {
   const file = input.files?.[0];
@@ -55,7 +48,7 @@ input?.addEventListener("change", () => {
   preview.style.display = "block";
 });
 
-/* ---------- Upload Cloudinary ---------- */
+// Upload to Cloudinary
 async function uploadFileToCloudinary(file, uid) {
   const fd = new FormData();
   fd.append("file", file);
@@ -66,15 +59,13 @@ async function uploadFileToCloudinary(file, uid) {
     method: "POST",
     body: fd
   });
-
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || "Upload failed");
 
-  const originalUrl = data.secure_url;
-  return originalUrl.replace("/upload/", `/upload/${TRANSFORM}/`);
+  return data.secure_url.replace("/upload/", `/upload/${TRANSFORM}/`);
 }
 
-/* ---------- Post handler ---------- */
+// Create post
 postBtn?.addEventListener("click", async () => {
   if (!authReady) {
     alert("ระบบกำลังเตรียมล็อกอิน ลองใหม่อีกครั้ง");
