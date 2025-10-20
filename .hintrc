@@ -4,12 +4,21 @@
   ],
   "hints": {
     "compat-api/css": [
-      "default",
+      "off",
       {
         "ignore": [
-          "user-select"
+          "scrollbar-width",
+          "scrollbar-width"
         ]
       }
     ]
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not chrome <= 109",
+    "not ios_saf <= 18.4",
+    "not safari <= 18.4",
+    "not samsung <= 27"
+  ]
 }
