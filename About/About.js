@@ -8,7 +8,6 @@ document.getElementById("loginBtn")?.addEventListener("click", () => {
 });
 
 
-
 const team = [
   { name: "วรินทร แก้วสอาด", role: "Project Lead", avatar: "../image/f0b81d84a65ab018b1d05323dcb4de29_0.jpg" },
   { name: "อมรเทพ จีระมานะพงศ์", role: "Frontend", avatar: "../image/f5b1b6a3-2d97-45b6-96d5-c07a62f49722.jpg" },
