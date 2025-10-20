@@ -8,6 +8,7 @@
       {
         "ignore": [
           "scrollbar-width",
+          "scrollbar-width",
           "scrollbar-width"
         ]
       }
