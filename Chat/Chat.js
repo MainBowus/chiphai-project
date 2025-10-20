@@ -1,4 +1,4 @@
-// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create
+// Chat.js — แสดงชื่อผู้ใช้มุมขวา + inbox ตามโพสต์ + ชื่อ/รูปคู่คุย
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, query, where,
@@ -7,7 +7,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-/* ===== Firebase Config ===== */
+/* ===== Firebase ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyBQlq_ZgG1eUVrMGXo178wNW7GMr6imCDk",
   authDomain: "chiphailogin01.firebaseapp.com",
@@ -21,50 +21,65 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const auth= getAuth(app);
 
-/* ===== UI ===== */
+/* ===== UI refs ===== */
 const chatList     = document.getElementById("chatList");
 const chatBody     = document.getElementById("chatBody");
 const messageInput = document.getElementById("messageInput");
 const sendBtn      = document.getElementById("sendBtn");
 const chatPartner  = document.getElementById("chatPartner");
+const profileNameEl   = document.querySelector(".profile-name");
+const profileAvatarEl = document.querySelector(".profile .avatar");
 
-/* ===== URL Params ===== */
+/* ===== URL ===== */
 const params   = new URLSearchParams(location.search);
 let partnerId  = params.get("partner");
 const postId   = params.get("post") || null;
 const title    = params.get("title") || "(ไม่มีชื่อโพสต์)";
 const firstMsg = params.get("msg")   || null;
+const DEBUG_UI = params.get("debug") === "1";
 
 /* ===== State ===== */
 let currentUserId   = null;
 let conversationId  = null;
 let unsubConversation = null;
+let unsubMyProfile    = null;
 const USE_ANON_FOR_DEV = true;
 const MAX_MESSAGES = 200;
 
-/* ===== users_create helpers ===== */
+/* ===== Helpers ===== */
 const userProfileCache = new Map(); // uid => { name, photo }
+
+function log(...a){ console.log("[chat]", ...a); }
+function warn(...a){ console.warn("[chat]", ...a); }
+function err(...a){ console.error("[chat]", ...a); }
 
 function pickBestName(u) {
   return (
-    u?.displayName ||
-    u?.name ||
-    u?.fullName ||
+    u?.displayName || u?.name || u?.fullName ||
     (u?.firstName && u?.lastName ? `${u.firstName} ${u.lastName}` : null) ||
-    u?.username ||
-    u?.email ||
-    "ผู้ใช้"
+    u?.username || u?.email || "ผู้ใช้"
   );
 }
+function toProfile(u) { return { name: pickBestName(u), photo: u?.photoURL || null }; }
 
-function toProfile(u) {
-  return { name: pickBestName(u), photo: u?.photoURL || null };
+function showDebugBanner(text){
+  if(!DEBUG_UI) return;
+  let el = document.getElementById("debug-banner");
+  if(!el){
+    el = document.createElement("div");
+    el.id="debug-banner";
+    el.style.cssText="position:fixed;left:12px;bottom:12px;background:#1b1f24;color:#e6f4ea;padding:8px 12px;border-radius:10px;font:12px/1.4 ui-monospace,monospace;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,.2)";
+    document.body.appendChild(el);
+  }
+  el.textContent = text;
 }
 
+/* ===== Profile resolve for OTHER users ===== */
 async function resolveUserProfile(uid) {
   if (!uid) return { name: "ผู้ใช้", photo: null };
   if (userProfileCache.has(uid)) return userProfileCache.get(uid);
 
+  // 1) doc id = uid
   try {
     const snap = await getDoc(doc(db, "users_create", uid));
     if (snap.exists()) {
@@ -72,10 +87,9 @@ async function resolveUserProfile(uid) {
       userProfileCache.set(uid, prof);
       return prof;
     }
-  } catch (err) {
-    console.warn("❗️Error reading profile:", err);
-  }
+  } catch (e) { warn("profile doc read error", e); }
 
+  // 2) where uid==uid
   try {
     const qSnap = await getDocs(query(collection(db, "users_create"), where("uid", "==", uid)));
     if (!qSnap.empty) {
@@ -83,58 +97,84 @@ async function resolveUserProfile(uid) {
       userProfileCache.set(uid, prof);
       return prof;
     }
-  } catch (err) {
-    console.warn("❗️Error query profile:", err);
-  }
+  } catch (e) { warn("profile query error", e); }
 
   const fallback = { name: "ผู้ใช้", photo: null };
   userProfileCache.set(uid, fallback);
   return fallback;
 }
 
-/* ===== Boot / Auth ===== */
+/* ===== Me (CURRENT user) header ===== */
+function setHeaderProfile({name, photo}){
+  if (profileNameEl) profileNameEl.textContent = name || "ผู้ใช้";
+  if (profileAvatarEl){
+    if (photo) profileAvatarEl.innerHTML = `<img src="${photo}" alt="${name||"user"}" />`;
+    else profileAvatarEl.textContent = "👤";
+  }
+  showDebugBanner(`me: ${name || "ผู้ใช้"}`);
+}
+
+async function watchMyProfileRealtime(uid, authUser){
+  // ยกเลิกตัวเก่า
+  if (unsubMyProfile){ unsubMyProfile(); unsubMyProfile = null; }
+
+  // 1) ลอง listen doc id = uid
+  try{
+    const ref = doc(db, "users_create", uid);
+    unsubMyProfile = onSnapshot(ref, (snap)=>{
+      if (snap.exists()){
+        const d = snap.data();
+        const prof = { name: pickBestName(d), photo: d?.photoURL || null };
+        log("me profile (docId) →", prof);
+        setHeaderProfile(prof);
+      } else {
+        // ถ้า doc นี้ไม่มี → fallback ไปขั้นต่อไป (query) / หรือใช้ auth
+        log("me profile doc not found, try query(uid) / auth fallback");
+      }
+    }, (e)=>warn("me profile listen error (docId):", e));
+  }catch(e){ warn("listen docId me error:", e); }
+
+  // 2) ยิง query once เพื่อเติมชื่อถ้า docId ไม่มี
+  try{
+    const qSnap = await getDocs(query(collection(db, "users_create"), where("uid","==", uid)));
+    if (!qSnap.empty){
+      const d = qSnap.docs[0].data();
+      const prof = { name: pickBestName(d), photo: d?.photoURL || null };
+      log("me profile (query uid) →", prof);
+      // set เฉพาะถ้ายังเป็นค่าเริ่มต้น
+      if (profileNameEl && (profileNameEl.textContent === "Username" || profileNameEl.textContent === "ผู้ใช้" || profileNameEl.textContent === "")){
+        setHeaderProfile(prof);
+      }
+      return; // ได้แล้วก็พอ
+    }
+  }catch(e){ warn("me profile query error:", e); }
+
+  // 3) auth fallback
+  const authFallbackName = authUser?.displayName || (authUser?.isAnonymous ? "ผู้ใช้ชั่วคราว" : "ไม่ทราบชื่อ");
+  const authFallbackPhoto = authUser?.photoURL || null;
+  log("me profile (auth fallback) →", authFallbackName);
+  if (profileNameEl && (profileNameEl.textContent === "Username" || profileNameEl.textContent === "")){
+    setHeaderProfile({name: authFallbackName, photo: authFallbackPhoto});
+  }
+}
+
+/* ===== Auth ===== */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     if (USE_ANON_FOR_DEV) { await signInAnonymously(auth); return; }
     alert("กรุณาเข้าสู่ระบบก่อนใช้งานแชต");
-    location.href = "../index.html";
+    location.href="../index.html";
     return;
   }
-
   currentUserId = user.uid;
-  console.log("✅ ผู้ใช้ที่ล็อกอินตอนนี้:", currentUserId);
+  log("signed-in:", currentUserId);
+  showDebugBanner(`uid: ${currentUserId}`);
 
-  /* 🟢 โหลดชื่อผู้ใช้บน header */
-  const profileNameEl = document.querySelector(".profile-name");
-  const profileAvatarEl = document.querySelector(".profile .avatar");
+  // Header profile (ชื่อ + รูป) — realtime + fallback
+  setHeaderProfile({name: "กำลังโหลด…", photo: null});
+  await watchMyProfileRealtime(currentUserId, user);
 
-  try {
-    const myDoc = await getDoc(doc(db, "users_create", currentUserId));
-    if (myDoc.exists()) {
-      const myData = myDoc.data();
-      const displayName = myData.displayName || "ผู้ใช้";
-      const photo = myData.photoURL || null;
-
-      if (profileNameEl) profileNameEl.textContent = displayName;
-      if (profileAvatarEl) {
-        if (photo) {
-          profileAvatarEl.innerHTML = `<img src="${photo}" alt="${displayName}" />`;
-        } else {
-          profileAvatarEl.textContent = "👤";
-        }
-      }
-
-      console.log("✅ โหลดข้อมูลโปรไฟล์สำเร็จ:", displayName);
-    } else {
-      console.warn("⚠️ ไม่พบเอกสาร users_create สำหรับ:", currentUserId);
-      if (profileNameEl) profileNameEl.textContent = user.isAnonymous ? "ผู้ใช้ชั่วคราว" : "ไม่ทราบชื่อ";
-    }
-  } catch (err) {
-    console.error("โหลดชื่อผู้ใช้ล้มเหลว:", err);
-    if (profileNameEl) profileNameEl.textContent = "ไม่ทราบชื่อ";
-  }
-
-  /* 🧭 โหลดหน้า */
+  // โหมด
   if (partnerId) {
     await openDirectChat(partnerId);
     const partnerProf = await resolveUserProfile(partnerId);
@@ -148,7 +188,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-/* ===== Open Direct Chat ===== */
+/* ===== Direct Chat ===== */
 async function openDirectChat(partner) {
   try {
     const qy = query(collection(db, "conversations"), where("participants", "array-contains", currentUserId));
@@ -164,17 +204,19 @@ async function openDirectChat(partner) {
     } else {
       const ref = await addDoc(collection(db, "conversations"), {
         participants: [currentUserId, partner],
+        userA: currentUserId,
+        userB: partner,
         postId: postId,
         postTitle: title || "(ไม่มีชื่อโพสต์)",
-        messages: [],
         lastMessage: "",
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        messages: []
       });
       conversationId = ref.id;
     }
     listenConversationDoc(conversationId);
   } catch (e) {
-    console.error("openDirectChat error:", e);
+    err("openDirectChat error:", e);
     alert("ไม่สามารถเปิดห้องคุยได้: " + (e?.message || e));
   }
 }
@@ -195,7 +237,7 @@ async function loadInbox() {
 
     renderInboxGrouped(convos);
   } catch (e) {
-    console.error("loadInbox error:", e);
+    err("loadInbox error:", e);
     alert("โหลดรายการไม่สำเร็จ: " + (e?.message || e));
   }
 }
@@ -209,9 +251,13 @@ function renderInboxGrouped(convos) {
 
   const groups = new Map();
   for (const c of convos) {
-    const gKey = c.postId || `__title__:${c.postTitle}`;
-    if (!groups.has(gKey)) groups.set(gKey, { title: c.postTitle, items: [] });
+    const gKey = c.postId || `__title__:${c.postTitle || "(ไม่มีชื่อโพสต์)"}`;
+    if (!groups.has(gKey)) groups.set(gKey, { title: c.postTitle || "(ไม่มีชื่อโพสต์)", items: [] });
     groups.get(gKey).items.push(c);
+  }
+
+  for (const g of groups.values()) {
+    g.items.sort((a,b) => (b.updatedAt?.seconds||0) - (a.updatedAt?.seconds||0));
   }
 
   for (const [key, group] of groups) {
@@ -221,24 +267,28 @@ function renderInboxGrouped(convos) {
     chatList.appendChild(header);
 
     for (const c of group.items) {
-      const otherUid = (c.participants || []).find(uid => uid !== currentUserId);
-      const prof = userProfileCache.get(otherUid) || { name: "ผู้ใช้", photo: null };
+      const otherUid   = (c.participants || []).find(uid => uid !== currentUserId) || null;
+      const prof       = otherUid ? (userProfileCache.get(otherUid) || { name: "ผู้ใช้", photo: null }) : { name: "ผู้ใช้", photo: null };
 
       const item = document.createElement("div");
       item.className = "chat-item";
       item.innerHTML = `
-        <div class="avatar">${prof.photo ? `<img src="${prof.photo}" />` : "👤"}</div>
+        <div class="avatar">
+          ${prof.photo ? `<img src="${prof.photo}" alt="${prof.name}" />` : "👤"}
+        </div>
         <div class="meta">
           <div class="name">${prof.name}</div>
           <div class="preview">${c.lastMessage || ""}</div>
         </div>
       `;
-      item.addEventListener("click", () => {
+      item.addEventListener("click", async () => {
         [...chatList.querySelectorAll(".chat-item")].forEach(el => el.classList.remove("active"));
         item.classList.add("active");
-        partnerId = otherUid;
-        chatPartner.textContent = `โพสต์: ${group.title} · ${prof.name}`;
+
+        partnerId = otherUid || null;
+        chatPartner.textContent = `โพสต์: ${group.title}${prof.name ? " · " + prof.name : ""}`;
         updateTopbarAvatar(prof.photo);
+
         conversationId = c.id;
         listenConversationDoc(conversationId);
       });
@@ -246,25 +296,30 @@ function renderInboxGrouped(convos) {
       chatList.appendChild(item);
     }
   }
+
+  const first = chatList.querySelector(".chat-item");
+  if (first) first.click();
 }
 
-/* ===== Update Topbar Avatar ===== */
+/* ===== Topbar avatar ===== */
 function updateTopbarAvatar(photoURL) {
   const avatarEl = document.querySelector(".chat-topbar .avatar");
   if (!avatarEl) return;
-  if (photoURL) avatarEl.innerHTML = `<img src="${photoURL}" />`;
+  if (photoURL) avatarEl.innerHTML = `<img src="${photoURL}" alt="avatar" />`;
   else avatarEl.textContent = "👥";
 }
 
-/* ===== Listen Messages ===== */
+/* ===== Listen to conversation ===== */
 function listenConversationDoc(cid) {
-  if (unsubConversation) unsubConversation();
-
+  if (unsubConversation) { unsubConversation(); unsubConversation = null; }
   const ref = doc(db, "conversations", cid);
   unsubConversation = onSnapshot(ref, (snap) => {
     const data = snap.data();
-    const msgs = (data?.messages || []).sort((a,b) => (a.createdAt?.seconds||0) - (b.createdAt?.seconds||0));
-
+    const msgs = (data?.messages || []).sort((a, b) => {
+      const ta = a.createdAt?.seconds || 0;
+      const tb = b.createdAt?.seconds || 0;
+      return ta - tb;
+    });
     chatBody.innerHTML = "";
     for (const m of msgs) {
       const div = document.createElement("div");
@@ -273,15 +328,16 @@ function listenConversationDoc(cid) {
       chatBody.appendChild(div);
     }
     chatBody.scrollTop = chatBody.scrollHeight;
+  }, (e)=>{
+    err("listenConversationDoc error:", e);
   });
 }
 
-/* ===== Send Message ===== */
+/* ===== Send message ===== */
 sendBtn.addEventListener("click", sendMessage);
 messageInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
-
 async function sendMessage() {
   const text = messageInput.value.trim();
   if (!text || !conversationId) return;
