@@ -1,103 +1,241 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+/* --- 1. CSS Variables --- */
+:root {
+  --bg: #f7fafc;
+  --card: #fff;
+  --accent: #43a047;
+  --accent-600: #388e3c;
+  --accent-dark: #2e7d32; 
+  --muted: #6b7a7a;
+  --border: #e0e6e0;
+  --shadow: 0 8px 28px rgba(67,160,71,0.06);
+  --shadow-sm: 0 6px 18px rgba(67,160,71,0.04);
+  --max-width: 1200px;
+  --gap: 20px;
+  --radius: 14px;
+  --pad: 24px;
+  --transition: 180ms cubic-bezier(.4, .0, .2, 1);
+  --text-dark: #222;
+  --header-height: 72px; 
+
+  /* --- Aliases (ตัวแปรเก่าที่ชี้ไปหาค่าใหม่) --- */
+  --primary-color: var(--accent-dark);
+  --secondary-color: var(--accent-dark);
+  --text-light: var(--card);
+  --text-light-gray: #fefefe;
+  --text-gray: var(--muted);
+  --bg-light: var(--bg);
+  --bg-feature: var(--card);
+  --container-width: var(--max-width);
+  --radius-normal: var(--radius);
+  --radius-round: 25px;
+  --shadow-light: var(--shadow-sm);
+  --shadow-dark: rgba(0, 0, 0, 0.2);
 }
 
-html {
+/* --- 2. Base Styles --- */
+*{box-sizing:border-box}
+html{
   scroll-behavior: smooth;
 }
-
-body {
-  background: #ffffff;
-  color: #333;
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: 'Poppins', 'Segoe UI', 'Prompt', 'Kanit', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text-dark);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   line-height: 1.6;
 }
 
-/* Header / Navbar */
-.header {
+/* --- 3. Utility Class --- */
+.container {
+  max-width: var(--container-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
 
+/* --- 4. Header / Navbar --- */
+.site-header {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 20px 100px;
-  background: #1b5e20;
-  backdrop-filter: blur(10px);
+  height: var(--header-height);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  z-index: 100;
+  justify-content: space-between;
+  padding: 20px 100px;
+  background: var(--accent-dark);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 99;
+  transition: background 180ms ease, box-shadow 180ms ease;
 }
 
 .logo {
+  font-weight: 900;
   font-size: 28px;
-  font-weight: 700;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.navbar a {
-  color: #fefefe;
-  text-decoration: none;
-  font-weight: 500;
-  margin-right: 50px;
-  position: relative;
-}
-
-.navbar a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -5px;
-  width: 0%;
-  height: 2px;
-  background: #ffffff;
-  transition: 0.3s;
-}
-
-.navbar a:hover::after {
-  width: 100%;
-}
-.btnLogin-popup {
-  padding: 8px 18px;
-  border: 2px solid #ffffff;
-  background: transparent;
-  color: #ffffff;
-  border-radius: 25px;
+  color: #fff;
   cursor: pointer;
-  transition: 0.3s;
+  letter-spacing: 1px;
+  transition: transform 180ms ease, color 180ms ease;
+}
+.logo:hover {
+  transform: scale(1.15);
+  color: #c8e6c9;
 }
 
-.btnLogin-popup:hover {
-  background: #2e7d32;
-  color: white;
+.nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.nav-item {
+  color: #e8f5e9;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 6px;
+  border-bottom: 3px solid transparent;
+  transition: all 180ms ease;
+}
+.nav-item:hover,
+.nav-item.active {
+  color: #fff;
+  border-bottom-color: #c8e6c9;
 }
 
-.navbar .btnLogin-popup::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 100%;
-    height: 2px;
-    background: #fff;
-    opacity: 0.85;
+/* --- 4.1 ปุ่ม Login (Ghost Button) --- */
+.header-right .login {
+  background: transparent; 
+  border: 2px solid var(--text-light-gray);
+  color: var(--text-light-gray);
+  padding: 8px 20px;
+  border-radius: var(--radius-round, 25px);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 180ms ease-out;
+  box-shadow: none; 
+}
+.header-right .login:hover {
+  background: var(--text-light);
+  color: var(--accent-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* --- 4.2 สไตล์สำหรับ User Dropdown (Letter Avatar) --- */
+#navbarUser {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.user-menu {
+  position: relative;
+  display: flex; /* เปลี่ยนเป็น flex */
+  align-items: center; /* จัดกลางแนวตั้ง */
+  gap: 10px; /* ระยะห่างระหว่าง Avatar กับ ชื่อ */
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 180ms ease;
+}
+.user-menu:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* สไตล์สำหรับ Letter Avatar */
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #c90058; /* สีชมพู/แดง จากในรูป */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.user-avatar span {
+  padding-bottom: 2px; /* ขยับตัวอักษรลงเล็กน้อยให้ดูอยู่กลาง */
+}
+
+/* สไตล์สำหรับชื่อ */
+.user-menu > span {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-light); /* สีขาว */
+  white-space: nowrap;
+}
+
+/* กล่อง Dropdown ที่ซ่อนอยู่ */
+.user-menu .dropdown {
+  display: none;
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 101;
+  overflow: hidden;
+  padding: 5px;
+}
+.user-menu .dropdown.hidden { /* สไตล์ .hidden จาก JS ของคุณ */
+  display: none;
+}
+.user-menu:hover .dropdown.hidden { /* ป้องกันการแสดงผล .hidden */
+  display: none;
+}
+/* เมื่อคลิก (JS จะลบ .hidden ออก) */
+.user-menu .dropdown:not(.hidden) { 
+  display: block;
+}
+
+/* สไตล์ปุ่ม Logout */
+.user-menu .dropdown button {
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text-dark);
+  font-weight: 500;
+  transition: background 180ms ease, color 180ms ease;
+}
+.user-menu .dropdown button:hover {
+  background: #f4f4f4;
+  color: var(--accent-dark);
+}
+/* --- END 4.2 --- */
+
+
+/* --- 5. เนื้อหาเก่า (Hero, Popup, Sections) --- */
 .hero {
-  height: 100vh;
+  min-height: 100vh;
   background: url('image/background1.jpg') no-repeat center center/cover;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   padding: 0 10%;
   position: relative;
+  margin-top: var(--header-height);
 }
-
 .hero::after {
   content: "";
   position: absolute;
@@ -105,425 +243,390 @@ body {
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.35);
 }
-
 .hero-content {
   position: relative;
   max-width: 600px;
   background: rgba(255, 255, 255, 0.8);
   padding: 40px;
-  border-radius: 16px;
+  border-radius: var(--radius-normal);
   backdrop-filter: blur(10px);
   z-index: 1;
 }
-
 .hero-content h1 {
   font-size: 48px;
-  color: #1b1b1b;
+  color: var(--text-dark);
 }
-
 .highlight {
-  color: #2e7d32;
+  color: var(--accent);
 }
-
 .hero-content p {
   font-size: 17px;
   margin: 20px 0;
-  color: #333;
+  color: var(--text-dark);
 }
 
-/* Login/Register Popup */
+/* Login/Register Popup (คงไว้เหมือนเดิม) */
 .section {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
-
 .wrapper {
-    position: fixed; /* เปลี่ยนจาก absolute -> fixed */
-    top: 0;
-    right: 0;
-    width: 450px;
-    height: 100vh; /* เต็ม viewport */
-    background: transparent;
-    backdrop-filter: blur(15px);
-    box-shadow: -1px 0 10px rgba(0, 0, 0, 0.2);
-    border-left: 2px solid rgba(255, 255, 255, 0.1);
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding: 0 40px;
-    opacity: 0;
-    pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 450px;
+  height: 100vh;
+  background: transparent;
+  backdrop-filter: blur(15px);
+  box-shadow: -1px 0 10px var(--shadow-dark);
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
-
 .wrapper.active-popup {
-    opacity: 1;
-    pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
 }
-
 .icon-close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 45px;
-    height: 45px;
-    background: #fff;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom-left-radius: 10px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 45px;
+  height: 45px;
+  background: var(--text-light);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom-left-radius: 10px;
 }
-
 .icon-close i {
-    font-size: 32px;
-    color: #333;
+  font-size: 32px;
+  color: var(--text-dark);
 }
-
-.wrapper .logreg-box {
-    width: 100%;
-}
-
-.wrapper .form-box.login {
-    display: block;
-}
-
-.wrapper.active .form-box.login {
-    display: none;
-}
-
-.wrapper .form-box.register {
-    display: none;
-}
-
-.wrapper.active .form-box.register {
-    display: block;
-}
-
+.wrapper .logreg-box { width: 100%; }
+.wrapper .form-box.login { display: block; }
+.wrapper.active .form-box.login { display: none; }
+.wrapper .form-box.register { display: none; }
+.wrapper.active .form-box.register { display: block; }
 .logreg-box .logreg-little {
-    text-align: center;
-    margin-bottom: 40px;
-    color: #fff;
+  text-align: center;
+  margin-bottom: 40px;
+  color: var(--text-light);
 }
-
-.logreg-little h2 {
-    font-size: 32px;
-}
-
+.logreg-little h2 { font-size: 32px; }
 .logreg-little p {
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-light);
 }
-
 .logreg-box .input-box {
-    position: relative;
-    width: 100%;
-    height: 50px;
-    margin: 30px 0;
-    border-bottom: 2px solid #fff;
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin: 30px 0;
+  border-bottom: 2px solid var(--text-light);
 }
-
 .input-box input {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    color: #fff;
-    font-weight: 500;
-    padding-right: 25px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--text-light);
+  font-weight: 500;
+  padding-right: 25px;
 }
-
 .input-box label {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: #fff;
-    font-weight: 500;
-    pointer-events: none;
-    transition: 0.5s;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--text-light);
+  font-weight: 500;
+  pointer-events: none;
+  transition: 0.5s;
 }
-
 .input-box input:focus ~ label,
 .input-box input:valid ~ label {
-    top: -5px;
+  top: -5px;
 }
-
 .input-box .icon {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    font-size: 19px;
-    color: #fff;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 19px;
+  color: var(--text-light);
 }
-
 .logreg-box .remember-forgot {
-    font-size: 14.5px;
-    color: #fff;
-    font-weight: 500;
-    margin: -15px 0 15px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.remember-forgot label input {
-    accent-color: #fff;
-    margin-right: 3px;
-}
-
-.remember-forgot a {
-    color: #fff;
-    text-decoration: none;
-}
-
-.remember-forgot a:hover {
-    text-decoration: underline;
-}
-
-.logreg-box .btn {
-    width: 100%;
-    height: 45px;
-    background: #fff;
-    border: none;
-    outline: none;
-    border-radius: 40px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    font-size: 16px;
-    color: #222;
-    font-weight: 600;
-}
-
-.logreg-box .logreg-link {
-    font-size: 14.5px;
-    color: #fff;
-    text-align: center;
-    font-weight: 500;
-    margin: 25px 0 15px;
-}
-
-.logreg-link p a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.logreg-link p a:hover {
-    text-decoration: underline;
-}
-
-.media-options {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-}
-
-.media-options a {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 50px;
-    background: transparent;
-    border: 2px solid #fff;
-    margin: 10px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    border-radius: 40px;
-    color: #fff;
-    text-decoration: none;
-    transition: 0.5s;
-}
-
-.media-options a:hover {
-    background: rgba(225, 225, 225, 0.1);
-}
-
-.media-options a i {
-    font-size: 22px;
-    margin: 0 8px 1.5px 0;
-}
-
-.media-options a span {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-/* User menu */
-.user-menu {
-    position: relative;
-    display: inline-block;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.user-menu .username {
-    padding: 5px 10px;
-}
-
-.user-menu .dropdown {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    background: white;
-    color: black;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    margin-top: 5px;
-    min-width: 120px;
-    z-index: 200;
-}
-
-.user-menu .dropdown button {
-    width: 100%;
-    padding: 8px 12px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-}
-
-.user-menu .dropdown button:hover {
-    background: #eee;
-}
-
-.hidden {
-    display: none;
-}
-
-#navbarUser {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#navbarUser img {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-#navbarUser span {
-    font-size: 16px;
-    font-weight: 500;
-    color: #fff;
-    white-space: nowrap;
-}
-
-.btn-main {
-  display: inline-block;
-  padding: 12px 30px;
-  background: #2e7d32;
-  color: white;
-  border-radius: 25px;
-  text-decoration: none;
+  font-size: 14.5px;
+  color: var(--text-light);
   font-weight: 500;
-  transition: 0.3s;
+  margin: -15px 0 15px;
+  display: flex;
+  justify-content: space-between;
 }
-
-.btn-main:hover {
-  background: #256427;
+.remember-forgot label input {
+  accent-color: var(--text-light);
+  margin-right: 3px;
 }
-
-/* About Section */
-.about {
-  padding: 100px 10%;
+.remember-forgot a {
+  color: var(--text-light);
+  text-decoration: none;
+}
+.remember-forgot a:hover { text-decoration: underline; }
+.logreg-box .btn {
+  width: 100%;
+  height: 45px;
+  background: var(--text-light);
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 2px 5px var(--shadow-dark);
+  cursor: pointer;
+  font-size: 16px;
+  color: #222;
+  font-weight: 600;
+}
+.logreg-box .logreg-link {
+  font-size: 14.5px;
+  color: var(--text-light);
   text-align: center;
-  background: #f8faf8;
+  font-weight: 500;
+  margin: 25px 0 15px;
+}
+.logreg-link p a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 600;
+}
+.logreg-link p a:hover { text-decoration: underline; }
+.media-options {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.media-options a {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  background: transparent;
+  border: 2px solid var(--text-light);
+  margin: 10px 0;
+  box-shadow: 0 2px 5px var(--shadow-dark);
+  border-radius: 40px;
+  color: var(--text-light);
+  text-decoration: none;
+  transition: 0.5s;
+}
+.media-options a:hover { background: rgba(225, 225, 225, 0.1); }
+.media-options a i {
+  font-size: 22px;
+  margin: 0 8px 1.5px 0;
+}
+.media-options a span {
+  font-size: 16px;
+  font-weight: 500;
 }
 
+/* About Section (Old) */
+.about {
+  padding: 100px 0;
+  text-align: center;
+  background: var(--bg-light);
+}
 .about h2 {
   font-size: 36px;
-  color: #2e7d32;
+  color: var(--accent);
   margin-bottom: 20px;
 }
-
 .about p {
   max-width: 700px;
-  margin: auto;
-  color: #555;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--text-gray);
   font-size: 17px;
 }
 
-/* Features Section */
+/* Features Section (Old) */
 .features {
+  padding: 100px 0;
+  background: var(--text-light);
+}
+.feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 30px;
-  padding: 100px 10%;
-  background: #fff;
 }
-
 .feature {
-  background: #f4f9f4;
+  background: var(--bg-feature);
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-light);
   transition: all 0.3s ease;
 }
-
-.feature:hover {
-  transform: translateY(-5px);
-}
-
+.feature:hover { transform: translateY(-5px); }
 .feature h3 {
-  color: #2e7d32;
+  color: var(--accent);
   margin-bottom: 10px;
   font-size: 22px;
 }
 
-/* Steps Section */
+/* Steps Section (Old) */
 .steps {
-  padding: 100px 10%;
-  background: #2e7d32;
+  padding: 100px 0;
+  background: var(--secondary-color);
   color: white;
   text-align: center;
 }
-
 .steps h2 {
   font-size: 36px;
   margin-bottom: 50px;
 }
-
 .step-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 30px;
 }
-
 .step {
   background: rgba(255, 255, 255, 0.1);
   padding: 30px;
-  border-radius: 16px;
+  border-radius: var(--radius-normal);
   transition: 0.3s;
 }
-
-.step:hover {
-  background: rgba(255,255,255,0.15);
-}
-
+.step:hover { background: rgba(255,255,255,0.15); }
 .step h3 {
   font-size: 20px;
   margin-bottom: 10px;
 }
-
 .step p {
   font-size: 15px;
   opacity: 0.9;
 }
 
-/* Footer */
-footer {
-  background: #1b5e20;
-  color: white;
-  text-align: center;
-  padding: 30px;
+/* --- 6. Footer --- */
+.site-footer{
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgba(67,160,71,0.03);
+  padding: 18px 0;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+.site-footer-inner{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
   font-size: 14px;
+}
+.site-footer .footer-left{
+  color: #666;
+  font-weight: 600;
+}
+.site-footer .brand {
+    color: var(--accent-dark);
+    font-weight: 800;
+    margin-right: 8px;
+}
+.footer-nav{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.footer-nav a{
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+.footer-nav a:hover{
+  background: rgba(67,160,71,0.06);
+  color: var(--accent-600);
+  transform: translateY(-2px);
+}
+.footer-nav .sep{
+  color: var(--border);
+  margin: 0 4px;
+}
+
+/* --- 7. Particles.js Background --- */
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+  z-index: -1;
+  background: var(--bg);
+}
+
+/* --- 8. Responsive Media Queries --- */
+@media (max-width:640px){
+  .nav { display: none; }
+  .logo { font-size: 20px; }
+  .site-header { padding: 16px 24px; }
+}
+@media (max-width:560px){
+  .site-footer-inner{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+  .footer-nav{gap:8px}
+}
+@media (max-width: 992px) {
+  .hero {
+    padding: 0 5%;
+  }
+  .about,
+  .features,
+  .steps {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+}
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 30px;
+    border-radius: var(--radius-normal);
+  }
+  .hero-content h1 {
+    font-size: 36px;
+  }
+  .wrapper {
+    width: 100%;
+    max-width: 400px;
+  }
+  .about,
+  .features,
+  .steps {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+  .steps h2 {
+    font-size: 28px;
+  }
+  .feature-grid,
+  .step-grid {
+    grid-template-columns: 1fr;
+  }
 }
