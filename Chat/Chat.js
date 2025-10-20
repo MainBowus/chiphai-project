@@ -1,4 +1,4 @@
-// Chat.js — Inbox แยกตาม itemName และแสดง displayName ของคู่คุย
+// Chat.js — Inbox แยกตาม itemName และแสดง displayName + avatar จาก users_create
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, query, where,
@@ -42,8 +42,8 @@ let unsubConversation = null;
 const USE_ANON_FOR_DEV = true;
 const MAX_MESSAGES = 200;
 
-/* ===== users_create helpers (เอา displayName) ===== */
-const userNameCache = new Map();
+/* ===== users_create helpers (เอา displayName + photoURL) ===== */
+const userProfileCache = new Map(); // uid => { name, photo }
 
 function pickBestName(u) {
   return (
@@ -57,35 +57,37 @@ function pickBestName(u) {
   );
 }
 
-async function resolveUserName(uid) {
-  if (!uid) return "ผู้ใช้";
-  if (userNameCache.has(uid)) return userNameCache.get(uid);
+function toProfile(u) {
+  return { name: pickBestName(u), photo: u?.photoURL || null };
+}
 
+async function resolveUserProfile(uid) {
+  if (!uid) return { name: "ผู้ใช้", photo: null };
+  if (userProfileCache.has(uid)) return userProfileCache.get(uid);
+
+  // 1) ลอง doc id = uid (เคสที่ users_create ใช้ uid เป็น docId)
   try {
-    // 1) doc id = uid
     const snap = await getDoc(doc(db, "users_create", uid));
     if (snap.exists()) {
-      const name = pickBestName(snap.data());
-      userNameCache.set(uid, name);
-      return name;
+      const prof = toProfile(snap.data());
+      userProfileCache.set(uid, prof);
+      return prof;
     }
   } catch {}
 
-  // 2) ฟิลด์ที่อาจเก็บ uid
-  const candidates = ["uid", "userId", "id"];
-  for (const f of candidates) {
-    try {
-      const qSnap = await getDocs(query(collection(db, "users_create"), where(f, "==", uid)));
-      if (!qSnap.empty) {
-        const name = pickBestName(qSnap.docs[0].data());
-        userNameCache.set(uid, name);
-        return name;
-      }
-    } catch {}
-  }
+  // 2) ลอง query ฟิลด์ uid (เคสที่เอกสารถูกสร้างแบบ random id แต่มี field uid)
+  try {
+    const qSnap = await getDocs(query(collection(db, "users_create"), where("uid", "==", uid)));
+    if (!qSnap.empty) {
+      const prof = toProfile(qSnap.docs[0].data());
+      userProfileCache.set(uid, prof);
+      return prof;
+    }
+  } catch {}
 
-  userNameCache.set(uid, "ผู้ใช้");
-  return "ผู้ใช้";
+  const fallback = { name: "ผู้ใช้", photo: null };
+  userProfileCache.set(uid, fallback);
+  return fallback;
 }
 
 /* ===== Boot / Auth ===== */
@@ -99,12 +101,16 @@ onAuthStateChanged(auth, async (user) => {
   if (partnerId) {
     // โหมด A: เปิดห้องกับ partner โดยตรง
     await openDirectChat(partnerId);
-    const partnerName = await resolveUserName(partnerId);
-    chatPartner.textContent = `โพสต์: ${title} · ${partnerName}`;
+
+    const partnerProf = await resolveUserProfile(partnerId);
+    chatPartner.textContent = `โพสต์: ${title} · ${partnerProf.name}`;
+    updateTopbarAvatar(partnerProf.photo);
+
     if (firstMsg) { await sendFirstMessageIfEmpty(firstMsg); }
   } else {
     // โหมด B: Inbox
     chatPartner.textContent = "เลือกบทสนทนาทางซ้ายเพื่อเริ่มคุย";
+    updateTopbarAvatar(null);
     await loadInbox();
   }
 });
@@ -118,7 +124,6 @@ async function openDirectChat(partner) {
 
     if (found) {
       conversationId = found.id;
-
       const d = found.data();
       if (!d.postTitle && title) {
         await updateDoc(doc(db, "conversations", conversationId), { postTitle: title });
@@ -132,7 +137,7 @@ async function openDirectChat(partner) {
         postTitle: title || "(ไม่มีชื่อโพสต์)",
         lastMessage: "",
         updatedAt: serverTimestamp(),
-        messages: []
+        messages: [] // เก็บข้อความเป็น array
       });
       conversationId = ref.id;
     }
@@ -157,20 +162,20 @@ async function sendFirstMessageIfEmpty(text) {
   }
 }
 
-/* ===== โหมด B: Inbox (แยกเป็นกลุ่มตาม itemName / postTitle) ===== */
+/* ===== โหมด B: Inbox (จัดกลุ่มตาม postId/postTitle + แสดง displayName + avatar) ===== */
 async function loadInbox() {
   try {
     const qy = query(collection(db, "conversations"), where("participants", "array-contains", currentUserId));
     const snap = await getDocs(qy);
     const convos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    // Prefetch ชื่อของทุก otherUid
+    // Prefetch โปรไฟล์ของทุก otherUid
     const uidSet = new Set();
     for (const c of convos) {
       const otherUid = (c.participants || []).find(uid => uid !== currentUserId);
       if (otherUid) uidSet.add(otherUid);
     }
-    await Promise.all([...uidSet].map(uid => resolveUserName(uid)));
+    await Promise.all([...uidSet].map(uid => resolveUserProfile(uid)));
 
     renderInboxGrouped(convos);
   } catch (e) {
@@ -179,7 +184,6 @@ async function loadInbox() {
   }
 }
 
-/* กลุ่มตาม postId/postTitle และแสดงชื่อ displayName */
 function renderInboxGrouped(convos) {
   chatList.innerHTML = "";
   if (!convos.length) {
@@ -187,12 +191,12 @@ function renderInboxGrouped(convos) {
     return;
   }
 
-  // จัดกลุ่มตาม postId/postTitle
+  // กลุ่มตาม postId ถ้ามี ไม่งั้นใช้ postTitle
   const groups = new Map();
   for (const c of convos) {
-    const key = c.postId || `__title__:${c.postTitle || "(ไม่มีชื่อโพสต์)"}`;
-    if (!groups.has(key)) groups.set(key, { title: c.postTitle || "(ไม่มีชื่อโพสต์)", items: [] });
-    groups.get(key).items.push(c);
+    const gKey = c.postId || `__title__:${c.postTitle || "(ไม่มีชื่อโพสต์)"}`;
+    if (!groups.has(gKey)) groups.set(gKey, { title: c.postTitle || "(ไม่มีชื่อโพสต์)", items: [] });
+    groups.get(gKey).items.push(c);
   }
 
   // เรียงในกลุ่มตาม updatedAt ใหม่ก่อน
@@ -200,7 +204,7 @@ function renderInboxGrouped(convos) {
     g.items.sort((a,b) => (b.updatedAt?.seconds||0) - (a.updatedAt?.seconds||0));
   }
 
-  // วาด UI: หัวกลุ่ม (itemName) แล้วตามด้วยบทสนทนาในโพสต์นั้น
+  // วาด UI
   for (const [key, group] of groups) {
     const header = document.createElement("div");
     header.className = "chat-group-title";
@@ -208,15 +212,17 @@ function renderInboxGrouped(convos) {
     chatList.appendChild(header);
 
     for (const c of group.items) {
-      const otherUid  = (c.participants || []).find(uid => uid !== currentUserId) || null;
-      const otherName = otherUid ? (userNameCache.get(otherUid) || otherUid) : "ผู้ใช้";
+      const otherUid   = (c.participants || []).find(uid => uid !== currentUserId) || null;
+      const prof       = otherUid ? (userProfileCache.get(otherUid) || { name: "ผู้ใช้", photo: null }) : { name: "ผู้ใช้", photo: null };
 
       const item = document.createElement("div");
       item.className = "chat-item";
       item.innerHTML = `
-        <div class="avatar">👤</div>
+        <div class="avatar">
+          ${prof.photo ? `<img src="${prof.photo}" alt="${prof.name}" />` : "👤"}
+        </div>
         <div class="meta">
-          <div class="name">${otherName}</div>
+          <div class="name">${prof.name}</div>
           <div class="preview">${c.lastMessage || ""}</div>
         </div>
       `;
@@ -226,7 +232,8 @@ function renderInboxGrouped(convos) {
         item.classList.add("active");
 
         partnerId = otherUid || null;
-        chatPartner.textContent = `โพสต์: ${group.title}${otherName ? " · " + otherName : ""}`;
+        chatPartner.textContent = `โพสต์: ${group.title}${prof.name ? " · " + prof.name : ""}`;
+        updateTopbarAvatar(prof.photo);
 
         conversationId = c.id;
         listenConversationDoc(conversationId);
@@ -239,6 +246,17 @@ function renderInboxGrouped(convos) {
   // auto เลือกบทสนทนาแรกของกลุ่มแรก
   const first = chatList.querySelector(".chat-item");
   if (first) first.click();
+}
+
+/* ===== ฟังก์ชันอัปเดตรูป avatar บนแถบ topbar ===== */
+function updateTopbarAvatar(photoURL) {
+  const avatarEl = document.querySelector(".chat-topbar .avatar");
+  if (!avatarEl) return;
+  if (photoURL) {
+    avatarEl.innerHTML = `<img src="${photoURL}" alt="avatar" />`;
+  } else {
+    avatarEl.textContent = "👥";
+  }
 }
 
 /* ===== Listen เอกสาร conversations/{cid} แล้วเรนเดอร์จาก messages array ===== */
