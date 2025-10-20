@@ -1,4 +1,4 @@
-// Chat.js — Realtime Chat ของ CHIPHAI Project
+// Chat.js — Realtime Chat ของ CHIPHAI
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore, collection, doc, getDoc, getDocs, query, where,
