@@ -109,7 +109,7 @@ body{
 /* Main wrapper */
 .about-main{
   max-width:var(--max-width);
-  margin:32px auto;
+  margin: calc(var(--header-height) + 20px) auto 16px;
   padding:24px;
   display:flex;
   flex-direction:column;
