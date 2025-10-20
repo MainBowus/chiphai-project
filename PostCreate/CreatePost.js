@@ -1,4 +1,4 @@
-import { auth, db } from ".CreatePostFirebase.js";
+import { auth, db } from "./CreatePostFirebase.js";
 import {
   collection,
   addDoc,
@@ -22,6 +22,7 @@ function getUserDisplayName(user) {
   return "Guest";
 }
 
+/* ---------- Elements ---------- */
 const input = $id("imageUpload");
 const preview = $id("preview");
 const postBtn = $id("PostBtn");
