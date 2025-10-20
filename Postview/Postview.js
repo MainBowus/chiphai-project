@@ -1,8 +1,9 @@
-// Postview.js
+// Postview.js — เจ้าของกด Message = เข้า Inbox, คนอื่นกด = คุยกับเจ้าของโพสต์
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-/* ---------- Firebase config---------- */
+/* Firebase config */
 const firebaseConfig = {
   apiKey: "AIzaSyBQlq_ZgG1eUVrMGXo178wNW7GMr6imCDk",
   authDomain: "chiphailogin01.firebaseapp.com",
@@ -12,35 +13,28 @@ const firebaseConfig = {
   appId: "1:122413223952:web:35a1f19668bf22be13fa95",
   measurementId: "G-2B1K7VV4ZT"
 };
-
-/* ---------- Init ---------- */
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+const auth= getAuth(app);
 
-/* ---------- Utils ---------- */
+/* Utils */
 const $ = (sel) => document.querySelector(sel);
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
 
 function parseFoundAt(foundAt) {
   if (!foundAt) return null;
-  if (typeof foundAt.toDate === "function") return foundAt.toDate(); // Firestore Timestamp
-  if (foundAt.seconds) return new Date(foundAt.seconds * 1000);      // เผื่อกรณีได้รูป raw
+  if (typeof foundAt.toDate === "function") return foundAt.toDate();
+  if (foundAt.seconds) return new Date(foundAt.seconds * 1000);
   const d = new Date(foundAt);
   return isNaN(d) ? null : d;
 }
-function formatDateTH(dt) {
-  if (!dt) return "-";
-  return dt.toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit", year: "numeric" });
-}
-function formatTimeTH(dt) {
-  if (!dt) return "-";
-  return dt.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
-}
+const formatDateTH = (dt) => dt ? dt.toLocaleDateString("th-TH", { day:"2-digit", month:"2-digit", year:"numeric" }) : "-";
+const formatTimeTH = (dt) => dt ? dt.toLocaleTimeString("th-TH", { hour:"2-digit", minute:"2-digit" }) : "-";
 function setInfoValue(labelText, value) {
-  const groups = document.querySelectorAll(".info-group");
-  for (const g of groups) {
+  for (const g of document.querySelectorAll(".info-group")) {
     const labelEl = g.querySelector(".info-label");
-    if (!labelEl) continue;
-    if (labelEl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+    if (labelEl && labelEl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
       const valEl = g.querySelector(".info-value");
       if (valEl) valEl.textContent = value ?? "-";
       break;
@@ -54,13 +48,10 @@ function renderError(msg) {
       <div class="postview-main">
         <div class="postview-right" style="width:100%">
           <h1 class="item-name">ไม่พบข้อมูลโพสต์</h1>
-          <div class="info-group">
-            <div class="info-value" style="color:#c00">${msg}</div>
-          </div>
+          <div class="info-group"><div class="info-value" style="color:#c00">${msg}</div></div>
           <button class="message-btn" id="backToList">← กลับรายการ</button>
         </div>
-      </div>
-    `;
+      </div>`;
     document.getElementById("backToList")?.addEventListener("click", () => {
       window.location.href = "../Post/Post.html";
     });
@@ -70,7 +61,7 @@ function renderError(msg) {
   }
 }
 
-
+/* Nav */
 document.getElementById("logoBtn")?.addEventListener("click", () => {
   window.location.href = "../index.html";
 });
@@ -80,53 +71,60 @@ document.getElementById("backBtn")?.addEventListener("click", (e) => {
   else window.location.href = "../Post/Post.html";
 });
 
-/* ---------- ดึง id จาก URL แล้วโหลดเอกสาร ---------- */
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
-
+/* Load */
 if (!id) {
   renderError("ไม่มีพารามิเตอร์ id ใน URL (เช่น .../Postview.html?id=xxxx)");
 } else {
   loadPost(id);
 }
 
+let createdByUid = null;
+
 async function loadPost(docId) {
   try {
     const snap = await getDoc(doc(db, "lost_items", docId));
-    if (!snap.exists()) {
-      renderError("ไม่พบโพสต์นี้ในฐานข้อมูล");
-      return;
-    }
+    if (!snap.exists()) return renderError("ไม่พบโพสต์นี้ในฐานข้อมูล");
     const data = snap.data();
 
-
-    const usernameEl = document.querySelector(".postview-left .username");
-    if (usernameEl) usernameEl.textContent = data.createdByName || "User";
-
-    const imgEl = document.querySelector(".placeholder img");
+    // UI
+    $(".postview-left .username").textContent = data.createdByName || "User";
+    const imgEl = $(".placeholder img");
     if (imgEl) {
-      if (data.imageUrl) {
-        imgEl.src = data.imageUrl;
-        imgEl.alt = data.itemName || "item image";
-        imgEl.style.display = "block";
-      } else {
-        imgEl.style.display = "none";
-      }
+      if (data.imageUrl) { imgEl.src = data.imageUrl; imgEl.alt = data.itemName || "item image"; imgEl.style.display = "block"; }
+      else imgEl.style.display = "none";
     }
-
-    const itemNameEl = document.querySelector(".postview-right .item-name");
-    if (itemNameEl) itemNameEl.textContent = data.itemName || "ไม่มีชื่อไอเท็ม";
-
+    $(".postview-right .item-name").textContent = data.itemName || "ไม่มีชื่อไอเท็ม";
     setInfoValue("Location", data.location || "-");
-
     const dt = parseFoundAt(data.foundAt);
     setInfoValue("Date", formatDateTH(dt));
     setInfoValue("Time", formatTimeTH(dt));
     setInfoValue("Description", data.description || "-");
 
+    createdByUid = data.createdBy; //  เจ้าของโพสต์
+
     // ปุ่ม Message
     document.querySelector(".message-btn")?.addEventListener("click", () => {
-      window.location.href = "../Chat/Chat.html";
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) { await signInAnonymously(auth); return; }
+        const me = user.uid;
+
+        if (me === createdByUid) {
+          // เจ้าของโพสต์ → เปิด Inbox (ไม่ส่ง partner)
+          const url = new URL("../Chat/Chat.html", window.location.href);
+          url.searchParams.set("post", docId);
+          url.searchParams.set("title", data.itemName || "โพสต์");
+          window.location.href = url.toString();
+        } else {
+          // ผู้ใช้คนอื่น → เปิดแชต 1-1 กับเจ้าของ
+          const url = new URL("../Chat/Chat.html", window.location.href);
+          url.searchParams.set("partner", createdByUid);
+          url.searchParams.set("post", docId);
+          url.searchParams.set("title", data.itemName || "โพสต์");
+          const autoMsg = `สวัสดี ฉันอยากสอบถามรายละเอียดของ “${data.itemName || "-"}” หน่อยได้ไหม`;
+          url.searchParams.set("msg", autoMsg);
+          window.location.href = url.toString();
+        }
+      });
     });
   } catch (err) {
     console.error("[postview] load error:", err);
