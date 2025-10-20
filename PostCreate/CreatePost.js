@@ -1,4 +1,4 @@
-import { auth, db } from "./CreatePostFirebase.js";
+import { auth, db } from ".CreatePostFirebase.js";
 import {
   collection,
   addDoc,
