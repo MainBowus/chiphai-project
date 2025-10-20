@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Message | CHIPHAI</title>
   <link rel="stylesheet" href="Chat.css" />
 </head>
@@ -10,12 +10,14 @@
   <!-- Header -->
   <header class="chat-header-bar">
     <div class="logo" id="logoBtn">CHIPHAI</div>
+
     <nav class="nav-links">
       <a href="../About/About.html">About</a>
       <a href="#" class="active">Message</a>
       <a href="../Post/Post.html">Post</a>
     </nav>
-    <button class="profile" id="profileBtn">
+
+    <button class="profile" id="profileBtn" aria-label="Open profile">
       <span class="avatar">👤</span>
       <span class="profile-name">Username</span>
     </button>
@@ -23,68 +25,49 @@
 
   <!-- Main Layout -->
   <main class="chat-main-layout">
-    <!-- Sidebar -->
+    <!-- Sidebar (Inbox) -->
     <aside class="chat-sidebar">
-      <h3 class="sidebar-title"><span>💬</span> Messages</h3>
+      <h3 class="sidebar-title">
+        <span>💬</span> Messages
+      </h3>
+ 
       <div class="chat-list" id="chatList">
-        <div class="chat-item active">
-          <span class="avatar">👥</span>
-          <div class="chat-info">
-            <p class="chat-name">Username</p>
-            <p class="chat-preview">Message • Time</p>
-          </div>
-        </div>
-        <div class="chat-item">
-          <span class="avatar">👥</span>
-          <div class="chat-info">
-            <p class="chat-name">Username</p>
-            <p class="chat-preview">Message • Time</p>
-          </div>
-        </div>
-        <div class="chat-item">
-          <span class="avatar">👥</span>
-          <div class="chat-info">
-            <p class="chat-name">Username</p>
-            <p class="chat-preview">Message • Time</p>
-          </div>
-        </div>
-        <div class="chat-item">
-          <span class="avatar">👥</span>
-          <div class="chat-info">
-            <p class="chat-name">Username</p>
-            <p class="chat-preview">Message • Time</p>
-          </div>
-        </div>
-        <div class="chat-item">
-          <span class="avatar">👥</span>
-          <div class="chat-info">
-            <p class="chat-name">Username</p>
-            <p class="chat-preview">Message • Time</p>
-          </div>
-        </div>
+
       </div>
     </aside>
 
     <!-- Chat Section -->
-    <section class="chat-section">
+    <section class="chat-section" aria-live="polite">
       <div class="chat-topbar">
         <span class="avatar">👥</span>
-        <span class="chat-username">Username</span>
+
+        <span class="chat-username" id="chatPartner">เลือกบทสนทนา</span>
       </div>
-      <div class="chat-body" id="chatBody">
-        <div class="message received">ข้อความจากอีกฝ่าย</div>
-        <div class="message received">...</div>
-        <div class="message received">...</div>
-        <div class="message sent">ข้อความของเรา</div>
-        <div class="message sent">...</div>
-      </div>
+
+
+      <div class="chat-body" id="chatBody"></div>
+
       <div class="chat-footer">
-        <input type="text" id="messageInput" placeholder="Type your message..." />
-        <button id="sendBtn">➤</button>
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="พิมพ์ข้อความของคุณ..."
+          autocomplete="off"
+          aria-label="พิมพ์ข้อความ"
+        />
+        <button id="sendBtn" title="ส่งข้อความ">➤</button>
       </div>
     </section>
   </main>
 
-  <script src="Chat.js"></script>
+
+  <script type="module" src="Chat.js"></script>
+
+
+  <script>
+    document.getElementById("logoBtn")?.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+  </script>
 </body>
 </html>
