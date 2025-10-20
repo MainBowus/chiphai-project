@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Create Post | CHIPHAI</title>
-  <link rel="stylesheet" href="CreatePost.css">
+  <link rel="stylesheet" href="CreatePost.css" />
 </head>
 <body>
   <header class="site-header">
@@ -16,16 +16,16 @@
 
   <main>
     <div class="create-main">
-
       <div class="create-left">
         <div class="meta">
           <div class="avatar">👤</div>
           <div class="username" id="username">Guest</div>
         </div>
+
         <label for="imageUpload" class="upload-box">
           <span class="upload-text">Upload Image</span>
           <input type="file" id="imageUpload" accept="image/*" hidden>
-          <img id="preview" alt="Preview" />
+          <img id="preview" alt="Preview" style="display:none;" />
         </label>
       </div>
 
@@ -34,22 +34,22 @@
 
         <label class="form-group">
           <span class="form-label">Item</span>
-          <input type="text" id="Item" placeholder="Enter Item" required>
+          <input type="text" id="Item" placeholder="Enter Item" required />
         </label>
 
         <label class="form-group">
           <span class="form-label">Location</span>
-          <input type="text" id="location" placeholder="Enter location" required>
+          <input type="text" id="location" placeholder="Enter location" required />
         </label>
 
         <label class="form-group">
           <span class="form-label">Date Found</span>
-          <input type="date" id="dateFounded" required>
+          <input type="date" id="dateFounded" required />
         </label>
 
         <label class="form-group">
           <span class="form-label">Time</span>
-          <input type="time" id="timeFounded" required>
+          <input type="time" id="timeFounded" required />
         </label>
 
         <label class="form-group">
@@ -58,10 +58,10 @@
         </label>
 
         <div class="btn-wrapper">
-          <button id="PostBtn" class="post-btn">
-            Post
-          </button>
+          <button id="PostBtn" class="post-btn">Post</button>
         </div>
+
+        <div id="msg" class="msg"></div>
       </div>
     </div>
   </main>
