@@ -32,25 +32,27 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 48px;
+  padding: 20px 100px;
   background: var(--accent-dark);
   color: #fff;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   height: var(--header-height);
 }
 
-/* Logo */
 .logo {
-  font-weight: 900;
+  font-weight: 800;
   font-size: 28px;
   letter-spacing: 1px;
   color: #fff;
+  border: none;
   cursor: pointer;
-  transition: transform var(--transition), color var(--transition);
+  transition: transform 0.3s ease, box-shadow 0.18s;
+  display: inline-block;
+  user-select: none;
 }
+
 .logo:hover {
   transform: scale(1.15);
-  color: #c8e6c9;
 }
 
 /* Header right */
