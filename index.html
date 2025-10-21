@@ -7,6 +7,7 @@
     <title>Chiphai</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
 </head>
 
 <body>
@@ -30,7 +31,7 @@
 
     <section class="hero">
       <div class="hero-content">
-        <h1>Find your missing items <br> with <span class="highlight">CHIPHAI</span></h1>
+        <h1>Find your missing items <br> with <span class="highlight"><span id="typed-text3"></span></span></h1>
         <p>
           Chiphai is a platform designed to help users post and find missing items.
           It allows individuals to quickly report lost items or search for ones they've found,
@@ -134,11 +135,9 @@
 
     <section id="about" class="about">
       <div class="container">
-        <h2>We will help everyone.</h2>
-        <p>
-          CHIPHAI ช่วยให้คุณโพสต์สิ่งของที่หาย หรือค้นหาของที่พบเจอได้ง่าย
-          เพื่อให้เจ้าของกับของได้กลับมาพบกันอีกครั้ง.
-        </p>
+        <h2><span id="typed-text"></span></h2>
+      <p> CHIPHAI ช่วยให้คุณโพสต์สิ่งของที่หาย หรือค้นหาของที่พบเจอได้ง่าย
+          เพื่อให้เจ้าของกับของได้กลับมาพบกันอีกครั้ง.</p>
       </div>
     </section>
 
@@ -167,7 +166,7 @@
 
     <section class="steps">
       <div class="container">
-        <h2>Simple Steps for Finding Your Lost Items</h2>
+        <h2><span id="typed-text2"></span></h2>
         <div class="step-grid">
           <div class="step">
             <h3>01 | Post Your Item</h3>
@@ -206,7 +205,6 @@
     <script src="script.js"></script>
     <script type="module" src="firebase.js"></script>
     <script type="module" src="firebase.auth.addon.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     </body>
 </html>

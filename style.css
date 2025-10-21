@@ -61,6 +61,25 @@ body{
   padding-left: 20px;
   padding-right: 20px;
 }
+/* ปุ่ม Login */
+.logingg {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logingg:hover {
+  background: #fff;
+  color: var(--accent-dark);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
 /* --- 4. Header / Navbar --- */
 .site-header {
@@ -122,22 +141,22 @@ body{
 /* นี่คือสไตล์สำหรับปุ่ม .login ที่อยู่ใน Header */
 .header-right .login {
   background: transparent; 
-  border: 2px solid var(--text-light-gray);
-  color: var(--text-light-gray);
-  padding: 8px 20px;
-  border-radius: var(--radius-round, 25px);
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 50px;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  transition: all 180ms ease-out;
-  box-shadow: none; 
+  transition: all 0.25s ease;
 }
 .header-right .login:hover {
-  background: var(--text-light);
+  background: #fff;
   color: var(--accent-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
+
 
 /* --- 4.2 สไตล์สำหรับ User Dropdown (Letter Avatar) --- */
 /* สไตล์นี้จะถูกใช้กับ HTML ที่ JavaScript สร้างขึ้นมาแทนที่ปุ่ม Login */
