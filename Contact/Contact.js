@@ -12,3 +12,8 @@
     "events": { "onhover": { "enable": false }, "onclick": { "enable": false } }
   }
 });
+
+// เมื่อกดปุ่ม Submit a ticket → ไปหน้า Ticket.html
+document.getElementById('submitTicket')?.addEventListener('click', () => {
+  window.location.href = '../Ticket/Ticket.html';
+});
