@@ -8,6 +8,7 @@
   padding-bottom: 50px; 
   margin: 0 auto;
   width: 100%;
+  flex-grow: 1;
 }
 
 .ticket-panel {
