@@ -4,9 +4,9 @@
 :root {
   --bg: #f7fafc;
   --card: #fff;
-  --accent: #43a047;
-  --accent-600: #388e3c;
-  --accent-dark: #2e7d32; 
+  --accent: #9DE0BE;
+  --accent-600: #A6EDCA;
+  --accent-dark: #8BC7A9; 
   --muted: #6b7a7a;
   --border: #e0e6e0;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
@@ -248,7 +248,7 @@ body{
 /* --- 5. เนื้อหาเก่า (Hero, Popup, Sections) --- */
 .hero {
   min-height: 100vh;
-  background: url('image/background1.jpg') no-repeat center center/cover;
+  background: url('image/7-1200x675.webp') no-repeat center center/cover;
   display: flex;
   justify-content: flex-start;
   align-items: center;
