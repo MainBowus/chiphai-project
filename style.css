@@ -269,7 +269,7 @@ body{
   background: rgba(255, 255, 255, 0.8);
   padding: 40px;
   border-radius: var(--radius-normal);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(1px);
   z-index: 1;
 }
 .hero-content h1 {
@@ -277,7 +277,7 @@ body{
   color: var(--text-dark);
 }
 .highlight {
-  color: var(--accent);
+  color: var(--accent-dark);
 }
 .hero-content p {
   font-size: 17px;
