@@ -49,3 +49,5 @@ iconClose.onclick = () => {
     backDelay: 8000,
     loop: true
   });
+
+  
