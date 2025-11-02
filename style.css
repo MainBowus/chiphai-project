@@ -170,6 +170,7 @@ body{
   border-radius: 8px;
   transition: background 180ms ease;
 }
+
 .user-menu:hover {
   background: rgba(255, 255, 255, 0.1);
 }
