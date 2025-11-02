@@ -66,9 +66,9 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   // คลิก profile → ไป Chat
-  profileBtn.onclick = () => {
+  /*profileBtn.onclick = () => {
     window.location.href = "../index.html";
-  };
+  };*/
 });
 
 // --- Section: ทีมพัฒนา ---
@@ -138,7 +138,7 @@ var typed = new Typed('#typed-text', {
 particlesJS('particles-js', {
   "particles": {
     "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
-    "color": { "value": "#a3ec9c" },
+    "color": { "value": "#9DE0BE" },
     "shape": { "type": "circle" },
     "opacity": { "value": 0.8, "random": true },
     "size": { "value": 6, "random": true },
