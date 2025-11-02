@@ -19,9 +19,10 @@
     <a href="../Post/Post.html" class="nav-item">Post</a>
   </nav>
 
-  <div class="header-right">
-    <button class="login" id="loginBtn">Log in</button>
-  </div>
+  <button class="profile" id="profileBtn" aria-label="Open profile">
+      <span class="avatar">👤</span>
+      <span class="profile-name">Guest</span>
+  </button>
 </header>
 
 <section class="hero">
@@ -106,5 +107,11 @@
 </script>
 <script type="module" src="Contact.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+<script>
+    document.getElementById("logoBtn")?.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+</script>
 </body>
 </html>
