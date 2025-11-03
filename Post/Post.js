@@ -108,13 +108,15 @@ function renderCard(docId, data) {
   card.innerHTML = `
     <div class="meta">
       <div class="avatar">
-        ${createdByPhotoURL ? `<img src="${escapeHtml(createdByPhotoURL)}" alt="">` : '👤'}
+        ${createdByPhotoURL
+          ? `<img src="${createdByPhotoURL}" alt="${escapeHtml(createdByName)}">`
+          : "👤"}
       </div>
       <div class="username">${escapeHtml(createdByName)}</div>
     </div>
 
     <div class="placeholder">
-      ${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="">` : ""}
+      ${imageUrl ? `<img src="${imageUrl}" alt="${escapeHtml(itemName)}">` : ""}
     </div>
 
     <div class="item-name">${escapeHtml(itemName)}</div>
