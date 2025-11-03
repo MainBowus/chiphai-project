@@ -1,17 +1,10 @@
 // Post.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit
+  getFirestore, collection, getDocs, query, orderBy, limit, doc, getDoc, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import {
-  getAuth,
-  onAuthStateChanged,
-  signInAnonymously
+  getAuth, onAuthStateChanged, signInAnonymously
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 /* ---------- Firebase config ---------- */
@@ -26,68 +19,76 @@ const firebaseConfig = {
 };
 
 /* ---------- Init ---------- */
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const auth = getAuth(app);
 
 /* ---------- Elements ---------- */
 const itemsEl   = document.getElementById("items");
 const loginBtn  = document.getElementById("loginBtn");
+const profileBtn = document.getElementById("loginBtn"); // ใช้ loginBtn แสดงชื่อ/รูป profile
+const logoBtn = document.getElementById("logoBtn");
 
+/* ---------- Navigation ---------- */
+logoBtn?.addEventListener("click", ()=>window.location.href="../index.html");
 
-document.getElementById("createBtn")?.addEventListener("click", () => {
-  window.location.href = "../PostCreate/CreatePost.html";
-});
-document.getElementById("logoBtn")?.addEventListener("click", () => {
-  window.location.href = "../index.html";
-});
-loginBtn?.addEventListener("click", () => {
+/* ---------- Auth & Profile ---------- */
+async function upsertProfile(user){
+  if(!user) return;
+  const ref = doc(db,"users_create",user.uid);
+  const now = new Date();
+  const snap = await getDoc(ref);
+  await setDoc(ref, {
+    uid: user.uid,
+    displayName: user.displayName || (user.email ? user.email.split("@")[0] : "User"),
+    email: user.email || "",
+    photoURL: user.photoURL || "",
+    providerPrimary: (user.providerData?.[0]?.providerId || "").replace(".com",""),
+    providers: (user.providerData || []).map(p=>p.providerId),
+    lastLoginAt: now,
+    createdAt: snap.exists()? (snap.data().createdAt||now) : now
+  }, {merge:true});
+}
 
-  window.location.href = "../index.html";
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    await signInAnonymously(auth);
+    return;
+  }
+  await upsertProfile(user);
+  const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
+  const photo = user.photoURL || "";
+  if(profileBtn){
+    profileBtn.textContent = "";
+    const span = document.createElement("span");
+    span.className = "avatar";
+    span.innerHTML = photo ? `<img src="${photo}" alt="${name}">` : "👤";
+    profileBtn.appendChild(span);
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = name;
+    nameSpan.style.marginLeft = "8px";
+    profileBtn.appendChild(nameSpan);
+  }
 });
 
 /* ---------- Utils ---------- */
 function escapeHtml(s) {
-  return String(s ?? "").replace(/[&<>"']/g, m => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  })[m]);
+  return String(s ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 }
-function parseFoundAt(foundAt) {
-  if (!foundAt) return null;
-  if (typeof foundAt.toDate === "function") return foundAt.toDate(); // Timestamp
+function parseFoundAt(foundAt){
+  if(!foundAt) return null;
+  if(typeof foundAt.toDate==="function") return foundAt.toDate();
   const d = new Date(foundAt);
-  return isNaN(d) ? null : d;
+  return isNaN(d)? null : d;
 }
-function formatThaiDateTime(dt) {
-  if (!dt) return "-";
-  const d = dt.toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const t = dt.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+function formatThaiDateTime(dt){
+  if(!dt) return "-";
+  const d = dt.toLocaleDateString("th-TH",{day:"2-digit", month:"2-digit", year:"numeric"});
+  const t = dt.toLocaleTimeString("th-TH",{hour:"2-digit", minute:"2-digit"});
   return `${d} เวลา ${t}`;
 }
-function getUserDisplayName(user) {
-  if (!user) return "Guest";
-  if (user.displayName && user.displayName.trim()) return user.displayName.trim();
-  const pd = (user.providerData && user.providerData[0]) ? user.providerData[0] : null;
-  if (pd && pd.displayName && pd.displayName.trim()) return pd.displayName.trim();
-  if (user.email && user.email.includes("@")) return user.email.split("@")[0];
-  return user.isAnonymous ? "Guest" : "User";
-}
 
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    try {
-      await signInAnonymously(auth);
-    } catch (e) {
-      console.error("Anonymous sign-in failed:", e);
-    }
-    return;
-  }
-  const name = getUserDisplayName(user);
-  if (loginBtn) loginBtn.textContent = name;
-});
-
-/* ---------- สร้างการ์ด ---------- */
+/* ---------- Render Card ---------- */
 function renderCard(docId, data) {
   const {
     itemName = "ไม่มีชื่อไอเท็ม",
@@ -95,6 +96,7 @@ function renderCard(docId, data) {
     location = "",
     imageUrl = "",
     createdByName = "User",
+    createdByPhotoURL = "",
     foundAt: rawFoundAt
   } = data;
 
@@ -105,7 +107,9 @@ function renderCard(docId, data) {
   card.className = "card";
   card.innerHTML = `
     <div class="meta">
-      <div class="avatar">👤</div>
+      <div class="avatar">
+        ${createdByPhotoURL ? `<img src="${escapeHtml(createdByPhotoURL)}" alt="">` : '👤'}
+      </div>
       <div class="username">${escapeHtml(createdByName)}</div>
     </div>
 
@@ -123,50 +127,40 @@ function renderCard(docId, data) {
 
     <button class="view-btn" data-id="${escapeHtml(docId)}">View</button>
   `;
+
   card.querySelector(".view-btn")?.addEventListener("click", () => {
     window.location.href = `../Postview/Postview.html?id=${encodeURIComponent(docId)}`;
   });
+
   return card;
 }
 
-/* ---------- โหลดโพสต์ ---------- */
-async function loadPosts() {
-  itemsEl.innerHTML = `
-    <div class="card">
-      <div class="item-name">กำลังโหลดรายการ...</div>
-    </div>
-  `;
-  try {
-    const q = query(
-      collection(db, "lost_items"),
-      orderBy("createdAt", "desc"),
-      limit(50)
-    );
+/* ---------- Load Posts ---------- */
+async function loadPosts(){
+  itemsEl.innerHTML = `<div class="card"><div class="item-name">กำลังโหลดรายการ...</div></div>`;
+  try{
+    const q = query(collection(db,"lost_items"), orderBy("createdAt","desc"), limit(50));
     const snap = await getDocs(q);
-
-    if (snap.empty) {
-      itemsEl.innerHTML = `
-        <div class="card">
-          <div class="item-name">ยังไม่มีโพสต์</div>
-          <div class="desc">กด "Create Post" เพื่อเพิ่มรายการแรก</div>
-        </div>
-      `;
+    if(snap.empty){
+      itemsEl.innerHTML = `<div class="card"><div class="item-name">ยังไม่มีโพสต์</div><div class="desc">กด "Create Post" เพื่อเพิ่มรายการแรก</div></div>`;
       return;
     }
-
     const frag = document.createDocumentFragment();
-    snap.forEach(doc => frag.appendChild(renderCard(doc.id, doc.data())));
+    snap.forEach(doc=>{
+      const data = doc.data();
+      frag.appendChild(renderCard(doc.id, data));
+    });
     itemsEl.innerHTML = "";
     itemsEl.appendChild(frag);
-  } catch (err) {
-    console.error("[post] load error:", err);
-    itemsEl.innerHTML = `
-      <div class="card">
-        <div class="item-name">โหลดรายการไม่สำเร็จ</div>
-        <div class="desc">${escapeHtml(err?.message || String(err))}</div>
-      </div>
-    `;
+  }catch(err){
+    console.error("[post] load error:",err);
+    itemsEl.innerHTML = `<div class="card"><div class="item-name">โหลดรายการไม่สำเร็จ</div><div class="desc">${escapeHtml(err?.message||String(err))}</div></div>`;
   }
 }
 
 loadPosts();
+
+/* ---------- Create Button ---------- */
+document.getElementById("createBtn")?.addEventListener("click", ()=>{
+  window.location.href="../PostCreate/CreatePost.html";
+});
