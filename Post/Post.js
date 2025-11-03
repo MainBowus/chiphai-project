@@ -32,6 +32,10 @@ const logoBtn = document.getElementById("logoBtn");
 /* ---------- Navigation ---------- */
 logoBtn?.addEventListener("click", ()=>window.location.href="../index.html");
 
+profileBtn?.addEventListener("click", () => {
+  window.location.href = "../Profile/Profile.html";
+});
+
 /* ---------- Auth & Profile ---------- */
 async function upsertProfile(user){
   if(!user) return;

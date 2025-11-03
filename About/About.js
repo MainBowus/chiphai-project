@@ -27,6 +27,9 @@ const nameEl = profileBtn?.querySelector(".profile-name");
 logoBtn?.addEventListener("click", () => {
   window.location.href = "../index.html";
 });
+profileBtn?.addEventListener("click", () => {
+  window.location.href = "../Profile/Profile.html";
+});
 
 // --- Helpers: Upsert Profile (เหมือน Chat.js) ---
 async function upsertMyProfileFromAuth(user) {
@@ -65,10 +68,6 @@ onAuthStateChanged(auth, async (user) => {
     nameEl.textContent = name;
   }
 
-  // คลิก profile → ไป Chat
-  /*profileBtn.onclick = () => {
-    window.location.href = "../index.html";
-  };*/
 });
 
 // --- Section: ทีมพัฒนา ---

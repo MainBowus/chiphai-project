@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile | CHIPHAI</title>
+  <link rel="stylesheet" href="Profile.css">
+</head>
+<body>
+<div id="particles-js"></div>
+
+<header class="site-header" role="banner">
+  <div class="logo" id="logoBtn">CHIPHAI</div>
+  <nav class="nav" role="navigation" aria-label="Main">
+    <a href="../About/About.html" class="nav-item">About</a>
+    <a href="../Chat/Chat.html" class="nav-item">Message</a>
+    <a href="../Post/Post.html" class="nav-item">Post</a>
+  </nav>
+  <button class="profile" id="profileBtn" aria-label="Open profile">
+      <span class="avatar">👤</span>
+      <span class="profile-name">Guest</span>
+  </button>
+</header>
+
+<main class="ticket-main">
+  <section class="ticket-panel" aria-labelledby="profile-title">
+    <h1 id="profile-title" style="display: none;">Profile</h1>
+
+    <div class="profile-info-header">
+      <div class="profile-avatar-large">
+        <img src="" alt="Profile Picture" id="profile-img" style="display: none;">
+        <span id="profile-avatar-fallback">👤</span>
+      </div>
+      <h2 id="profile-display-name">Loading...</h2>
+      <p class="profile-bio" id="profile-bio-display">Loading bio...</p>
+      
+      <button type="button" class="btn-message hidden" id="messageBtn">
+        <span class="icon">💬</span> Message
+      </button>
+    </div>
+
+    <div id="edit-form-panel" class="hidden">
+      <form class="ticket-form" id="profileForm">
+        
+        <label for="displayName">Display Name</label>
+        <input type="text" id="displayName" name="displayName" placeholder="Enter your display name" required>
+
+        <label for="bio">Your Introduction (Bio)</label>
+        <textarea id="bio" name="bio" rows="4" placeholder="Tell everyone a little about yourself..."></textarea>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" readonly>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Save Changes</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="profile-danger-zone hidden" id="danger-zone">
+      <button type="button" class="btn-danger" id="signOutBtn">Sign Out</button>
+    </div>
+
+    <div id="profile-error" class="profile-error-message hidden">
+      <h2>Profile Not Found</h2>
+      <p>This user does not exist or may have been deleted.</p>
+    </div>
+
+  </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="site-footer-inner">
+    <div class="footer-left">
+      <span class="brand">CHIPHAI</span> © 2025 All rights reserved.
+    </div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="../Privacy/Privacy.html">Privacy Policy</a>
+      <span class="sep" aria-hidden="true">|</span>
+      <a href="../Contact/Contact.html">Contact us</a>
+    </nav>
+  </div>
+</footer>
+
+<script type="module" src="Profile.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+    document.getElementById("logoBtn")?.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+</script>
+</body>
+</html>

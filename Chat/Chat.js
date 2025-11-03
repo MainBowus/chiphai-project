@@ -277,3 +277,7 @@ async function sendFirstMessageIfEmpty(text) {
     });
   }
 }
+
+profileBtn?.addEventListener("click", () => {
+  window.location.href = "../Profile/Profile.html";
+});

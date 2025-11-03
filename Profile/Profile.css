@@ -1,0 +1,153 @@
+/* --- คัดลอก CSS ทั้งหมดจาก Ticket.css มาวางที่นี่ --- */
+@import url('../Contact/Contact.css');
+/* ... (วางโค้ด .ticket-main, .ticket-panel, .ticket-form, .btn-submit, etc. ทั้งหมด) ... */
+.ticket-main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 120px;   
+  padding-bottom: 50px; 
+  margin: 0 auto;
+  width: 100%;
+  flex-grow: 1;
+}
+.ticket-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 32px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  flex: 0 1 700px; /* ทำให้ Panel แคบลง (700px) */
+  width: 100%;
+  max-width: 700px; 
+  position: relative; /* สำหรับ Error message */
+}
+/* ... (สไตล์ .ticket-form, .btn-submit, etc. ทั้งหมด) ... */
+.ticket-form { display: flex; flex-direction: column; gap: 18px; }
+.ticket-form label { font-weight: 700; color: var(--text-dark); }
+.ticket-form input, .ticket-form select, .ticket-form textarea { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; box-shadow: var(--shadow-sm); font-size: 15px; font-family: inherit; color: var(--text-dark); transition: border var(--transition), box-shadow var(--transition); }
+.ticket-form input:focus, .ticket-form select:focus, .ticket-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(67,160,71,0.15); }
+.ticket-form input[readonly] { background: #f4f4f4; color: #888; cursor: not-allowed; }
+.ticket-form input[readonly]:focus { box-shadow: var(--shadow-sm); border-color: var(--border); }
+.ticket-form textarea[name="bio"] { font-family: inherit; font-size: 15px; resize: vertical; min-height: 80px; }
+.form-actions { text-align: right; margin-top: 16px; justify-content: flex-end; display: flex; }
+.btn-submit { background: var(--accent); color: var(--card); border: none; padding: 12px 28px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform var(--transition); }
+.btn-submit:hover { transform: translateY(-2px); background: var(--accent-600); }
+@media (max-width: 640px) { .ticket-panel { padding: 20px; } }
+#particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; background: var(--bg); }
+
+/* --- CSS สไตล์ Banner (จากไอเดียที่ 1) --- */
+.profile-info-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-600));
+  color: var(--card); 
+  padding: 32px;
+  border-radius: var(--radius);
+  margin-left: -32px;  
+  margin-right: -32px; 
+  margin-top: -32px;   
+  margin-bottom: 32px;
+}
+.profile-avatar-large {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid var(--card);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-large span { font-size: 50px; color: var(--accent); }
+.profile-info-header h2 {
+  color: var(--card);
+  font-size: 28px;
+  margin: 8px 0 0 0;
+}
+
+/* --- CSS สไตล์ Bio (จากคำตอบก่อน) --- */
+.profile-bio {
+  color: var(--card); 
+  font-size: 16px;
+  font-style: italic; 
+  opacity: 0.9;
+  margin-top: 8px; 
+  margin-bottom: 0;
+  max-width: 90%; 
+  text-align: center; 
+}
+
+/* --- CSS สไตล์ Danger Zone (จากไอเดียที่ 2) --- */
+.profile-danger-zone {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--border); 
+  text-align: center; 
+}
+.btn-danger {
+  background: transparent;
+  color: #E53935; 
+  border: 1px solid #E53935;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-danger:hover {
+  background: #E53935;
+  color: var(--card); 
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* ===============================================
+  (ใหม่) CSS สำหรับปุ่ม Message และการซ่อน/แสดง
+===============================================
+*/
+
+/* 1. คลาสสำหรับซ่อน */
+.hidden {
+  display: none !important;
+}
+
+/* 2. สไตล์ปุ่ม Message (จะโผล่ใน Banner) */
+.btn-message {
+  background: var(--card); /* พื้นขาว */
+  color: var(--accent-600); /* ตัวหนังสือเขียว */
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 16px;
+  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-message:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  background: #fdfdfd;
+}
+
+.btn-message span {
+  margin-right: 8px;
+}
+
+/* 3. สไตล์สำหรับหน้า Error */
+.profile-error-message {
+  text-align: center;
+  color: var(--text-light);
+  padding: 40px 0;
+}
+.profile-error-message h2 {
+  color: var(--text-dark);
+}
