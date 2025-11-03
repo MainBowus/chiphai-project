@@ -1,7 +1,7 @@
 // --- Firebase Imports ---
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 // --- Firebase Config ---
 const firebaseConfig = {
@@ -24,6 +24,7 @@ const logoBtn = document.getElementById("logoBtn");
 const profileBtn = document.getElementById("profileBtn");
 const avatarEl = profileBtn?.querySelector(".avatar");
 const nameEl = profileBtn?.querySelector(".profile-name");
+const formEl = document.getElementById("reportForm");
 
 // --- Logo Navigation ---
 logoBtn?.addEventListener("click", () => {
@@ -40,7 +41,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // บันทึกโปรไฟล์ตัวเองเหมือน Chat.js
+
   const ref = doc(db, "users_create", user.uid);
   const snap = await getDoc(ref);
   const now = new Date();
@@ -55,20 +56,15 @@ onAuthStateChanged(auth, async (user) => {
     createdAt: snap.exists() ? (snap.data().createdAt || now) : now
   }, { merge: true });
 
-  // แสดงโปรไฟล์ในปุ่ม
+
   const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
   const photoURL = user.photoURL || "";
 
   if (avatarEl) avatarEl.innerHTML = photoURL ? `<img src="${photoURL}" alt="${displayName}">` : "👤";
   if (nameEl) nameEl.textContent = displayName;
-
-  // คลิกโปรไฟล์ → ไปหน้า Chat
-  /*profileBtn.onclick = () => {
-    window.location.href = "../index.html";
-  };*/
 });
 
-// --- Particles.js ---
+
 particlesJS('particles-js', {
   particles: {
     number: { value: 100, density: { enable: true, value_area: 800 } },
@@ -83,19 +79,36 @@ particlesJS('particles-js', {
 });
 
 // --- Submit Ticket Form ---
-document.getElementById('reportForm')?.addEventListener('submit', (e) => {
+formEl?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById('email').value;
-  const category = document.getElementById('category').value;
-  const details = document.getElementById('details').value;
+  const email = document.getElementById("email").value.trim();
+  const category = document.getElementById("category").value.trim();
+  const details = document.getElementById("details").value.trim();
 
   if (!email || !category || !details) {
-    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    alert("กรุณากรอกข้อมูลให้ครบถ้วน");
     return;
   }
 
-  // สามารถเชื่อม backend ได้ที่นี่ (Firebase, API ฯลฯ)
-  alert('ส่งรายงานสำเร็จ! ทีมงานจะติดต่อกลับภายใน 2–3 วันทำการ');
-  e.target.reset();
+  const user = auth.currentUser;
+  const uid = user?.uid || "anonymous";
+
+  try {
+    // --- เพิ่ม Ticket ลง Firestore ---
+    await addDoc(collection(db, "tickets"), {
+      email,
+      category,
+      details,
+      uid,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+
+    alert("✅ ส่งรายงานสำเร็จ! ทีมงานจะติดต่อกลับภายใน 2–3 วันทำการ");
+    e.target.reset();
+  } catch (err) {
+    console.error("Error sending ticket:", err);
+    alert("❌ เกิดข้อผิดพลาดในการส่งรายงาน");
+  }
 });
