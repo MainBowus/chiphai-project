@@ -19,8 +19,8 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   /* (ปรับแก้) ขยาย Panel ให้กว้างขึ้นเพื่อรองรับ 2 คอลัมน์ */
-  max-width: 900px; 
-  flex: 0 1 900px;
+  max-width: 1000px; 
+  flex: 0 1 1000px;
   width: 100%;
   position: relative;
 }
