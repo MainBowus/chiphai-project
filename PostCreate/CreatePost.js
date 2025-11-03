@@ -1,5 +1,5 @@
 import { auth, db } from "./CreataPostFirebase.js";
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 // 🌤️ Cloudinary config
@@ -15,23 +15,47 @@ const preview = $id("preview");
 const postBtn = $id("PostBtn");
 const msgEl = $id("msg");
 const usernameEl = $id("username");
+const avatarEl = document.querySelector(".avatar");
 
 let authReady = false;
 if (postBtn) postBtn.disabled = true;
 
-/* ---------- Auth ---------- */
-onAuthStateChanged(auth, (user) => {
+/* ---------- Auth + Avatar ---------- */
+onAuthStateChanged(auth, async (user) => {
   authReady = !!user;
   if (postBtn) postBtn.disabled = !authReady;
-  if (usernameEl) usernameEl.textContent = getUserDisplayName(user);
-});
 
-function getUserDisplayName(user) {
-  if (!user) return "Guest";
-  if (user.displayName) return user.displayName;
-  if (user.email) return user.email.split("@")[0];
-  return "Guest";
-}
+  if (!user) {
+    if (usernameEl) usernameEl.textContent = "Guest";
+    avatarEl.textContent = "👤";
+    return;
+  }
+
+  const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "User");
+  usernameEl.textContent = displayName;
+
+  // ลองดึงรูปจาก Firestore.users_create ก่อน
+  let photoURL = user.photoURL || "";
+  try {
+    const userDoc = await getDoc(doc(db, "users_create", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      if (userData.photoURL) photoURL = userData.photoURL;
+    }
+  } catch (err) {
+    console.warn("ไม่พบข้อมูลผู้ใช้ใน users_create:", err);
+  }
+
+  // แสดง Avatar
+  if (photoURL) {
+    avatarEl.innerHTML = `<img src="${photoURL}" alt="${displayName}">`;
+  } else {
+    avatarEl.textContent = "👤";
+  }
+
+  // เก็บไว้ใช้ตอนโพสต์
+  user._resolvedPhotoURL = photoURL;
+});
 
 /* ---------- Preview ---------- */
 let objectUrl;
@@ -110,8 +134,9 @@ postBtn?.addEventListener("click", async () => {
       imageUrl,
       createdAt: serverTimestamp(),
       createdBy: user.uid,
-      createdByName: getUserDisplayName(user),
+      createdByName: user.displayName || "User",
       createdByEmail: user.email || "",
+      createdByPhotoURL: user._resolvedPhotoURL || "",
       status: "open"
     });
 
