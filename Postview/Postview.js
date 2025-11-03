@@ -1,4 +1,4 @@
-// Postview.js — กด Message: เจ้าของโพสต์ = Inbox, คนอื่น = แชตกับเจ้าของโพสต์
+// Postview.js — เพิ่มการแสดง avatar จริงของผู้โพสต์
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -86,8 +86,26 @@ async function loadPost(docId) {
     const data = snap.data();
     createdByUid = data.createdBy;
 
-    // UI
+    // UI: ตั้งค่าชื่อ
     $("#username").textContent = data.createdByName || "User";
+
+    // รูปโปรไฟล์ (ถ้ามีในโพสต์)
+    if (data.createdByPhotoURL) {
+      $("#userAvatar").innerHTML = `<img src="${data.createdByPhotoURL}" alt="${data.createdByName || "User"}">`;
+    } else {
+      // ถ้าไม่มี ให้ลองดึงจาก users_create
+      if (createdByUid) {
+        const userSnap = await getDoc(doc(db, "users_create", createdByUid));
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          if (userData.photoURL) {
+            $("#userAvatar").innerHTML = `<img src="${userData.photoURL}" alt="${userData.displayName || "User"}">`;
+          }
+        }
+      }
+    }
+
+    // รูปไอเท็ม
     const imgEl = $(".placeholder img");
     if (imgEl) {
       if (data.imageUrl) {
@@ -97,6 +115,7 @@ async function loadPost(docId) {
       } else imgEl.style.display = "none";
     }
 
+    // รายละเอียดอื่น ๆ
     $("#itemName").textContent = data.itemName || "ไม่มีชื่อไอเท็ม";
     setInfoValue("Location", data.location || "-");
     const dt = parseFoundAt(data.foundAt);
@@ -123,11 +142,9 @@ async function loadPost(docId) {
         const chatBase = new URL("../Chat/Chat.html", window.location.href);
 
         if (me === createdByUid) {
-          // เจ้าของโพสต์ → Inbox
           chatBase.searchParams.set("post", docId);
           chatBase.searchParams.set("title", itemName);
         } else {
-          // คนอื่น → แชตกับเจ้าของ
           chatBase.searchParams.set("partner", createdByUid);
           chatBase.searchParams.set("post", docId);
           chatBase.searchParams.set("title", itemName);
