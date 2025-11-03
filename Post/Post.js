@@ -138,6 +138,8 @@ function renderCard(docId, data) {
 }
 
 /* ---------- Load Posts ---------- */
+let allPosts = []; // เก็บโพสต์ทั้งหมด
+
 async function loadPosts(){
   itemsEl.innerHTML = `<div class="card"><div class="item-name">กำลังโหลดรายการ...</div></div>`;
   try{
@@ -148,8 +150,10 @@ async function loadPosts(){
       return;
     }
     const frag = document.createDocumentFragment();
+    allPosts = []; // เคลียร์ก่อน
     snap.forEach(doc=>{
       const data = doc.data();
+      allPosts.push({id: doc.id, data}); // เก็บโพสต์ทั้งหมด
       frag.appendChild(renderCard(doc.id, data));
     });
     itemsEl.innerHTML = "";
@@ -160,7 +164,39 @@ async function loadPosts(){
   }
 }
 
+
 loadPosts();
+
+const searchInput = document.querySelector(".header-right input[type=search]");
+
+searchInput?.addEventListener("input", ()=>{
+  const term = searchInput.value.trim().toLowerCase();
+  itemsEl.innerHTML = "";
+  if(!term){
+    // ถ้าไม่มีคำค้น แสดงโพสต์ทั้งหมด
+    const frag = document.createDocumentFragment();
+    allPosts.forEach(p => frag.appendChild(renderCard(p.id, p.data)));
+    itemsEl.appendChild(frag);
+    return;
+  }
+
+  const filtered = allPosts.filter(p=>{
+    const { itemName="", description="", location="" } = p.data;
+    return itemName.toLowerCase().includes(term)
+        || description.toLowerCase().includes(term)
+        || location.toLowerCase().includes(term);
+  });
+
+  if(filtered.length === 0){
+    itemsEl.innerHTML = `<div class="card"><div class="item-name">ไม่พบผลลัพธ์</div></div>`;
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  filtered.forEach(p=>frag.appendChild(renderCard(p.id, p.data)));
+  itemsEl.appendChild(frag);
+});
+
 
 /* ---------- Create Button ---------- */
 document.getElementById("createBtn")?.addEventListener("click", ()=>{
