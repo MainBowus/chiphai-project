@@ -201,7 +201,7 @@ main {
 .item-name {
   font-size: 35px;
   font-weight: 800;
-  color: var(--accent-dark);
+  color: var(--accent);
   margin-bottom: 10px;
   letter-spacing: 0.5px;
 }
