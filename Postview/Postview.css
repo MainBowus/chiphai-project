@@ -1,35 +1,32 @@
-/* ===== RESET & BASE ===== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  height: 100%;
-  scroll-behavior: smooth;
-}
-
-body {
-  background: var(--bg);
-  font-family: 'Prompt', 'Kanit', 'Segoe UI', sans-serif;
-  color: #222;
-  line-height: 1.6;
-}
-
 /* ===== THEME ===== */
 :root {
   --bg: #fcfdfc;
   --card: #fff;
-  --accent: #43a047;
-  --accent-600: #388e3c;
-  --accent-dark: #2e7d32;
+  --accent: #9DE0BE;
+  --accent-600: #A6EDCA;
+  --accent-dark: #8BC7A9; 
+  --muted: #6b7a7a;
   --border: #e0e6e0;
+  --text-dark: #222;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
+  --shadow-sm: 0 6px 18px rgba(67,160,71,0.04);
   --header-height: 72px;
   --transition: 180ms cubic-bezier(.4, .0, .2, 1);
+}
+
+/* ===== RESET & BASE ===== */
+*{box-sizing:border-box;}
+html, body{height:100%;}
+body{
+  margin:0;
+  font-family: 'Segoe UI', 'Prompt', 'Kanit', Arial, sans-serif;
+  background:var(--bg);
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ===== HEADER (เหมือน createpost) ===== */
@@ -45,19 +42,16 @@ header {
 }
 
 .logo {
-  font-weight: 800;
+  font-weight: 900;
   font-size: 28px;
-  letter-spacing: 1px;
   color: #fff;
-  border: none;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.18s;
-  display: inline-block;
-  user-select: none;
+  letter-spacing: 1px;
+  transition: transform 180ms ease, color 180ms ease;
 }
-
 .logo:hover {
   transform: scale(1.15);
+  color: #c8e6c9;
 }
 
 /* Back link */
@@ -66,7 +60,7 @@ header {
   align-items: center;
   gap: 6px;
   padding: 8px 18px;
-  color: #e8f5e9;
+  color: var(--card);
   text-decoration: none;
   font-weight: 600;
   border-radius: 14px;
@@ -74,7 +68,7 @@ header {
 }
 .back-link:hover {
   color: #fff;
-  background: var(--accent-600);
+  background: var(--accent-dark);
   transform: scale(1.07);
 }
 
@@ -91,13 +85,13 @@ main {
 /* ===== POSTVIEW CARD ===== */
 .postview-main {
   display: flex;
-  gap: 64px;
+  gap: 90px;
   background: var(--card);
   border-radius: 24px;
   box-shadow: var(--shadow);
   border: 1.5px solid var(--border);
   padding: 48px 64px;
-  max-width: 1200px;
+  max-width: 1100px;
   width: 100%;
 }
 
@@ -128,30 +122,37 @@ main {
 }
 
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: var(--accent-soft);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--accent);
-  border: 2px solid var(--accent-light);
+  overflow: hidden;
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 6px rgba(67,160,71,0.1);
+  font-size: 22px;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .username {
-  font-size: 16px;
-  color: var(--accent);
+  font-size: 22px;
+  color: var(--muted);
   font-weight: 700;
 }
 
 .placeholder {
   width: 100%;
-  height: 200px;
+  height: 250px;
   background: linear-gradient(135deg, #f6fdf9 0%, #eafaf2 100%);
-  border-radius: 14px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,7 +165,7 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 20px;
 }
 
 .message-btn {
@@ -173,7 +174,7 @@ main {
   padding: 10px 32px;
   border: none;
   border-radius: 16px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-600) 100%);
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
   font-weight: 700;
@@ -198,10 +199,10 @@ main {
 }
 
 .item-name {
-  font-size: 2rem;
+  font-size: 35px;
   font-weight: 800;
-  color: var(--accent);
-  margin-bottom: 18px;
+  color: var(--accent-dark);
+  margin-bottom: 10px;
   letter-spacing: 0.5px;
 }
 
@@ -210,7 +211,7 @@ main {
 }
 
 .info-label {
-  font-size: 15px;
+  font-size: 20px;
   color: var(--muted);
   margin-bottom: 2px;
   font-weight: 600;
