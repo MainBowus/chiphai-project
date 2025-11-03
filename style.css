@@ -112,9 +112,12 @@ body{
 }
 
 .nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 24px;
   align-items: center;
+  gap: 40px;
 }
 .nav-item {
   color: #e8f5e9;
