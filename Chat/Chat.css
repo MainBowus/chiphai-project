@@ -70,8 +70,12 @@ body{
 }
 
 .nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 32px;
+  align-items: center;
+  gap: 40px;
 }
 
 .nav-links a {
