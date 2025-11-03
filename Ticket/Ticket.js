@@ -29,6 +29,9 @@ const nameEl = profileBtn?.querySelector(".profile-name");
 logoBtn?.addEventListener("click", () => {
   window.location.href = "../index.html";
 });
+profileBtn?.addEventListener("click", () => {
+  window.location.href = "../Profile/Profile.html";
+});
 
 // --- Auth State Control ---
 onAuthStateChanged(auth, async (user) => {
