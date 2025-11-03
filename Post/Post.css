@@ -59,8 +59,12 @@ body{
 }
 
 .nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 32px;
+  align-items: center;
+  gap: 40px;
 }
 
 .nav-item {
@@ -82,13 +86,13 @@ body{
 .header-right {
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:8px;
 }
 .header-right .search input {
   border: 1.5px solid var(--text-dark);
   border-radius: 20px;
   padding: 8px 18px;
-  font-size:15px;
+  font-size:13px;
   color:#222;
 }
 .header-right .login {
