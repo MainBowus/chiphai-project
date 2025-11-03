@@ -1,27 +1,28 @@
 :root {
   --bg: #fcfdfc;
   --card: #fff;
-  --accent: #43a047;
-  --accent-600: #388e3c;
-  --accent-dark: #2e7d32;
+  --accent: #9DE0BE;
+  --accent-600: #A6EDCA;
+  --accent-dark: #8BC7A9; 
+  --muted: #6b7a7a;
   --border: #e0e6e0;
+  --text-dark: #222;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
+  --shadow-sm: 0 6px 18px rgba(67,160,71,0.04);
   --header-height: 72px;
   --transition: 180ms cubic-bezier(.4, .0, .2, 1);
 }
-
+ 
 /* Reset / Base */
-* {
-  box-sizing: border-box;
-}
-html, body {
-  height: 100%;
-}
-body {
-  margin: 0;
+*{box-sizing:border-box;}
+html, body{height:100%;}
+body{
+  margin:0;
   font-family: 'Segoe UI', 'Prompt', 'Kanit', Arial, sans-serif;
-  background: var(--bg);
-  color: #222;
+  background:var(--bg);
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -40,19 +41,16 @@ header {
 }
 
 .logo {
-  font-weight: 800;
+  font-weight: 900;
   font-size: 28px;
-  letter-spacing: 1px;
   color: #fff;
-  border: none;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.18s;
-  display: inline-block;
-  user-select: none;
+  letter-spacing: 1px;
+  transition: transform 180ms ease, color 180ms ease;
 }
-
 .logo:hover {
   transform: scale(1.15);
+  color: #c8e6c9;
 }
 
 /* Header right */
@@ -68,7 +66,7 @@ header {
   align-items: center;
   gap: 6px;
   padding: 8px 18px;
-  color: #e8f5e9;
+  color: var(--card);
   text-decoration: none;
   font-weight: 600;
   border-radius: 14px;
@@ -76,7 +74,7 @@ header {
 }
 .back-link:hover {
   color: #fff;
-  background: var(--accent-600);
+  background: var(--accent-dark);
   transform: scale(1.07);
 }
 
@@ -90,14 +88,14 @@ main {
 /* Create main */
 .create-main {
   display: flex;
-  gap: 64px;
-  width: 100%;
-  max-width: 1200px;
-  padding: 48px 64px;
+  gap: 90px;
   background: var(--card);
-  border: 1.5px solid var(--border);
   border-radius: 24px;
   box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  padding: 48px 64px;
+  max-width: 1100px;
+  width: 100%;
 }
 
 @media (max-width: 992px) {
@@ -112,6 +110,7 @@ main {
 .create-left {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   min-width: 320px;
   max-width: 340px;
   width: 100%;
@@ -122,23 +121,33 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
+
 .avatar {
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 700;
-  background: var(--accent);
-  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  box-shadow: 0 2px 6px rgba(67,160,71,0.1);
+  font-size: 22px;
 }
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .username {
-  color: #222;
-  font-size: 16px;
+  font-size: 22px;
+  color: var(--muted);
   font-weight: 700;
 }
 
@@ -147,13 +156,13 @@ main {
   position: relative;
   overflow: hidden;
   width: 100%;
-  height: 200px;
+  height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
   background: var(--card);
-  border: 2px dashed var(--accent);
-  border-radius: 14px;
+  border: 2px dashed var(--muted);
+  border-radius: 20px;
   cursor: pointer;
 }
 .upload-text {
@@ -179,7 +188,7 @@ main {
 .form-title {
   margin: 0 0 12px 0;
   color: var(--accent);
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 800;
 }
 .form-group {
@@ -217,18 +226,18 @@ textarea {
   gap: 8px;
   padding: 12px 32px;
   color: #fff;
-  background: linear-gradient(90deg, var(--accent-600) 0%, var(--accent) 100%);
+  background: var(--accent);
   font-weight: 700;
   font-size: 16px;
   border: none;
-  border-radius: 14px;
+  border-radius: 20px;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(67,160,71,0.06);
   transition: transform var(--transition);
 }
 .post-btn:hover {
   transform: scale(1.05);
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-600) 100%);
+  background: var(--accent-600);
 }
 
 .hint {
