@@ -1,55 +1,66 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Post | CHIPHAI</title>
-  <link rel="icon" type="image/x-icon" href="../image/ICON.ico ">
-  <link rel="stylesheet" href="Post.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Post | CHIPHAI</title>
+    <link rel="icon" type="image/x-icon" href="../image/ICON.ico ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="Post.css">
 </head>
 <body>
-  <!-- Header แบบ About + profile -->
-  <header class="site-header">
-    <div class="logo" id="logoBtn">CHIPHAI</div>
- 
-    <nav class="nav">
-      <a href="../About/About.html" class="nav-item">About</a>
-      <a href="../Chat/Chat.html" class="nav-item">Message</a>
-      <a href="../Post/Post.html" class="nav-item active">Post</a>
-    </nav>
+    
+    <header class="site-header">
+        <div class="logo" id="logoBtn">CHIPHAI</div>
 
-    <div class="header-right">
-      <div class="search">
-        <input type="search" placeholder="ค้นหา..." />
-      </div>
-      <button class="login" id="loginBtn"></button>
-    </div>
-  </header>
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+            <i class="fas fa-bars icon-menu"></i>
+            <i class="fas fa-times icon-close"></i>
+        </button>
 
-  <!-- Main content -->
-  <main class="post-main">
-    <h1>Post of founded item</h1>
+        <nav class="nav">
+            <a href="../About/About.html" class="nav-item">About</a>
+            <a href="../Chat/Chat.html" class="nav-item">Message</a>
+            <a href="../Post/Post.html" class="nav-item active">Post</a>
+        </nav>
+        
+        <div class="header-right">
+            <button class="login" id="loginBtn"></button>
+        </div>
+    </header>
 
-    <div class="items" id="items"></div>
+    <div class="mobile-nav" id="mobileNav">
+        </div>
 
-    <div class="create-wrap">
-      <button class="create" id="createBtn">Create Post</button>
-    </div>
-  </main>
-  <footer class="site-footer" role="contentinfo">
-    <div class="site-footer-inner">
-        <div class="footer-left">
-        <span class="brand">CHIPHAI</span> © 2025 All rights reserved.
-      </div>
+    <main class="main-container">
+        <div class="page-header">
+            <h1>Post of founded item</h1>
+            <p>ค้นหาสิ่งของที่คุณตามหา</p>
+        </div>
 
-      <nav class="footer-nav" aria-label="Footer">
-        <a href="../Privacy/Privacy.html">Privacy Policy</a>
-        <span class="sep" aria-hidden="true">|</span>
-        <a href="../Contact/Contact.html">Contact Us</a>
-      </nav>
-    </div>
-  </footer>
+        <div class="main-search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="search" id="mainSearchInput" placeholder="ค้นหาสิ่งของ, สถานที่, หรือรายละเอียด...">
+            </div>
+        </div>
+        
+        <div class="items-grid" id="items">
+            </div>
 
-  <script type="module" src="Post.js"></script>
+        <div class="pagination-container" id="paginationContainer">
+            </div>
+
+        <div class="create-wrap">
+            <button class="create-btn" id="createBtn">
+                <i class="fas fa-plus"></i> Create Post
+            </button>
+        </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        </footer>
+
+    <script type="module" src="Post.js"></script>
 </body>
 </html>
