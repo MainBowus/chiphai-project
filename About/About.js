@@ -129,7 +129,7 @@ var typed = new Typed('#typed-text', {
   ],
   typeSpeed: 20,
   backSpeed: 15,
-  backDelay: 12000,
+  backDelay: 4000,
   loop: true
 });
 
