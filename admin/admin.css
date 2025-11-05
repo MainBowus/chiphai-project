@@ -1,0 +1,308 @@
+/* ===============================================
+   ADMIN PANEL STYLESHEET (Productly Re-imagined)
+   - Based on provided image design
+   - Includes styles for Dashboard & Manager Tables
+=============================================== */
+
+/* --- 0. Root Variables (สีและฟอนต์) --- */
+:root {
+    --primary-bg: #f5f6fa;
+    --card-bg: #ffffff;
+    --sidebar-bg: #454697;
+    --text-color: #4c7be1;
+    --text-light: #8696a7;
+    --border-color: #f0f0f0;
+    --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.08);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --font-family: 'Poppins', 'Segoe UI', 'Prompt', 'Kanit', Arial, sans-serif;
+    --accent-blue: #007bff; --accent-orange: #ff9800; --accent-green: #4caf50;
+    --accent-red: #f44336; --accent-purple: #9c27b0;
+}
+
+/* --- 1. Global Reset & Typography --- */
+body, html {
+    margin: 0; padding: 0; font-family: var(--font-family);
+    background-color: var(--primary-bg); color: var(--text-color);
+    height: 100%; overflow: hidden;
+}
+* { box-sizing: border-box; }
+h1, h2, h3, h4, h5, h6, ul { margin: 0; padding: 0; list-style: none; }
+a { text-decoration: none; color: inherit; }
+
+/* --- 2. Main Layout --- */
+.dashboard-container { display: flex; height: 100vh; }
+
+/* --- 3. Sidebar (ด้านซ้าย) --- */
+.sidebar {
+    width: 260px; background-color: var(--sidebar-bg); color: #ffffff;
+    padding: 25px 20px; display: flex; flex-direction: column;
+    flex-shrink: 0; box-shadow: var(--shadow-md);
+}
+.logo-area {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 30px; padding-left: 10px;
+}
+.brand-logo-img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+}
+.brand-icon { font-size: 28px; color: #fafaf7; }
+.brand-name { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
+.main-nav { flex-grow: 1; margin-bottom: 20px; }
+.main-nav h3 {
+    font-size: 13px; color: #aeb8c9; text-transform: uppercase;
+    margin: 25px 0 10px 10px; letter-spacing: 0.8px; font-weight: 600;
+}
+.main-nav li { margin-bottom: 5px; }
+.main-nav .nav-item {
+    display: flex; align-items: center; padding: 12px 15px;
+    border-radius: var(--radius-md); color: #e0e6ed; font-size: 15px;
+    transition: all 0.2s ease;
+}
+.main-nav .nav-item i { margin-right: 12px; font-size: 16px; width: 20px; text-align: center; }
+.main-nav .nav-item:hover { background-color: rgba(255, 255, 255, 0.08); color: #ffffff; }
+.main-nav .nav-item.active {
+    background-color: rgba(255, 255, 255, 0.15); color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.user-profile-widget {
+    background-color: rgba(0, 0, 0, 0.2); border-radius: var(--radius-md);
+    padding: 15px; display: flex; align-items: center; gap: 12px; margin-top: auto;
+}
+.profile-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.5); }
+.profile-info { flex-grow: 1; }
+.profile-name { font-weight: 600; font-size: 15px; color: #ffffff; }
+.profile-role { font-size: 12px; color: #aeb8c9; }
+.logout-btn {
+    background: none; border: none; color: #aeb8c9; font-size: 18px;
+    cursor: pointer; padding: 5px; border-radius: 5px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+.logout-btn:hover { color: #ff6347; background-color: rgba(255, 255, 255, 0.05); }
+
+/* --- 4. Main Content Area (ด้านขวา) --- */
+.content-area {
+    flex-grow: 1; display: flex; flex-direction: column;
+    padding: 30px; overflow-y: auto;
+}
+.top-header {
+    display: flex; justify-content: space-between; align-items: center;
+    background-color: var(--card-bg); padding: 15px 25px;
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-light);
+    margin-bottom: 25px; flex-shrink: 0;
+}
+.search-box {
+    display: flex; align-items: center; background-color: var(--primary-bg);
+    border-radius: var(--radius-md); padding: 8px 15px; width: 350px;
+}
+.search-box i { color: var(--text-light); margin-right: 10px; }
+.search-box input {
+    border: none; background: none; outline: none; flex-grow: 1;
+    font-size: 15px; color: var(--text-color);
+}
+.search-box input::placeholder { color: var(--text-light); }
+.header-actions { display: flex; align-items: center; gap: 15px; }
+.icon-button {
+    background-color: var(--primary-bg); border: none; border-radius: 50%;
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; color: var(--text-light);
+    cursor: pointer; transition: all 0.2s ease;
+}
+.icon-button:hover { background-color: var(--border-color); color: var(--text-color); }
+.profile-button {
+    background-color: var(--primary-bg); border: none; border-radius: 20px;
+    padding: 5px 15px 5px 5px; display: flex; align-items: center;
+    gap: 8px; cursor: pointer; font-size: 15px; font-weight: 600;
+}
+.profile-button img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.profile-button:hover { background-color: var(--border-color); }
+.page-title { margin-bottom: 25px; flex-shrink: 0; }
+.page-title h1 { font-size: 26px; font-weight: 700; }
+#main-content-display { flex-grow: 1; padding-bottom: 20px; }
+
+/* --- 5. Base Classes (ปุ่ม & การ์ด) --- */
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+}
+.btn {
+    border: none; cursor: pointer; transition: all 0.2s ease;
+    font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
+}
+
+/* --- 6. Dashboard Grid --- */
+.dashboard-content-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+.stats-cards-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 10px; }
+.stat-card {
+    background-color: var(--card-bg); border-radius: var(--border-radius-lg);
+    padding: 20px; box-shadow: var(--shadow-light);
+    transition: transform 0.2s ease;
+}
+.stat-card:hover { transform: translateY(-5px); }
+.stat-card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+.stat-icon {
+    width: 45px; height: 45px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff;
+}
+.stat-icon.blue { background-color: var(--accent-blue); }
+.stat-icon.green { background-color: var(--accent-green); }
+.stat-icon.purple { background-color: var(--accent-purple); }
+.stat-icon.red { background-color: var(--accent-red); }
+.stat-card h3 { font-size: 14px; font-weight: 500; color: var(--text-light); margin: 0; }
+.stat-card-value { font-size: 26px; font-weight: 700; color: var(--text-color); }
+.stat-card-footer { font-size: 13px; color: var(--text-light); margin-top: 10px; }
+
+.balance-card {
+    grid-column: span 1; background-color: #ff6f61; color: white;
+    border-radius: var(--border-radius-lg); padding: 25px;
+    box-shadow: var(--shadow-md); display: flex; flex-direction: column;
+}
+.balance-card h3 { color: rgba(255, 255, 255, 0.8); font-size: 15px; margin-bottom: 10px; }
+.balance-card .balance-amount { font-size: 36px; font-weight: 700; margin-bottom: 20px; }
+.balance-card .details-list li {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.2); font-size: 14px;
+}
+.balance-card .details-list li:last-child { border-bottom: none; }
+.balance-card .details-list li span:first-child { opacity: 0.8; }
+.balance-card .details-list li span:last-child { font-weight: 600; }
+.add-card-btn {
+    background-color: rgba(255, 255, 255, 0.2); color: white; border-radius: var(--radius-md);
+    padding: 12px 20px; font-size: 15px; justify-content: center;
+}
+.add-card-btn:hover { background-color: rgba(255, 255, 255, 0.3); }
+
+.chart-card {
+    grid-column: span 2; background-color: var(--card-bg);
+    border-radius: var(--border-radius-lg); padding: 25px;
+    box-shadow: var(--shadow-light);
+}
+.chart-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.chart-card-header h3 { font-size: 18px; font-weight: 600; }
+.chart-filter {
+    background-color: var(--primary-bg); border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); padding: 8px 12px;
+    font-size: 14px; cursor: pointer; outline: none;
+}
+.chart-placeholder {
+    height: 200px; background: url('https://i.imgur.com/eBf2Y6C.png') no-repeat center center;
+    background-size: contain; margin-top: 20px; filter: saturate(1.2);
+}
+
+.recent-activity-card { grid-column: span 2; padding: 25px; }
+.recent-activity-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+.activity-table { width: 100%; border-collapse: collapse; }
+.activity-table th, .activity-table td {
+    padding: 12px 0; text-align: left; border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+.activity-table th { color: var(--text-light); font-weight: 500; text-transform: uppercase; font-size: 12px; }
+.activity-table tr:last-child td { border-bottom: none; }
+.activity-table td:first-child { font-weight: 600; }
+
+.upcoming-payments-card { grid-column: span 1; padding: 25px; }
+.upcoming-payments-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+.payment-item { display: flex; align-items: center; margin-bottom: 15px; }
+.payment-item:last-child { margin-bottom: 0; }
+.payment-color-bar { width: 5px; height: 35px; border-radius: 3px; margin-right: 15px; flex-shrink: 0; }
+.payment-details { flex-grow: 1; }
+.payment-details .name { font-weight: 600; font-size: 15px; }
+.payment-details .date { font-size: 12px; color: var(--text-light); }
+.payment-amount { font-weight: 600; font-size: 15px; }
+
+/* --- 7. Data List & Table Styles (สำหรับ Manager) --- */
+.data-list-card { padding: 0; } /* การ์ดตารางไม่จำเป็นต้องมี padding */
+.data-list-header {
+    padding: 20px 25px; border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.data-list-header h3 { font-size: 18px; font-weight: 600; }
+.btn-primary-sm {
+    background-color: var(--sidebar-bg); color: white; border-radius: var(--radius-sm);
+    padding: 10px 15px; font-size: 14px;
+}
+.btn-primary-sm:hover { background-color: #4a528a; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(53, 59, 106, 0.2); }
+
+.data-table-wrapper { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td {
+    padding: 16px 25px; text-align: left;
+    border-bottom: 1px solid var(--border-color); font-size: 14px;
+    vertical-align: middle;
+}
+.data-table th {
+    background-color: var(--primary-bg); font-size: 13px; font-weight: 600;
+    color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover { background-color: #fcfcfd; }
+.data-table .empty-cell { text-align: center; padding: 20px; color: var(--text-light); }
+
+.col-avatar { width: 60px; }
+.col-avatar img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.avatar-placeholder {
+    font-size: 24px; color: var(--text-light); width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+}
+.col-uid { font-family: monospace; font-size: 13px; color: var(--text-light); max-width: 100px; }
+.col-details { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.col-actions { width: 150px; text-align: right; }
+.col-email { max-width: 200px; }
+.col-date { width: 180px; }
+.col-status { width: 120px; }
+
+.status-badge {
+    padding: 6px 12px; border-radius: 15px; font-size: 12px;
+    font-weight: 700; text-transform: capitalize; display: inline-block;
+}
+.status-pending { background-color: #ffe0b2; color: #ff9800; }
+.status-resolved { background-color: #c8e6c9; color: #4caf50; }
+.status-banned { background-color: #ffcdd2; color: #f44336; }
+.status-active { background-color: #c8e6c9; color: #4caf50; }
+
+.btn-action {
+    background-color: var(--primary-bg); color: var(--text-color);
+    border: 1px solid var(--border-color); border-radius: var(--radius-sm);
+    padding: 8px 12px; font-size: 13px;
+}
+.btn-action:hover { background-color: var(--border-color); border-color: #ddd; }
+.btn-action.btn-danger { background-color: #fff0f0; color: var(--accent-red); border-color: #ffcdd2; }
+.btn-action.btn-danger:hover { background-color: var(--accent-red); color: white; }
+.btn-action.btn-success { background-color: #f0fff0; color: var(--accent-green); border-color: #c8e6c9; }
+.btn-action.btn-success:hover { background-color: var(--accent-green); color: white; }
+.btn-action.btn-secondary { background-color: #f0f4f8; color: var(--text-light); border-color: #e0e6ed; }
+.btn-action.btn-secondary:hover { background-color: var(--text-light); color: white; }
+.btn-action .fa-spinner { animation: fa-spin 1s infinite linear; }
+@keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- 8. Responsive --- */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 80px; padding: 20px 10px;
+        position: fixed; z-index: 100; height: 100%;
+    }
+    .content-area { margin-left: 80px; }
+    .sidebar .brand-name, .main-nav h3, .main-nav .nav-item span,
+    .user-profile-widget .profile-info, .user-profile-widget .logout-btn { display: none; }
+    .sidebar .logo-area { justify-content: center; margin-bottom: 20px; }
+    .main-nav .nav-item { justify-content: center; padding: 10px 0; }
+    .main-nav .nav-item i { margin-right: 0; }
+    .user-profile-widget { justify-content: center; padding: 10px; }
+    .user-profile-widget .profile-avatar { margin: 0 auto; }
+    .top-header .search-box { width: 100%; margin-right: 15px; }
+    .top-header .header-actions .profile-button span { display: none; }
+    .dashboard-content-grid { grid-template-columns: 1fr; }
+    .balance-card, .chart-card, .recent-activity-card, .upcoming-payments-card { grid-column: span 1; }
+}
+@media (max-width: 768px) {
+    .content-area { padding: 20px; }
+    .top-header { flex-direction: column; align-items: flex-start; gap: 15px; padding: 15px; }
+    .header-actions { width: 100%; justify-content: space-between; }
+}
