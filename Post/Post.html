@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Post | CHIPHAI</title>
     <link rel="icon" type="image/x-icon" href="../image/ICON.ico ">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <link rel="stylesheet" href="Post.css">
 </head>
 <body>
@@ -30,12 +32,17 @@
     </header>
 
     <div class="mobile-nav" id="mobileNav">
-        </div>
+        <nav>
+            <a href="../About/About.html" class="nav-item">About</a>
+            <a href="../Chat/Chat.html" class="nav-item">Message</a>
+            <a href="../Post/Post.html" class="nav-item active">Post</a>
+        </nav>
+    </div>
 
     <main class="main-container">
         <div class="page-header">
-            <h1>Post of founded item</h1>
-            <p>ค้นหาสิ่งของที่คุณตามหา</p>
+            <h1>Browse The Range</h1>
+            <p>ค้นหาสิ่งของที่คุณตามหา หรือแจ้งของที่คุณพบ</p>
         </div>
 
         <div class="main-search-container">
@@ -59,7 +66,17 @@
     </main>
 
     <footer class="site-footer" role="contentinfo">
-        </footer>
+        <div class="site-footer-inner">
+            <div class="footer-left">
+                <span class="brand">CHIPHAI</span> © 2025 All rights reserved.
+            </div>
+            <nav class="footer-nav" aria-label="Footer">
+                <a href="../Privacy/Privacy.html">Privacy Policy</a>
+                <span class="sep" aria-hidden="true">|</span>
+                <a href="../Contact/Contact.html">Contact Us</a>
+            </nav>
+        </div>
+    </footer>
 
     <script type="module" src="Post.js"></script>
 </body>
