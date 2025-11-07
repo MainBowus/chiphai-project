@@ -1,9 +1,9 @@
 :root {
-  --bg: #f7fafc;
+  --bg: #fcfdfc;
   --card: #fff;
-  --accent: #9DE0BE;
-  --accent-600: #A6EDCA;
-  --accent-dark: #8BC7A9; 
+  --accent: #1A202C;
+  --accent-600: #2D3748;
+  --accent-dark: #2D3748; 
   --muted: #6b7a7a;
   --border: #e0e6e0;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
@@ -59,7 +59,7 @@ body{
 }
 .logo:hover {
   transform: scale(1.15);
-  color: #c8e6c9;
+  color: #ff9800;
 }
 
 /* Navigation */
@@ -74,7 +74,7 @@ body{
 
 .nav-item {
   text-decoration: none;
-  color: #e8f5e9;
+  color: #E2E8F0;
   font-size: 17px;
   font-weight: 700; 
   padding: 8px 6px;  
@@ -84,7 +84,7 @@ body{
 .nav-item:hover,
 .nav-item.active {
   color: var(--card);
-  border-bottom-color: #c8e6c9; 
+  border-bottom-color: #ff9800; 
 }
 
 .profile {
@@ -96,7 +96,7 @@ body{
   font-size: 18px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(67,160,71,0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform var(--transition);
   display: flex;
   align-items: center;
@@ -215,7 +215,7 @@ body{
   gap:10px;
   transition:transform var(--transition), box-shadow var(--transition);
 }
-.member:hover{transform:translateY(-6px); box-shadow:0 18px 40px rgba(67,160,71,0.06)}
+.member:hover{transform:translateY(-6px); box-shadow:0 18px 40px rgba(0, 0, 0, 0.06)}
 .avatar{
   width:76px;
   height:76px;
@@ -225,7 +225,7 @@ body{
   font-size:36px;
   border-radius:50%;
   background:linear-gradient(180deg,var(--sidebar, #eafaf2), #fff);
-  border:2px solid rgba(67,160,71,0.12);
+  border:2px solid rgba(243, 176, 32, 0.12);
   box-shadow:0 6px 18px rgba(67,160,71,0.04);
   overflow:hidden;
 }
@@ -274,7 +274,7 @@ body{
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  color: var(--muted);
+  color: var  (--muted);
   font-size: 14px;
 }
 
@@ -298,7 +298,7 @@ body{
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 .footer-nav a:hover{
-  background: rgba(67,160,71,0.06);
+  background: rgba(255, 188, 86, 0.06);
   color: var(--accent-600);
   transform: translateY(-2px);
 }

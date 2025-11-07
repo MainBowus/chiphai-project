@@ -13,11 +13,7 @@
     --accent-orange: #ff9800; /* สีส้มสำหรับปุ่ม Create */
 
     /* (ใหม่) สีเขียว (สำหรับ Footer แบบ About) */
-    --footer-accent-green: #9DE0BE;
-    --footer-accent-green-hover: #A6EDCA;
-    --footer-border: #e0e6e0;
-    --footer-muted: #6b7a7a;
-    --footer-shadow: rgba(67,160,71,0.03);
+
     
     /* (เดิม) Layout */
     --header-height: 72px;
