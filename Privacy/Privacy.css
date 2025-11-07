@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap');
 
 :root {
-  --bg: #f7fafc;
+  --bg: #fcfdfc;
   --card: #fff;
-  --accent: #9DE0BE;
-  --accent-600: #A6EDCA;
-  --accent-dark: #8BC7A9; 
+  --accent: #ff9800;
+  --accent-600: #2D3748;
+  --accent-dark: #2D3748; 
   --muted: #6b7a7a;
   --border: #e0e6e0;
+  --text-dark: #222;
   --max-width: 1200px;
   --radius: 14px;
   --pad: 24px;

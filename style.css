@@ -2,13 +2,14 @@
 
 /* --- 1. CSS Variables --- */
 :root {
-  --bg: #f7fafc;
+  --bg: #fcfdfc;
   --card: #fff;
-  --accent: #9DE0BE;
-  --accent-600: #A6EDCA;
-  --accent-dark: #8BC7A9; 
+  --accent: #ff9800;
+  --accent-600: #2D3748;
+  --accent-dark: #2D3748; 
   --muted: #6b7a7a;
   --border: #e0e6e0;
+  --text-dark: #222;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
   --shadow-sm: 0 6px 18px rgba(67,160,71,0.04);
   --max-width: 1200px;
@@ -108,7 +109,7 @@ body{
 }
 .logo:hover {
   transform: scale(1.15);
-  color: #c8e6c9;
+  color: #ff9800;
 }
 
 .nav {
@@ -120,7 +121,7 @@ body{
   gap: 40px;
 }
 .nav-item {
-  color: #e8f5e9;
+  color: #E2E8F0;
   text-decoration: none;
   font-weight: 600;
   padding: 8px 6px;
@@ -130,7 +131,7 @@ body{
 .nav-item:hover,
 .nav-item.active {
   color: #fff;
-  border-bottom-color: #c8e6c9;
+  border-bottom-color: #ff9800;
 }
 
 /* --- 4.1 ปุ่ม Login (Ghost Button) --- */

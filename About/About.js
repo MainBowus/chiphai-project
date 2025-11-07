@@ -137,7 +137,7 @@ var typed = new Typed('#typed-text', {
 particlesJS('particles-js', {
   "particles": {
     "number": { "value": 100, "density": { "enable": true, "value_area": 1500 } },
-    "color": { "value": "#000000" },
+    "color": { "value": "#ff9800" },
     "shape": { "type": "circle" },
     "opacity": { "value": 0.8, "random": true },
     "size": { "value": 6, "random": true },
