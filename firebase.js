@@ -99,11 +99,11 @@ loginForm?.addEventListener("submit", async (e) => {
 
       usernameEl?.addEventListener("click", () => dropdown?.classList.toggle("hidden"));
       logoutBtn?.addEventListener("click", () => {
-        navbarUser.innerHTML = `<button class="btnLogin-popup">Login</button>`;
-        navbarUser.querySelector(".btnLogin-popup")?.addEventListener("click", () => {
-          wrapper?.classList?.add("active-popup");
-        });
-      });
+      navbarUser.innerHTML = `<button class="login btnLogin-popup" id="loginBtn">Log in</button>`; // ✅ บรรทัดนี้
+      navbarUser.querySelector(".btnLogin-popup")?.addEventListener("click", () => {
+        wrapper?.classList?.add("active-popup");
+    });
+});
 
     } else {
       alert("username หรือ password ไม่ถูกต้อง");

@@ -57,7 +57,7 @@ body.mobile-nav-open {
     transition: transform 180ms ease, color 180ms ease;
     flex-shrink: 0;
 }
-.logo:hover { transform: scale(1.15); color: #E2E8F0; }
+.logo:hover { transform: scale(1.15); color: #ff9800; }
 
 .nav {
     position: absolute; left: 50%; transform: translateX(-50%);

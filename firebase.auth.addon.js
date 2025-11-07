@@ -57,7 +57,7 @@ function renderNavbar(user) {
     userMenu?.addEventListener("click", () => dropdown?.classList.toggle("hidden"));
     logoutBtn?.addEventListener("click", async (e) => { e.stopPropagation(); await signOut(auth); });
   } else {
-    navbarUser.innerHTML = `<button class="btnLogin-popup">Login</button>`;
+    navbarUser.innerHTML = `<button class="login btnLogin-popup" id="loginBtn">Log in</button>`;
     navbarUser.querySelector(".btnLogin-popup")?.addEventListener("click", openPopup);
   }
 }

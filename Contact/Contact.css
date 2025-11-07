@@ -1,11 +1,11 @@
 :root{
-  --bg:#f7fafc;
-  --card:#fff;
-  --accent: #9DE0BE;
-  --accent-600: #A6EDCA;
-  --accent-dark: #8BC7A9; 
-  --muted:#6b7a7a;
-  --border:#e0e6e0;
+  --bg: #fcfdfc;
+  --card: #fff;
+  --accent: #1A202C;
+  --accent-600: #2D3748;
+  --accent-dark: #2D3748; 
+  --muted: #6b7a7a;
+  --border: #e0e6e0;
   --shadow:0 8px 28px rgba(67,160,71,0.06);
   --shadow-sm:0 6px 18px rgba(67,160,71,0.04);
   --max-width:1200px;
@@ -58,7 +58,7 @@ body{
 }
 .logo:hover {
   transform: scale(1.15);
-  color: #c8e6c9;
+  color: #ff9800;
 }
 
 .nav {
@@ -72,7 +72,7 @@ body{
 
 .nav-item {
   text-decoration: none;
-  color: #e8f5e9;
+  color: #E2E8F0;
   font-size: 17px;
   font-weight: 700; 
   padding: 8px 6px;  
@@ -82,7 +82,7 @@ body{
 .nav-item:hover,
 .nav-item.active {
   color: var(--card);
-  border-bottom-color: #c8e6c9; 
+  border-bottom-color: #ff9800; 
 }
 
 .profile {
@@ -94,7 +94,7 @@ body{
   font-size: 18px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(67,160,71,0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform var(--transition);
   display: flex;
   align-items: center;
@@ -112,7 +112,7 @@ body{
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #fff2;
+  background: rgba(0, 0, 0, 0.133);
   overflow: hidden;
 }
 
@@ -271,7 +271,7 @@ body{
   transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 .footer-nav a:hover{
-  background: rgba(67,160,71,0.06);
+  background: rgba(245, 181, 97, 0.06);
   color: var(--accent-600);
   transform: translateY(-2px);
 }
