@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Message | CHIPHAI</title>
   <link rel="icon" type="image/x-icon" href="../image/ICON.ico ">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
   <link rel="stylesheet" href="Chat.css" />
 </head>
-<body>
+
+<body id="pageBody">
 
   <header class="chat-header-bar">
     <div class="logo" id="logoBtn">CHIPHAI</div>
@@ -18,22 +22,35 @@
       <a href="../Post/Post.html">Post</a>
     </nav>
 
-    <button class="profile" id="profileBtn" aria-label="Open profile">
-      <span class="avatar">👤</span>
-      <span class="profile-name">Guest</span>
-    </button>
+    <div class="header-right">
+        <button class="profile" id="profileBtn" aria-label="Open profile">
+          <span class="avatar">👤</span>
+          <span class="profile-name">Guest</span>
+        </button>
+
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+            <i class="fas fa-bars icon-menu"></i>
+            <i class="fas fa-times icon-close"></i>
+        </button>
+    </div>
   </header>
 
+  <div class="mobile-nav" id="mobileNav">
+    <nav>
+        <a href="../About/About.html" class="nav-item">About</a>
+        <a href="../Chat/Chat.html" class="nav-item active">Message</a>
+        <a href="../Post/Post.html" class="nav-item">Post</a>
+    </nav>
+  </div>
 
   <main class="chat-main-layout">
 
     <aside class="chat-sidebar">
       <h3 class="sidebar-title">
-        <span>💬</span> Messages
+        <span>✉</span> MESSAGES
       </h3>
       <div class="chat-list" id="chatList"></div>
     </aside>
-
 
     <section class="chat-section" aria-live="polite">
       <div class="chat-topbar">
@@ -59,9 +76,28 @@
   <script type="module" src="Chat.js"></script>
 
   <script>
+    // Script Logo (v1)
     document.getElementById("logoBtn")?.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
+
+    // 9. (เพิ่ม) SCRIPT HAMBURGER (จากหน้า Post)
+    const toggleBtn = document.getElementById('mobileNavToggle');
+    const pageBody = document.getElementById('pageBody');
+    const mobileNavScreen = document.getElementById('mobileNav');
+
+    if (toggleBtn && pageBody && mobileNavScreen) {
+        
+        toggleBtn.addEventListener('click', () => {
+            pageBody.classList.toggle('mobile-nav-open');
+        });
+
+        mobileNavScreen.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', () => {
+                pageBody.classList.remove('mobile-nav-open');
+            });
+        });
+    }
   </script>
 </body>
 </html>

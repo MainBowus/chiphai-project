@@ -1,3 +1,4 @@
+/* ---------- 0. Variables & Reset (v1 เดิม) ---------- */
 :root {
   --bg: #fcfdfc;
   --card: #fff;
@@ -24,7 +25,7 @@ html, body {
   height: 100%;
 }
 
-body{
+body {
   margin:0;
   font-family: 'Segoe UI', 'Prompt', 'Kanit', Arial, sans-serif;
   background:var(--bg);
@@ -34,9 +35,14 @@ body{
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow: hidden; 
+}
+/* (เพิ่ม) Logic การเปิดเมนู */
+body.mobile-nav-open {
+  overflow: hidden;
 }
 
-/* ─────────────── HEADER ─────────────── */
+/* ─────────────── HEADER (v1 เดิม + Hamburger) ─────────────── */
 
 .chat-header-bar {
   position: fixed;
@@ -62,12 +68,10 @@ body{
   letter-spacing: 1px;
   transition: transform 180ms ease, color 180ms ease;
 }
-
 .logo:hover {
   transform: scale(1.15);
-  color: #c8e6c9;
+  color: #ff9800; /* v1 (แก้ไข) */
 }
-
 .nav-links {
   position: absolute;
   left: 50%;
@@ -76,21 +80,26 @@ body{
   align-items: center;
   gap: 40px;
 }
-
 .nav-links a {
   text-decoration: none;
-  color: #e8f5e9;
+  color: #E2E8F0;
   font-size: 17px;
   font-weight: 700; 
-  padding: 8px 6px;  
+  padding: 8px 6px;
   border-bottom: 3px solid transparent; 
   transition: all 180ms ease;
 }
-
 .nav-links a.active,
 .nav-links a:hover {
   color: var(--card);
-  border-bottom-color: #c8e6c9; 
+  border-bottom-color: #ff9800; /* v1 (แก้ไข) */
+}
+
+/* (เพิ่ม) Container ปุ่มขวา */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .profile {
@@ -102,17 +111,15 @@ body{
   font-size: 18px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(67,160,71,0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform var(--transition);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
 .profile:hover {
   transform: scale(1.05);
 }
-
 .profile .avatar {
   width: 28px;
   height: 28px;
@@ -123,7 +130,6 @@ body{
   background: #fff2;
   overflow: hidden;
 }
-
 .profile .avatar img {
   width: 100%;
   height: 100%;
@@ -131,20 +137,70 @@ body{
   border-radius: 50%;
 }
 
-/* ─────────────── MAIN LAYOUT ─────────────── */
+/* (เพิ่ม) CSS HAMBURGER (จากหน้า Post) ────────── */
+.mobile-nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  padding: 0 5px;
+}
+.mobile-nav-toggle .icon-close {
+  display: none;
+}
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100%; 
+  height: calc(100vh - var(--header-height));
+  background: rgba(45, 55, 72, 0.98); 
+  backdrop-filter: blur(5px);
+  z-index: 900;
+  padding: 30px;
+}
+.mobile-nav nav { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 20px; 
+  align-items: center;
+}
+.mobile-nav .nav-item {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  padding: 10px;
+  border-bottom: none;
+  text-align: center;
+  text-decoration: none;
+}
+.mobile-nav .nav-item:hover, 
+.mobile-nav .nav-item.active {
+  color: var(--accent); /* ใช้สีส้ม */
+}
 
+/* (ตรรกะการสลับ) */
+body.mobile-nav-open .mobile-nav { display: block; }
+body.mobile-nav-open .mobile-nav-toggle .icon-menu { display: none; }
+body.mobile-nav-open .mobile-nav-toggle .icon-close { display: block; }
+
+
+/* ─────────────── MAIN LAYOUT (v1 เดิม) ─────────────── */
 .chat-main-layout {
   display: flex;
-  height: calc(100vh - 72px);
-  margin-top: 72px;
+  height: calc(100vh - var(--header-height));
+  margin-top: var(--header-height);
   background: var(--bg);
   width: 100vw;
   max-width: 100vw;
   overflow: hidden;
 }
 
-/* ─────────────── SIDEBAR ─────────────── */
-
+/* ─────────────── SIDEBAR (v1 เดิม) ─────────────── */
 .chat-sidebar {
   width: var(--sidebar-width);
   min-width: 260px;
@@ -153,8 +209,8 @@ body{
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: width 0.2s ease, min-width 0.2s ease;
 }
-
 .sidebar-title {
   font-size: 20px;
   font-weight: 700;
@@ -163,8 +219,15 @@ body{
   margin: 0;
   border-bottom: 1.5px solid var(--border);
   background: var(--accent-dark);
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: padding 0.2s ease, font-size 0.2s ease; 
 }
-
+.sidebar-title span {
+  min-width: 28px; 
+  transition: font-size 0.2s ease, margin 0.2s ease;
+}
 .chat-list {
   flex: 1;
   overflow-y: auto;
@@ -172,18 +235,11 @@ body{
   scrollbar-width: thin;
   scrollbar-color: var(--text-dark) transparent;
 }
-
-.chat-list::-webkit-scrollbar {
-  width: 8px;
-}
-
+.chat-list::-webkit-scrollbar { width: 8px; }
 .chat-list::-webkit-scrollbar-thumb {
   background: var(--text-dark);
   border-radius: 8px;
 }
-
-/* ─────────────── GROUP HEADER ─────────────── */
-
 .chat-group-title {
   margin: 10px 10px 4px;
   font-size: 13px;
@@ -195,8 +251,7 @@ body{
   text-overflow: ellipsis;
 }
 
-/* ─────────────── CHAT ITEMS ─────────────── */
-
+/* CHAT ITEMS (v1 แก้ไข hover) */
 .chat-item {
   display: grid;
   grid-template-columns: 44px 1fr;
@@ -209,8 +264,8 @@ body{
   margin: 8px 10px;
   padding: 10px 12px;
   cursor: pointer;
+  transition: padding 0.2s ease, grid-template-columns 0.2s ease;
 }
-
 .chat-item .avatar {
   width: 44px;
   height: 44px;
@@ -222,18 +277,13 @@ body{
   border: 1px solid var(--accent);
   overflow: hidden;
 }
-
 .chat-item .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
 }
-
-.chat-item .chat-info {
-  min-width: 0;
-}
-
+.chat-item .chat-info { min-width: 0; }
 .chat-item .chat-name {
   font-weight: 700;
   font-size: 16px;
@@ -243,7 +293,6 @@ body{
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .chat-item .chat-preview {
   font-size: 13px;
   color: var(--muted);
@@ -252,26 +301,19 @@ body{
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .chat-item:hover,
 .chat-item.active {
-  background: var(--muted);
+  background: #ff9800; /* v1 (แก้ไข) */
   color: #fff;
   transform: translateY(-1px);
 }
-
 .chat-item:hover .chat-name,
-.chat-item.active .chat-name {
-  color: #fff;
-}
-
+.chat-item.active .chat-name { color: #fff; }
 .chat-item:hover .chat-preview,
-.chat-item.active .chat-preview {
-  color: #e8f5e9;
-}
+.chat-item.active .chat-preview { color: #e8f5e9; }
 
-/* ─────────────── CHAT SECTION ─────────────── */
 
+/* ─────────────── CHAT SECTION (v1 เดิม) ─────────────── */
 .chat-section {
   flex: 1;
   display: flex;
@@ -281,8 +323,6 @@ body{
   border-left: 1.5px solid var(--border);
   min-width: 0;
 }
-
-/* Top bar */
 .chat-topbar {
   display: flex;
   align-items: center;
@@ -293,8 +333,8 @@ body{
   font-weight: 800;
   color: var(--card);
   font-size: 18px;
+  flex-shrink: 0;
 }
-
 .chat-topbar .avatar {
   width: 40px;
   height: 40px;
@@ -306,15 +346,12 @@ body{
   justify-content: center;
   overflow: hidden;
 }
-
 .chat-topbar .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
 }
-
-/* Body */
 .chat-body {
   flex: 1;
   padding: 18px 16px;
@@ -327,17 +364,11 @@ body{
   scrollbar-width: thin;
   scrollbar-color: var(--accent) transparent;
 }
-
-.chat-body::-webkit-scrollbar {
-  width: 8px;
-}
-
+.chat-body::-webkit-scrollbar { width: 8px; }
 .chat-body::-webkit-scrollbar-thumb {
   background: var(--accent);
   border-radius: 8px;
 }
-
-/* Messages */
 .message {
   max-width: min(68%, 720px);
   padding: 12px 16px;
@@ -348,26 +379,19 @@ body{
   opacity: 0;
   animation: fadeIn .25s forwards;
 }
-
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-
+@keyframes fadeIn { to { opacity: 1; } }
 .message.received {
   background: var(--accent);
   color: var(--text-dark);
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
-
 .message.sent {
   background: var(--muted);
   color: var(--card);
   align-self: flex-end;
   border-bottom-right-radius: 4px;
 }
-
-/* Footer */
 .chat-footer {
   display: flex;
   align-items: center;
@@ -375,8 +399,8 @@ body{
   padding: 12px;
   background: var(--accent-600);
   border-top: 1.5px solid var(--border);
+  flex-shrink: 0;
 }
-
 .chat-footer input[type="text"] {
   flex: 1;
   border: 1.5px solid var(--text-dark);
@@ -387,12 +411,10 @@ body{
   color: var(--text-dark);
   outline: none;
 }
-
 .chat-footer input[type="text"]:focus {
   border-color: var(--accent-dark);
   background: var(--card);
 }
-
 .chat-footer button {
   background: var(--accent-dark);
   color: var(--card);
@@ -405,31 +427,61 @@ body{
   box-shadow: 0 2px 8px rgba(67,160,71,0.10);
   transition: transform var(--transition);
 }
-
 .chat-footer button:hover {
   transform: scale(1.06);
 }
 
-/* ─────────────── RESPONSIVE ─────────────── */
+
+/* ────────── ⬇️ RESPONSIVE: "Mini-Sidebar" + Hamburger ────────── */
 
 @media (max-width: 900px) {
-  .chat-main-layout {
-    flex-direction: column;
-    height: auto;
+  /* 1. ปรับ Header */
+  .chat-header-bar {
+    padding: 20px 24px;
+  }
+  
+  /* (อัปเดต) ซ่อน Nav Desktop และโชว์ปุ่ม Hamburger */
+  .nav-links {
+    display: none;
+  }
+  .mobile-nav-toggle {
+    display: block; /* โชว์ Hamburger */
+  }
+  
+  /* (อัปเดต) ย่อปุ่ม Profile */
+  .profile {
+    padding: 6px;
+    gap: 0;
+  }
+  .profile .profile-name {
+    display: none;
+  }
+  .profile .avatar {
+    width: 30px;
+    height: 30px;
   }
 
+  /* 2. "Mini-Sidebar" (v1 เดิม) */
   .chat-sidebar {
-    width: 100vw;
-    min-width: 0;
-    border-right: none;
-    border-bottom: 1.5px solid var(--border);
+    width: 100px;
+    min-width: 80px;
   }
-
-  .chat-section {
-    border-left: none;
+  .sidebar-title {
+    padding: 23px;
+    justify-content: center; 
+    font-size: 0; 
   }
-
-  .chat-body {
-    padding: 12px;
+  .sidebar-title span {
+     font-size: 20px;
+     margin-right: 0;
+  }
+  .chat-item {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 10px 8px;
+    margin: 8px 10px;
+  }
+  .chat-item .chat-info {
+    display: none; 
   }
 }
