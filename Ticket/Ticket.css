@@ -172,10 +172,3 @@
   color: var(--text-dark);
 }
 
-/* (ปุ่ม .btn-submit จะใช้สไตล์ที่มีอยู่แล้ว) */
-#customAlertOkBtn.is-danger {
-  background: #E53935;
-}
-#customAlertOkBtn.is-danger:hover {
-  background: #c62828;
-}

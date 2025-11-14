@@ -74,7 +74,7 @@ onAuthStateChanged(auth, async (user) => {
 particlesJS('particles-js', {
   particles: {
     number: { value: 100, density: { enable: true, value_area: 800 } },
-    color: { value: "#9DE0BE" },
+    color: { value: "#ff9800" },
     shape: { type: "circle" },
     opacity: { value: 0.8, random: true },
     size: { value: 6, random: true },
