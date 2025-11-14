@@ -7,7 +7,7 @@ import {
   collection, query, where, getDocs, orderBy 
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-// --- Firebase Config --- (เหมือนเดิม)
+// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: "AIzaSyBQlq_ZgG1eUVrMGXo178wNW7GMr6imCDk",
   authDomain: "chiphailogin01.firebaseapp.com",
@@ -18,7 +18,7 @@ const firebaseConfig = {
   measurementId: "G-2B1K7VV4ZT"
 };
 
-// --- Firebase Init --- (เหมือนเดิม)
+// --- Firebase Init ---
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -50,6 +50,12 @@ const signOutBtn = document.getElementById("signOutBtn");
 const userPostsContainer = document.getElementById("user-posts-container");
 const userPostsGrid = document.getElementById("user-posts-grid");
 const userPostsTitle = document.getElementById("user-posts-title");
+
+// (อัปเดต) Elements สำหรับ Custom Alert
+const customAlert = document.getElementById("customAlert");
+const customAlertMessage = document.getElementById("customAlertMessage");
+const customAlertOkBtn = document.getElementById("customAlertOkBtn"); // ปุ่มตกลง
+const customAlertCancelBtn = document.getElementById("customAlertCancelBtn"); // ปุ่มยกเลิก
 
 
 // --- Logo Navigation ---
@@ -191,72 +197,6 @@ particlesJS('particles-js', {
 });
 
 
-// --- Event Listeners (สำหรับปุ่มต่างๆ) ---
-
-// (เหมือนเดิม) --- Submit Profile Form ---
-profileForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const user = auth.currentUser;
-  if (!user || user.isAnonymous) return;
-
-  const newDisplayName = displayNameInput.value.trim();
-  const newBio = bioInput.value.trim(); 
-  if (!newDisplayName) return;
-  
-  const submitButton = e.target.querySelector('.btn-submit');
-  submitButton.textContent = "กำลังบันทึก...";
-  submitButton.disabled = true;
-
-  try {
-    await updateProfile(user, { displayName: newDisplayName });
-    const ref = doc(db, "users_create", user.uid);
-    await updateDoc(ref, {
-      displayName: newDisplayName,
-      bio: newBio, 
-      lastLoginAt: new Date()
-    });
-    
-    profileDisplayName.textContent = newDisplayName;
-    if (headerNameEl) headerNameEl.textContent = newDisplayName;
-    profileBioDisplay.textContent = newBio || "Click 'Save Changes' to add your bio!"; 
-    
-    alert("บันทึกโปรไฟล์สำเร็จ!");
-  } catch (error) {
-    console.error("Error updating profile:", error);
-  } finally {
-    submitButton.textContent = "Save Changes";
-    submitButton.disabled = false;
-  }
-});
-
-// (เหมือนเดิม) --- Sign Out Button ---
-signOutBtn?.addEventListener('click', async () => {
-  if (!confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) return;
-  try {
-    await signOut(auth);
-    alert("คุณออกจากระบบแล้ว");
-    window.location.href = "../index.html"; 
-  } catch (error) {
-    console.error("Error signing out:", error);
-  }
-});
-
-// (เหมือนเดิม) --- Message Button ---
-messageBtn?.addEventListener('click', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const profileUid = urlParams.get('partner') || urlParams.get('uid');
-  if (!profileUid) {
-    alert("ไม่สามารถส่งข้อความได้: ไม่พบ ID ผู้ใช้");
-    return;
-  }
-  if (profileUid === auth.currentUser?.uid) {
-    alert("คุณไม่สามารถส่งข้อลความหาตัวเองได้");
-    return;
-  }
-  window.location.href = `../Chat/Chat.html?partner=${profileUid}`;
-});
-
-
 /* ===============================================
   (ใหม่) Utility Functions (คัดลอกจาก Post.js)
 =============================================== */
@@ -361,3 +301,184 @@ async function loadUserPosts(uid) {
     userPostsGrid.innerHTML = `<div class="card"><div class="item-name">โหลดโพสต์ไม่สำเร็จ</div><div class="desc">${escapeHtml(err?.message)}</div></div>`;
   }
 }
+
+/* ===============================================
+  (อัปเดต) Custom Alert Modal Logic
+=============================================== */
+let alertOkCallback = null; // ตัวแปรเก็บ Callback
+
+/**
+ * (อัปเดต) ฟังก์ชันสำหรับแสดง Alert (1 ปุ่ม)
+ */
+function showCustomAlert(message, onClose) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onClose || null;
+
+  // --- ตั้งค่าปุ่ม ---
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.classList.remove('is-danger'); // ทำให้เป็นปุ่มปกติ (สีเขียว)
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'none'; // (สำคัญ) ซ่อนปุ่มยกเลิก
+
+  // --- แสดง Modal ---
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+/**
+ * (ใหม่!) ฟังก์ชันสำหรับแสดง Confirm (2 ปุ่ม)
+ * @param {string} message ข้อความ
+ * @param {function} onConfirm ฟังก์ชันที่จะรันเมื่อกด "ตกลง"
+ * @param {boolean} [isDanger=false] ถ้าใช่, ปุ่ม "ตกลง" จะเป็นสีแดง
+ */
+function showCustomConfirm(message, onConfirm, isDanger = false) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onConfirm || null; // "ตกลง" จะรันฟังก์ชันนี้
+
+  // --- ตั้งค่าปุ่ม ---
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'block'; // (สำคัญ) แสดงปุ่มยกเลิก
+
+  if (isDanger) {
+    customAlertOkBtn.classList.add('is-danger'); // ทำให้เป็นสีแดง
+  } else {
+    customAlertOkBtn.classList.remove('is-danger'); // ทำให้เป็นสีเขียว
+  }
+
+  // --- แสดง Modal ---
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+
+/**
+ * (อัปเดต) ฟังก์ชันสำหรับซ่อน Alert
+ * @param {boolean} [runCallback=false] - ถ้าเป็น true, จะรัน Callback (เช่น กด "ตกลง")
+ */
+function hideCustomAlert(runCallback = false) {
+  customAlert.classList.remove('show');
+  
+  setTimeout(() => {
+    customAlert.classList.add('hidden');
+    
+    // ถ้ารัน Callback และมี Callback ให้รัน
+    if (runCallback && typeof alertOkCallback === 'function') {
+      alertOkCallback();
+    }
+    alertOkCallback = null; // เคลียร์ Callback เสมอ
+    
+  }, 200);
+}
+
+// --- (อัปเดต) Event Listeners สำหรับ Modal ---
+
+// เมื่อกด "ตกลง"
+customAlertOkBtn?.addEventListener('click', () => {
+  hideCustomAlert(true); // ซ่อน และ รัน Callback
+});
+
+// เมื่อกด "ยกเลิก"
+customAlertCancelBtn?.addEventListener('click', () => {
+  hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
+});
+
+// เมื่อคลิกที่พื้นหลัง
+customAlert?.addEventListener('click', (e) => {
+  if (e.target === customAlert) {
+    hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
+  }
+});
+
+
+// --- Event Listeners (สำหรับปุ่มต่างๆ) ---
+
+// --- Submit Profile Form ---
+profileForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user || user.isAnonymous) return;
+
+  const newDisplayName = displayNameInput.value.trim();
+  const newBio = bioInput.value.trim(); 
+  
+  // (อัปเดต) ถ้าชื่อว่าง ให้เด้ง Alert เตือน แล้วหยุด
+  if (!newDisplayName) {
+    showCustomAlert("กรุณากรอก Display Name ด้วยครับ");
+    return;
+  }
+  
+  const submitButton = e.target.querySelector('.btn-submit');
+  submitButton.textContent = "กำลังบันทึก...";
+  submitButton.disabled = true;
+
+  try {
+    await updateProfile(user, { displayName: newDisplayName });
+    const ref = doc(db, "users_create", user.uid);
+    await updateDoc(ref, {
+      displayName: newDisplayName,
+      bio: newBio, 
+      lastLoginAt: new Date()
+    });
+    
+    profileDisplayName.textContent = newDisplayName;
+    if (headerNameEl) headerNameEl.textContent = newDisplayName;
+    profileBioDisplay.textContent = newBio || "Click 'Save Changes' to add your bio!"; 
+    
+    showCustomAlert("บันทึกโปรไฟล์สำเร็จ!");
+
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    // (อัปเดต) ถ้าการบันทึกล้มเหลว (ใน catch) ก็ให้เด้ง Alert
+    showCustomAlert(`บันทึกไม่สำเร็จ: ${error.message}`);
+    
+  } finally {
+    submitButton.textContent = "Save Changes";
+    submitButton.disabled = false;
+  }
+});
+
+// --- (อัปเดต) Sign Out Button ---
+signOutBtn?.addEventListener('click', async () => {
+  
+  // (แก้ไข) เรียกใช้ showCustomConfirm แทน confirm()
+  showCustomConfirm(
+    "คุณต้องการออกจากระบบใช่หรือไม่?", 
+    async () => {
+      // ฟังก์ชันนี้จะทำงาน *เฉพาะ* เมื่อผู้ใช้กด "ตกลง"
+      try {
+        await signOut(auth);
+        
+        // เมื่อออกจากระบบสำเร็จ, ค่อยแสดง Alert (1 ปุ่ม)
+        showCustomAlert("คุณออกจากระบบแล้ว", () => {
+          window.location.href = "../index.html"; 
+        });
+        
+      } catch (error) {
+        console.error("Error signing out:", error);
+        showCustomAlert(`เกิดข้อผิดพลาด: ${error.message}`);
+      }
+    },
+    true // <-- ส่งค่า true เพื่อให้ปุ่ม "ตกลง" เป็นสีแดง (isDanger)
+  );
+
+});
+
+// --- Message Button ---
+messageBtn?.addEventListener('click', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const profileUid = urlParams.get('partner') || urlParams.get('uid');
+  if (!profileUid) {
+    showCustomAlert("ไม่สามารถส่งข้อความได้: ไม่พบ ID ผู้ใช้");
+    return;
+  }
+  if (profileUid === auth.currentUser?.uid) {
+    showCustomAlert("คุณไม่สามารถส่งข้อความหาตัวเองได้");
+    return;
+  }
+  window.location.href = `../Chat/Chat.html?partner=${profileUid}`;
+});
