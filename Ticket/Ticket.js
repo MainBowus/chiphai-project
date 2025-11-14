@@ -26,6 +26,12 @@ const avatarEl = profileBtn?.querySelector(".avatar");
 const nameEl = profileBtn?.querySelector(".profile-name");
 const formEl = document.getElementById("reportForm");
 
+// (*** ใหม่ ***) Elements สำหรับ Custom Alert
+const customAlert = document.getElementById("customAlert");
+const customAlertMessage = document.getElementById("customAlertMessage");
+const customAlertOkBtn = document.getElementById("customAlertOkBtn");
+const customAlertCancelBtn = document.getElementById("customAlertCancelBtn");
+
 // --- Logo Navigation ---
 logoBtn?.addEventListener("click", () => {
   window.location.href = "../index.html";
@@ -41,30 +47,30 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-
   const ref = doc(db, "users_create", user.uid);
   const snap = await getDoc(ref);
   const now = new Date();
+  // (อัปเดตเล็กน้อย) ใช้ displayName จาก user.displayName ก่อน
+  const userData = snap.exists() ? snap.data() : {};
+  const displayName = user.displayName || userData.displayName || (user.email ? user.email.split("@")[0] : "Guest");
+  
   await setDoc(ref, {
     uid: user.uid,
-    displayName: user.displayName || (user.email ? user.email.split("@")[0] : "User"),
-    email: user.email || "",
-    photoURL: user.photoURL || "",
-    providerPrimary: (user.providerData?.[0]?.providerId || "").replace(".com", ""),
-    providers: (user.providerData || []).map(p => p.providerId),
+    displayName: displayName,
+    email: user.email || userData.email || "",
+    photoURL: user.photoURL || userData.photoURL || "",
     lastLoginAt: now,
-    createdAt: snap.exists() ? (snap.data().createdAt || now) : now
+    createdAt: userData.createdAt || now
   }, { merge: true });
 
-
-  const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
-  const photoURL = user.photoURL || "";
+  const photoURL = user.photoURL || userData.photoURL || "";
 
   if (avatarEl) avatarEl.innerHTML = photoURL ? `<img src="${photoURL}" alt="${displayName}">` : "👤";
   if (nameEl) nameEl.textContent = displayName;
 });
 
 
+// --- Particles.js ---
 particlesJS('particles-js', {
   particles: {
     number: { value: 100, density: { enable: true, value_area: 800 } },
@@ -78,7 +84,87 @@ particlesJS('particles-js', {
   interactivity: { events: { onhover: { enable: false }, onclick: { enable: false } } }
 });
 
-// --- Submit Ticket Form ---
+/* ===============================================
+  (*** ใหม่ ***) Custom Alert Modal Logic
+  (คัดลอกจาก Profile.js)
+=============================================== */
+let alertOkCallback = null;
+
+/**
+ * ฟังก์ชันสำหรับแสดง Alert (1 ปุ่ม)
+ */
+function showCustomAlert(message, onClose) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onClose || null;
+
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.classList.remove('is-danger');
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'none'; 
+
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+/**
+ * ฟังก์ชันสำหรับแสดง Confirm (2 ปุ่ม)
+ */
+function showCustomConfirm(message, onConfirm, isDanger = false) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onConfirm || null; 
+
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'block'; 
+
+  if (isDanger) {
+    customAlertOkBtn.classList.add('is-danger');
+  } else {
+    customAlertOkBtn.classList.remove('is-danger');
+  }
+
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+/**
+ * ฟังก์ชันสำหรับซ่อน Alert
+ */
+function hideCustomAlert(runCallback = false) {
+  customAlert.classList.remove('show');
+  
+  setTimeout(() => {
+    customAlert.classList.add('hidden');
+    
+    if (runCallback && typeof alertOkCallback === 'function') {
+      alertOkCallback();
+    }
+    alertOkCallback = null; 
+    
+  }, 200);
+}
+
+// --- Event Listeners สำหรับ Modal ---
+customAlertOkBtn?.addEventListener('click', () => {
+  hideCustomAlert(true); 
+});
+
+customAlertCancelBtn?.addEventListener('click', () => {
+  hideCustomAlert(false); 
+});
+
+customAlert?.addEventListener('click', (e) => {
+  if (e.target === customAlert) {
+    hideCustomAlert(false);
+  }
+});
+
+
+// --- (*** อัปเดต ***) Submit Ticket Form ---
 formEl?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -87,28 +173,35 @@ formEl?.addEventListener("submit", async (e) => {
   const details = document.getElementById("details").value.trim();
 
   if (!email || !category || !details) {
-    alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    showCustomAlert("กรุณากรอกข้อมูลให้ครบถ้วน");
     return;
   }
 
   const user = auth.currentUser;
   const uid = user?.uid || "anonymous";
 
-  try {
-    // --- เพิ่ม Ticket ลง Firestore ---
-    await addDoc(collection(db, "tickets"), {
-      email,
-      category,
-      details,
-      uid,
-      status: "pending",
-      createdAt: serverTimestamp()
-    });
+  showCustomConfirm(
+    "คุณยืนยันที่จะส่ง Report Ticket นี้หรือไม่?",
+    async () => {
+      try {
+        await addDoc(collection(db, "tickets"), {
+          email,
+          category,
+          details,
+          uid,
+          status: "pending",
+          createdAt: serverTimestamp()
+        });
 
-    alert("✅ ส่งรายงานสำเร็จ! ทีมงานจะติดต่อกลับภายใน 2–3 วันทำการ");
-    e.target.reset();
-  } catch (err) {
-    console.error("Error sending ticket:", err);
-    alert("❌ เกิดข้อผิดพลาดในการส่งรายงาน");
-  }
+
+        showCustomAlert("✅ ส่งรายงานสำเร็จ! ทีมงานจะติดต่อกลับภายใน 2–3 วันทำการ");
+        e.target.reset();
+      } catch (err) {
+
+        console.error("Error sending ticket:", err);
+        showCustomAlert(`❌ เกิดข้อผิดพลาดในการส่งรายงาน: ${err.message}`);
+      }
+    },
+    false
+  );
 });

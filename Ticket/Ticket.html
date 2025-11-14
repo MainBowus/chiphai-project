@@ -10,7 +10,6 @@
 <body>
 <div id="particles-js"></div>
 
-<!-- Header -->
 <header class="site-header" role="banner">
   <div class="logo" id="logoBtn">CHIPHAI</div>
   <nav class="nav" role="navigation" aria-label="Main">
@@ -25,7 +24,6 @@
   </button>
 </header>
 
-<!-- Main -->
 <main class="ticket-main">
   <section class="ticket-panel" aria-labelledby="ticket-title">
     <h1 id="ticket-title">Report Ticket</h1>
@@ -53,7 +51,6 @@
   </section>
 </main>
 
-<!-- Footer -->
 <footer class="site-footer" role="contentinfo">
   <div class="site-footer-inner">
     <div class="footer-left">
@@ -68,13 +65,18 @@
   </div>
 </footer>
 
+<div id="customAlert" class="custom-alert-overlay hidden">
+  <div class="custom-alert-box">
+    <p id="customAlertMessage">นี่คือข้อความแจ้งเตือน!</p>
+    <div class="custom-alert-actions">
+      <button id="customAlertCancelBtn" class="btn-cancel">ยกเลิก</button>
+      <button id="customAlertOkBtn" class="btn-submit">ตกลง</button>
+    </div>
+  </div>
+</div>
+
 <script type="module" src="Ticket.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
-<script>
-    document.getElementById("logoBtn")?.addEventListener("click", () => {
-      window.location.href = "../index.html";
-    });
-</script>
 </body>
 </html>
