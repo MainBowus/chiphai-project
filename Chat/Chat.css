@@ -35,7 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow: hidden; 
+  overflow: auto; 
 }
 /* (เพิ่ม) Logic การเปิดเมนู */
 body.mobile-nav-open {
@@ -322,6 +322,7 @@ body.mobile-nav-open .mobile-nav-toggle .icon-close { display: block; }
   border-radius: 0;
   border-left: 1.5px solid var(--border);
   min-width: 0;
+  min-height: 0;
 }
 .chat-topbar {
   display: flex;
