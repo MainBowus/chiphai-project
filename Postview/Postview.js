@@ -1,7 +1,18 @@
-// Postview.js — เพิ่มการแสดง avatar จริงของผู้โพสต์
+// Postview.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 /* ---------- Firebase config ---------- */
 const firebaseConfig = {
@@ -20,25 +31,42 @@ const auth = getAuth(app);
 
 /* ---------- Utils ---------- */
 const $ = (sel) => document.querySelector(sel);
+
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
 
 function parseFoundAt(foundAt) {
   if (!foundAt) return null;
-  if (typeof foundAt.toDate === "function") return foundAt.toDate();
+  if (typeof foundAt.toDate === "function") return foundAt.toDate();  // Firestore Timestamp
   if (foundAt.seconds) return new Date(foundAt.seconds * 1000);
   const d = new Date(foundAt);
   return isNaN(d) ? null : d;
 }
+
 const formatDateTH = (dt) =>
-  dt ? dt.toLocaleDateString("th-TH", { day: "2-digit", month: "2-digit", year: "numeric" }) : "-";
+  dt
+    ? dt.toLocaleDateString("th-TH", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      })
+    : "-";
+
 const formatTimeTH = (dt) =>
-  dt ? dt.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }) : "-";
+  dt
+    ? dt.toLocaleTimeString("th-TH", {
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+    : "-";
 
 function setInfoValue(labelText, value) {
   for (const g of document.querySelectorAll(".info-group")) {
     const labelEl = g.querySelector(".info-label");
-    if (labelEl && labelEl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+    if (
+      labelEl &&
+      labelEl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())
+    ) {
       const valEl = g.querySelector(".info-value");
       if (valEl) valEl.textContent = value ?? "-";
       break;
@@ -57,106 +85,218 @@ function renderError(msg) {
         </div>
         <button class="message-btn" id="backToList">← กลับรายการ</button>
       </div>
-    </div>`;
-  $("#backToList")?.addEventListener("click", () => (window.location.href = "../Post/Post.html"));
+    </div>
+  `;
+  $("#backToList")?.addEventListener("click", () => {
+    window.location.href = "../Post/Post.html";
+  });
 }
 
-/* ---------- Navigation ---------- */
-$("#logoBtn")?.addEventListener("click", () => (window.location.href = "../index.html"));
-$("#backBtn")?.addEventListener("click", (e) => {
-  e.preventDefault();
-  if (history.length > 1) history.back();
-  else window.location.href = "../Post/Post.html";
-});
-
-/* ---------- Main ---------- */
-if (!id) {
-  renderError("ไม่มีพารามิเตอร์ id ใน URL (เช่น .../Postview.html?id=xxxx)");
-} else {
-  loadPost(id);
-}
-
+/* ---------- Global state ---------- */
 let createdByUid = null;
+let currentStatus = "open";
+let currentUserUid = null;
+let latestDocId = null;
+let latestPostData = null;
 
+/* ---------- Status UI ---------- */
+function renderStatus(status) {
+  const badge = $("#statusBadge");
+  if (!badge) return;
+
+  badge.classList.remove("status-open", "status-closed");
+
+  if (status === "closed") {
+    badge.textContent = "สถานะ: ของชิ้นนี้เจ้าของรับคืนแล้ว";
+    badge.classList.add("status-closed");
+  } else {
+    badge.textContent = "สถานะ: กำลังตามหาเจ้าของ";
+    badge.classList.add("status-open");
+  }
+}
+
+/* ---------- ปุ่มด้านล่าง (Message / ปิดโพสต์) ---------- */
+function updateActionButtonForCurrentUser() {
+  const btn = $("#messageBtn");
+  if (!btn || !latestDocId || !latestPostData) return;
+
+  btn.classList.remove("btn-disabled");
+  btn.disabled = false;
+
+  // ถ้าโพสต์ปิดแล้ว → ใครมาก็เห็นว่าเจ้าของรับคืนแล้ว
+  if (currentStatus === "closed") {
+    btn.textContent = "ของชิ้นนี้เจ้าของรับคืนแล้ว";
+    btn.disabled = true;
+    btn.classList.add("btn-disabled");
+    btn.onclick = null;
+    return;
+  }
+
+  // ถ้าเป็นเจ้าของโพสต์
+  if (currentUserUid && currentUserUid === createdByUid) {
+    btn.textContent = "ยืนยันว่าเจ้าของรับคืนแล้ว";
+    btn.onclick = async () => {
+      const ok = confirm(
+        "ยืนยันหรือไม่ว่าเจ้าของได้รับของกลับคืนแล้ว?\n(โพสต์นี้จะถูกปิดและไม่สามารถรับข้อความใหม่ได้)"
+      );
+      if (!ok) return;
+
+      try {
+        await updateDoc(doc(db, "lost_items", latestDocId), {
+          status: "closed",
+          closedAt: serverTimestamp()
+        });
+
+        currentStatus = "closed";
+        renderStatus(currentStatus);
+        updateActionButtonForCurrentUser();
+
+        alert("บันทึกเรียบร้อยแล้ว ✅");
+      } catch (err) {
+        console.error("Update status failed:", err);
+        alert("ไม่สามารถอัปเดตสถานะได้ ลองใหม่อีกครั้ง");
+      }
+    };
+  } else {
+    // คนอื่น (ไม่ใช่เจ้าของโพสต์) → ปุ่ม Message
+    btn.textContent = "Message";
+    btn.onclick = async () => {
+      try {
+        let user = auth.currentUser;
+
+        // ถ้ายังไม่มี user ให้ล็อกอินแบบ anonymous
+        if (!user) {
+          await signInAnonymously(auth);
+          user = auth.currentUser;
+        }
+
+        if (!user) {
+          alert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
+          return;
+        }
+
+        const me = user.uid;
+        const itemName = latestPostData.itemName || "โพสต์";
+        const chatBase = new URL("../Chat/Chat.html", window.location.href);
+
+        if (me === createdByUid) {
+          // เผื่อกรณีคนเป็นเจ้าของหลังจาก anon sign-in
+          chatBase.searchParams.set("post", latestDocId);
+          chatBase.searchParams.set("title", itemName);
+        } else {
+          chatBase.searchParams.set("partner", createdByUid);
+          chatBase.searchParams.set("post", latestDocId);
+          chatBase.searchParams.set("title", itemName);
+
+          const autoMsg = `สวัสดี ฉันอยากสอบถามรายละเอียดของ “${itemName}” หน่อยได้ไหม`;
+          chatBase.searchParams.set("msg", autoMsg);
+        }
+
+        window.location.href = chatBase.toString();
+      } catch (err) {
+        console.error("Anonymous sign-in failed:", err);
+        alert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
+      }
+    };
+  }
+}
+
+/* ---------- Main: โหลดโพสต์ ---------- */
 async function loadPost(docId) {
   try {
     const snap = await getDoc(doc(db, "lost_items", docId));
     if (!snap.exists()) return renderError("ไม่พบโพสต์นี้ในฐานข้อมูล");
 
     const data = snap.data();
-    createdByUid = data.createdBy;
+    latestDocId = docId;
+    latestPostData = data;
 
-    // UI: ตั้งค่าชื่อ
-    $("#username").textContent = data.createdByName || "User";
+    createdByUid = data.createdBy || null;
+    currentStatus = data.status || "open"; // ถ้าโพสต์เก่ายังไม่มี status ให้ถือว่า open
 
-    // รูปโปรไฟล์ (ถ้ามีในโพสต์)
-    if (data.createdByPhotoURL) {
-      $("#userAvatar").innerHTML = `<img src="${data.createdByPhotoURL}" alt="${data.createdByName || "User"}">`;
-    } else {
-      // ถ้าไม่มี ให้ลองดึงจาก users_create
-      if (createdByUid) {
-        const userSnap = await getDoc(doc(db, "users_create", createdByUid));
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          if (userData.photoURL) {
-            $("#userAvatar").innerHTML = `<img src="${userData.photoURL}" alt="${userData.displayName || "User"}">`;
+    // UI: ชื่อผู้โพสต์
+    const usernameEl = $("#username");
+    if (usernameEl) usernameEl.textContent = data.createdByName || "User";
+
+    // รูปโปรไฟล์
+    const avatarEl = $("#userAvatar");
+    if (avatarEl) {
+      if (data.createdByPhotoURL) {
+        avatarEl.innerHTML = `<img src="${data.createdByPhotoURL}" alt="${data.createdByName || "User"}">`;
+      } else if (createdByUid) {
+        try {
+          const userSnap = await getDoc(doc(db, "users_create", createdByUid));
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            if (userData.photoURL) {
+              avatarEl.innerHTML = `<img src="${userData.photoURL}" alt="${userData.displayName || "User"}">`;
+            } else {
+              avatarEl.textContent = "👤";
+            }
+          } else {
+            avatarEl.textContent = "👤";
           }
+        } catch (e) {
+          console.error("load user avatar error:", e);
+          avatarEl.textContent = "👤";
         }
+      } else {
+        avatarEl.textContent = "👤";
       }
     }
 
     // รูปไอเท็ม
-    const imgEl = $(".placeholder img");
+    const imgEl = document.querySelector(".placeholder img");
     if (imgEl) {
       if (data.imageUrl) {
         imgEl.src = data.imageUrl;
         imgEl.alt = data.itemName || "item image";
         imgEl.style.display = "block";
-      } else imgEl.style.display = "none";
+      } else {
+        imgEl.style.display = "none";
+      }
     }
 
     // รายละเอียดอื่น ๆ
     $("#itemName").textContent = data.itemName || "ไม่มีชื่อไอเท็ม";
     setInfoValue("Location", data.location || "-");
+
     const dt = parseFoundAt(data.foundAt);
     setInfoValue("Date", formatDateTH(dt));
     setInfoValue("Time", formatTimeTH(dt));
     setInfoValue("Description", data.description || "-");
 
-    /* ---------- ปุ่ม Message ---------- */
-    $("#messageBtn")?.addEventListener("click", () => {
-      onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-          try {
-            await signInAnonymously(auth);
-            return;
-          } catch (err) {
-            console.error("Anonymous sign-in failed:", err);
-            alert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
-            return;
-          }
-        }
+    // แสดงสถานะ
+    renderStatus(currentStatus);
 
-        const me = user.uid;
-        const itemName = data.itemName || "โพสต์";
-        const chatBase = new URL("../Chat/Chat.html", window.location.href);
-
-        if (me === createdByUid) {
-          chatBase.searchParams.set("post", docId);
-          chatBase.searchParams.set("title", itemName);
-        } else {
-          chatBase.searchParams.set("partner", createdByUid);
-          chatBase.searchParams.set("post", docId);
-          chatBase.searchParams.set("title", itemName);
-          const autoMsg = `สวัสดี ฉันอยากสอบถามรายละเอียดของ “${itemName}” หน่อยได้ไหม`;
-          chatBase.searchParams.set("msg", autoMsg);
-        }
-
-        window.location.href = chatBase.toString();
-      });
-    });
+    // ตั้งค่าปุ่มตาม user ปัจจุบัน
+    updateActionButtonForCurrentUser();
   } catch (err) {
     console.error("[postview] load error:", err);
     renderError(err?.message || String(err));
   }
+}
+
+/* ---------- Navigation ---------- */
+$("#logoBtn")?.addEventListener("click", () => {
+  window.location.href = "../index.html";
+});
+
+$("#backBtn")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (history.length > 1) history.back();
+  else window.location.href = "../Post/Post.html";
+});
+
+/* ---------- Auth listener สำหรับเปลี่ยนปุ่มตาม user ---------- */
+onAuthStateChanged(auth, (user) => {
+  currentUserUid = user ? user.uid : null;
+  updateActionButtonForCurrentUser();
+});
+
+/* ---------- Start ---------- */
+if (!id) {
+  renderError("ไม่มีพารามิเตอร์ id ใน URL (เช่น .../Postview.html?id=xxxx)");
+} else {
+  loadPost(id);
 }
