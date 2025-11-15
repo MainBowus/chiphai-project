@@ -657,3 +657,66 @@ body{
     grid-template-columns: 1fr;
   }
 }
+
+/*Shrink the main user-menu container to tightly wrap the avatar */
+.user-menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 2px 4px !important;
+  max-height: 40px !important;
+}
+
+/*Force resize for real profile images (<img>) inside .user-menu */
+.user-menu img,
+.user-menu > img,
+.user-menu img[referrerpolicy],
+header .user-menu img {
+  width: 40px !important;      /* ← Adjust size here (e.g., 32 / 36 / 48) */
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/*Letter Avatar fallback when user has no profile image */
+.user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background-color: #c90058 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  color: #fff !important;
+  text-transform: uppercase !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+
+.user-avatar span {
+  padding-bottom: 1px !important;
+}
+
+/*Style for the username displayed next to the avatar */
+.user-menu > span {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+}
+
+/*Dropdown menu styling below the avatar */
+.user-menu .dropdown {
+  background: var(--card) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+  padding: 5px !important;
+  min-width: 150px !important;
+  position: absolute;
+  top: 110%;
+  right: 0;
+}
