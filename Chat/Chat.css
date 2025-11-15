@@ -35,7 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow: auto; 
+  overflow: hidden; 
 }
 /* (เพิ่ม) Logic การเปิดเมนู */
 body.mobile-nav-open {
@@ -192,7 +192,7 @@ body.mobile-nav-open .mobile-nav-toggle .icon-close { display: block; }
 /* ─────────────── MAIN LAYOUT (v1 เดิม) ─────────────── */
 .chat-main-layout {
   display: flex;
-  height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   margin-top: var(--header-height);
   background: var(--bg);
   width: 100vw;
