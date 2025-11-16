@@ -35,6 +35,12 @@ const $ = (sel) => document.querySelector(sel);
 const params = new URLSearchParams(location.search);
 const id = params.get("id");
 
+// (อัปเดต) Elements สำหรับ Custom Alert
+const customAlert = document.getElementById("customAlert");
+const customAlertMessage = document.getElementById("customAlertMessage");
+const customAlertOkBtn = document.getElementById("customAlertOkBtn"); // ปุ่มตกลง
+const customAlertCancelBtn = document.getElementById("customAlertCancelBtn"); // ปุ่มยกเลิก
+
 function parseFoundAt(foundAt) {
   if (!foundAt) return null;
   if (typeof foundAt.toDate === "function") return foundAt.toDate();  // Firestore Timestamp
@@ -135,28 +141,29 @@ function updateActionButtonForCurrentUser() {
   // ถ้าเป็นเจ้าของโพสต์
   if (currentUserUid && currentUserUid === createdByUid) {
     btn.textContent = "ยืนยันว่าเจ้าของรับคืนแล้ว";
-    btn.onclick = async () => {
-      const ok = confirm(
-        "ยืนยันหรือไม่ว่าเจ้าของได้รับของกลับคืนแล้ว?\n(โพสต์นี้จะถูกปิดและไม่สามารถรับข้อความใหม่ได้)"
-      );
-      if (!ok) return;
+    btn.onclick = () => {
+    showCustomConfirm(
+      "ยืนยันหรือไม่ว่าเจ้าของได้รับของกลับคืนแล้ว?\n(โพสต์นี้จะถูกปิดและไม่สามารถรับข้อความใหม่ได้)",
+      async () => {
+        try {
+          await updateDoc(doc(db, "lost_items", latestDocId), {
+            status: "closed",
+            closedAt: serverTimestamp()
+          });
 
-      try {
-        await updateDoc(doc(db, "lost_items", latestDocId), {
-          status: "closed",
-          closedAt: serverTimestamp()
-        });
+          currentStatus = "closed";
+          renderStatus(currentStatus);
+          updateActionButtonForCurrentUser();
 
-        currentStatus = "closed";
-        renderStatus(currentStatus);
-        updateActionButtonForCurrentUser();
-
-        alert("บันทึกเรียบร้อยแล้ว ✅");
-      } catch (err) {
-        console.error("Update status failed:", err);
-        alert("ไม่สามารถอัปเดตสถานะได้ ลองใหม่อีกครั้ง");
-      }
-    };
+          showCustomAlert("บันทึกเรียบร้อยแล้ว ✅");
+        } catch (err) {
+          console.error("Update status failed:", err);
+          showCustomAlert("ไม่สามารถอัปเดตสถานะได้ ลองใหม่อีกครั้ง");
+        }
+      },
+      true // ให้ปุ่ม "ตกลง" เป็นสีส้ม
+    );
+  };
   } else {
     // คนอื่น (ไม่ใช่เจ้าของโพสต์) → ปุ่ม Message
     btn.textContent = "Message";
@@ -171,7 +178,7 @@ function updateActionButtonForCurrentUser() {
         }
 
         if (!user) {
-          alert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
+          showCustomAlert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
           return;
         }
 
@@ -195,7 +202,7 @@ function updateActionButtonForCurrentUser() {
         window.location.href = chatBase.toString();
       } catch (err) {
         console.error("Anonymous sign-in failed:", err);
-        alert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
+        showCustomAlert("ไม่สามารถเข้าสู่ระบบชั่วคราวได้");
       }
     };
   }
@@ -300,3 +307,95 @@ if (!id) {
 } else {
   loadPost(id);
 }
+
+/* ===============================================
+  (อัปเดต) Custom Alert Modal Logic
+=============================================== */
+let alertOkCallback = null; // ตัวแปรเก็บ Callback
+
+/**
+ * (อัปเดต) ฟังก์ชันสำหรับแสดง Alert (1 ปุ่ม)
+ */
+function showCustomAlert(message, onClose) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onClose || null;
+
+  // --- ตั้งค่าปุ่ม ---
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.classList.add('is-danger'); // ทำให้ปุ่มเป็นสีส้ม
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'none'; // (สำคัญ) ซ่อนปุ่มยกเลิก
+
+  // --- แสดง Modal ---
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+/**
+ * (ใหม่!) ฟังก์ชันสำหรับแสดง Confirm (2 ปุ่ม)
+ * @param {string} message ข้อความ
+ * @param {function} onConfirm ฟังก์ชันที่จะรันเมื่อกด "ตกลง"
+ * @param {boolean} [isDanger=false] ถ้าใช่, ปุ่ม "ตกลง" จะเป็นสีแดง
+ */
+function showCustomConfirm(message, onConfirm, isDanger = false) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onConfirm || null; // "ตกลง" จะรันฟังก์ชันนี้
+
+  // --- ตั้งค่าปุ่ม ---
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'block'; // (สำคัญ) แสดงปุ่มยกเลิก
+
+  if (isDanger) {
+    customAlertOkBtn.classList.add('is-danger'); // ทำให้เป็นสีแดง
+  } else {
+    customAlertOkBtn.classList.remove('is-danger'); // ทำให้เป็นสีเขียว
+  }
+
+  // --- แสดง Modal ---
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+
+/**
+ * (อัปเดต) ฟังก์ชันสำหรับซ่อน Alert
+ * @param {boolean} [runCallback=false] - ถ้าเป็น true, จะรัน Callback (เช่น กด "ตกลง")
+ */
+function hideCustomAlert(runCallback = false) {
+  customAlert.classList.remove('show');
+  
+  setTimeout(() => {
+    customAlert.classList.add('hidden');
+    
+    // ถ้ารัน Callback และมี Callback ให้รัน
+    if (runCallback && typeof alertOkCallback === 'function') {
+      alertOkCallback();
+    }
+    alertOkCallback = null; // เคลียร์ Callback เสมอ
+    
+  }, 200);
+}
+
+// --- (อัปเดต) Event Listeners สำหรับ Modal ---
+
+// เมื่อกด "ตกลง"
+customAlertOkBtn?.addEventListener('click', () => {
+  hideCustomAlert(true); // ซ่อน และ รัน Callback
+});
+
+// เมื่อกด "ยกเลิก"
+customAlertCancelBtn?.addEventListener('click', () => {
+  hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
+});
+
+// เมื่อคลิกที่พื้นหลัง
+customAlert?.addEventListener('click', (e) => {
+  if (e.target === customAlert) {
+    hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
+  }
+});
