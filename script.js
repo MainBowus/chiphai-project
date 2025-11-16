@@ -50,4 +50,19 @@ iconClose.onclick = () => {
     loop: true
   });
 
+  // ===== Custom Alert =====
+window.customAlert = function(message) {
+    const box = document.getElementById("customAlert");
+    const msg = document.getElementById("alertMessage");
+    const btn = document.getElementById("alertOkBtn");
+
+    msg.textContent = message;
+    box.classList.remove("hidden");
+
+    btn.onclick = () => {
+        box.classList.add("hidden");
+    };
+};
+
+ 
   

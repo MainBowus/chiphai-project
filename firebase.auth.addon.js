@@ -111,13 +111,13 @@ googleAnchor?.addEventListener("click", async (e) => {
     catch (eUp) { console.error("[auth.addon] UPSERT FAILED", eUp); }
 
     closePopup();
-    alert("ล็อกอินผ่านแล้ว ✅");
+    customAlert("ล็อกอินผ่านแล้ว ✅");
   } catch (err) {
     console.error("[auth.addon] signIn error", err);
     if (err?.code === "auth/account-exists-with-different-credential") {
       const email = err.customData?.email;
       const pendingCred = EmailAuthProvider.credentialFromError?.(err) || err.customData?.credential;
-      if (!email) { alert("อีเมลนี้มีอยู่แล้วกับผู้ให้บริการอื่น โปรดล็อกอินด้วยวิธีนั้นก่อน แล้วจะเชื่อมให้"); return; }
+      if (!email) { customAlert("อีเมลนี้มีอยู่แล้วกับผู้ให้บริการอื่น โปรดล็อกอินด้วยวิธีนั้นก่อน แล้วจะเชื่อมให้"); return; }
       try {
         const methods = await fetchSignInMethodsForEmail(auth, email);
         if (methods.includes("password")) {
@@ -127,17 +127,17 @@ googleAnchor?.addEventListener("click", async (e) => {
           const passUser  = await signInWithEmailAndPassword(auth, email, pass);
           await linkWithCredential(passUser.user, pendingCred);
           await upsertGoogleProfile(passUser.user);
-          alert("เชื่อมบัญชี Google กับบัญชีเดิมสำเร็จ");
+          customAlert("เชื่อมบัญชี Google กับบัญชีเดิมสำเร็จ");
           closePopup();
         } else {
-          alert(`อีเมลนี้ผูกกับวิธี: ${methods.join(", ")}\nกรุณาล็อกอินด้วยวิธีนั้นก่อน แล้วจะเชื่อมให้`);
+          customAlert(`อีเมลนี้ผูกกับวิธี: ${methods.join(", ")}\nกรุณาล็อกอินด้วยวิธีนั้นก่อน แล้วจะเชื่อมให้`);
         }
       } catch (e2) {
         console.error(e2);
-        alert(e2?.message ?? "ไม่สามารถเชื่อมบัญชีได้");
+        customAlert(e2?.message ?? "ไม่สามารถเชื่อมบัญชีได้");
       }
     } else {
-      alert(err?.message ?? "Google sign-in failed");
+      customAlert(err?.message ?? "Google sign-in failed");
     }
   }
 });

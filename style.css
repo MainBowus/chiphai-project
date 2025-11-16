@@ -720,3 +720,49 @@ header .user-menu img {
   top: 110%;
   right: 0;
 }
+
+/* ===== CUSTOM ALERT (GLOBAL) ===== */
+.custom-alert {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.custom-alert.hidden {
+  display: none;
+}
+
+.alert-box {
+  background: white;
+  padding: 22px 28px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  max-width: 310px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.alert-box p {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: #444;
+}
+
+.alert-box button {
+  background: #2D3748;
+  color: white;
+  padding: 8px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.alert-box button:hover {
+  background: #1a2332;
+}

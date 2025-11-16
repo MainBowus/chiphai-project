@@ -33,15 +33,15 @@ registerForm?.addEventListener("submit", async (e) => {
   const agree       = document.getElementById("agreeTos").checked;
 
   const studentId = Number(studentIdStr);
-  if (!agree) return alert("กรุณายอมรับเงื่อนไขก่อนสมัคร");
-  if (!username || !studentIdStr || !email || !password) return alert("กรอกข้อมูลให้ครบ");
-  if (isNaN(studentId)) return alert("Student ID ต้องเป็นตัวเลข");
+  if (!agree) return customAlert("กรุณายอมรับเงื่อนไขก่อนสมัคร");
+  if (!username || !studentIdStr || !email || !password) return customAlert("กรอกข้อมูลให้ครบ");
+  if (isNaN(studentId)) return customAlert("Student ID ต้องเป็นตัวเลข");
 
   try {
     // ตรวจชื่อซ้ำ
     const uq = query(collection(db, "users_create"), where("username", "==", username), limit(1));
     const uSnap = await getDocs(uq);
-    if (!uSnap.empty) return alert("Username นี้ถูกใช้แล้ว");
+    if (!uSnap.empty) return customAlert("Username นี้ถูกใช้แล้ว");
 
     await setDoc(doc(collection(db, "users_create"), String(studentId)), {
       username,
@@ -51,11 +51,11 @@ registerForm?.addEventListener("submit", async (e) => {
       createdAt: serverTimestamp()
     });
 
-    alert("ลงทะเบียนสำเร็จ (Student ID = " + studentId + ")");
+    customAlert("ลงทะเบียนสำเร็จ (Student ID = " + studentId + ")");
     registerForm.reset();
   } catch (err) {
     console.error(err);
-    alert("บันทึกล้มเหลว: " + (err?.message || String(err)));
+    customAlert("บันทึกล้มเหลว: " + (err?.message || String(err)));
   }
 });
 
@@ -66,17 +66,17 @@ loginForm?.addEventListener("submit", async (e) => {
 
   const username = document.getElementById("loginUsername").value.trim();
   const password = document.getElementById("loginPassword").value;
-  if (!username || !password) return alert("กรอก username และ password");
+  if (!username || !password) return customAlert("กรอก username และ password");
 
   try {
     const q = query(collection(db, "users_create"), where("username", "==", username), limit(1));
     const snap = await getDocs(q);
 
-    if (snap.empty) return alert("username หรือ password ไม่ถูกต้อง");
+    if (snap.empty) return customAlert("username หรือ password ไม่ถูกต้อง");
 
     const user = snap.docs[0].data();
     if (user.password === password) {
-      alert("ล็อกอินผ่านแล้ว ✅");
+      customAlert("ล็อกอินผ่านแล้ว ✅");
 
       // ปิด popup
       wrapper?.classList?.remove("active-popup");
@@ -106,10 +106,10 @@ loginForm?.addEventListener("submit", async (e) => {
 });
 
     } else {
-      alert("username หรือ password ไม่ถูกต้อง");
+      customAlert("username หรือ password ไม่ถูกต้อง");
     }
   } catch (err) {
     console.error(err);
-    alert("เกิดข้อผิดพลาดระหว่างล็อกอิน: " + (err?.message || String(err)));
+    customAlert("เกิดข้อผิดพลาดระหว่างล็อกอิน: " + (err?.message || String(err)));
   }
 });
