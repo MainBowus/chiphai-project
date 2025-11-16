@@ -1,7 +1,7 @@
 :root {
   --bg: #fcfdfc;
   --card: #fff;
-  --accent: #1A202C;
+  --accent: #ff9800;
   --accent-600: #2D3748;
   --accent-dark: #2D3748; 
   --muted: #6b7a7a;
@@ -9,6 +9,7 @@
   --text-dark: #222;
   --shadow: 0 8px 28px rgba(67,160,71,0.06);
   --shadow-sm: 0 6px 18px rgba(67,160,71,0.04);
+  --radius:14px;
   --header-height: 72px;
   --transition: 180ms cubic-bezier(.4, .0, .2, 1);
 }
@@ -86,7 +87,7 @@ main {
 }
 
 /* Create main */
-.create-main {
+.create-main { 
   display: flex;
   gap: 90px;
   background: var(--card);
@@ -249,4 +250,163 @@ textarea {
 @media (max-width: 640px){
   header {padding:16px 24px;}
   .create-main {padding: 24px 16px;}
+}
+
+/* --- (ใหม่) Custom Alert Modal --- */
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* พื้นหลังมืดลง */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001; /* ให้อยู่เหนือ Header */
+  
+  /* ซ่อน/แสดง แบบมี transition */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0s 0.2s linear;
+}
+
+.custom-alert-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease;
+}
+
+.custom-alert-box {
+  background: var(--card); /* ใช้สีจากตัวแปรเดิม */
+  padding: 28px 32px;
+  border-radius: var(--radius); /* ใช้ขอบมนจากตัวแปรเดิม */
+  box-shadow: var(--shadow); /* ใช้เงาจากตัวแปรเดิม */
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  
+  /* Animation ตอนเด้งขึ้นมา */
+  transform: scale(0.9);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.custom-alert-overlay.show .custom-alert-box {
+  transform: scale(1);
+}
+
+#customAlertMessage {
+  font-size: 17px;
+  color: var(--text-dark); /* ใช้สีจากตัวแปรเดิม */
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+.custom-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0s 0.2s linear;
+}
+
+.custom-alert-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease;
+}
+
+.custom-alert-box {
+  background: var(--card);
+  padding: 28px 32px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.custom-alert-overlay.show .custom-alert-box {
+  transform: scale(1);
+}
+
+#customAlertMessage {
+  font-size: 17px;
+  color: var(--text-dark);
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+/* (*** อัปเดต CSS สำหรับปุ่ม ***) */
+
+/* (ใหม่) Container สำหรับปุ่ม */
+.custom-alert-actions {
+  display: flex;
+  justify-content: flex-end; /* จัดปุ่มไปทางขวา */
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* (ใหม่) สไตล์ปุ่ม "ยกเลิก" */
+.btn-cancel {
+  background: transparent;
+  color: var(--text-light);
+  border: 1px solid var(--border);
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-cancel:hover {
+  background: #f0f0f0; /* สีเทาอ่อนๆ */
+  border-color: var(--text-dark);
+  color: var(--text-dark);
+}
+
+/* ปุ่มตกลง */
+#customAlertOkBtn,
+.custom-alert-box .btn-submit {
+  background: #ff9800;
+  color: white;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ปุ่มตกลงเมื่อ hover */
+#customAlertOkBtn:hover,
+.custom-alert-box .btn-submit:hover {
+  background: #dd8500;
+}
+
+/* ปุ่มยกเลิก */
+#customAlertCancelBtn,
+.custom-alert-box .btn-cancel {
+  background: #e0e0e0;
+  color: #333;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#customAlertCancelBtn:hover,
+.custom-alert-box .btn-cancel:hover {
+  background: #c7c7c7;
 }
