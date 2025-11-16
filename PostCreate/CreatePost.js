@@ -17,6 +17,12 @@ const msgEl = $id("msg");
 const usernameEl = $id("username");
 const avatarEl = document.querySelector(".avatar");
 
+// (อัปเดต) Elements สำหรับ Custom Alert
+const customAlert = document.getElementById("customAlert");
+const customAlertMessage = document.getElementById("customAlertMessage");
+const customAlertOkBtn = document.getElementById("customAlertOkBtn"); // ปุ่มตกลง
+const customAlertCancelBtn = document.getElementById("customAlertCancelBtn"); // ปุ่มยกเลิก
+
 let authReady = false;
 if (postBtn) postBtn.disabled = true;
 
@@ -63,7 +69,7 @@ input?.addEventListener("change", () => {
   const file = input.files?.[0];
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) {
-    alert("ไฟล์ใหญ่เกินไป (จำกัด 5 MB)");
+    showCustomAlert("ไฟล์ใหญ่เกินไป (จำกัด 5 MB)");
     input.value = "";
     return;
   }
@@ -93,7 +99,7 @@ async function uploadFileToCloudinary(file, uid) {
 /* ---------- Post handler ---------- */
 postBtn?.addEventListener("click", async () => {
   if (!authReady) {
-    alert("ระบบกำลังเตรียมล็อกอิน ลองใหม่อีกครั้ง");
+    showCustomAlert("ระบบกำลังเตรียมล็อกอิน ลองใหม่อีกครั้ง");
     return;
   }
 
@@ -104,13 +110,13 @@ postBtn?.addEventListener("click", async () => {
   const description = read("description");
 
   if (!itemName || !location || !dateStr || !timeStr || !description) {
-    alert("กรอกข้อมูลให้ครบทุกช่องก่อนโพสต์");
+    showCustomAlert("กรอกข้อมูลให้ครบทุกช่องก่อนโพสต์");
     return;
   }
 
   const foundAt = new Date(`${dateStr}T${timeStr}:00`);
   if (isNaN(foundAt.getTime())) {
-    alert("รูปแบบวัน/เวลาไม่ถูกต้อง");
+    showCustomAlert("รูปแบบวัน/เวลาไม่ถูกต้อง");
     return;
   }
 
@@ -139,16 +145,16 @@ postBtn?.addEventListener("click", async () => {
       createdByPhotoURL: user._resolvedPhotoURL || "",
       status: "open"
     });
-
+ 
     msgEl.style.color = "green";
     msgEl.textContent = "สร้างโพสต์สำเร็จ!";
-    alert("สร้างโพสต์สำเร็จ!");
+    showCustomAlert("สร้างโพสต์สำเร็จ!");
     window.location.href = "../Post/Post.html";
   } catch (err) {
     console.error("[CreatePost error]", err);
     msgEl.style.color = "red";
     msgEl.textContent = "เกิดข้อผิดพลาด: " + (err?.message || err);
-    alert("เกิดข้อผิดพลาด: " + (err?.message || err));
+    showCustomAlert("เกิดข้อผิดพลาด: " + (err?.message || err));
   } finally {
     postBtn.disabled = false;
     postBtn.textContent = "Post";
@@ -156,3 +162,95 @@ postBtn?.addEventListener("click", async () => {
 });
 
 console.log("[CreatePost.js] loaded ✅");
+
+/* ===============================================
+  (อัปเดต) Custom Alert Modal Logic
+=============================================== */
+let alertOkCallback = null; // ตัวแปรเก็บ Callback
+
+/**
+ * (อัปเดต) ฟังก์ชันสำหรับแสดง Alert (1 ปุ่ม)
+ */
+function showCustomAlert(message, onClose) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onClose || null;
+
+  // --- ตั้งค่าปุ่ม ---
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.classList.add('is-danger'); // ทำให้ปุ่มเป็นสีส้ม
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'none'; // (สำคัญ) ซ่อนปุ่มยกเลิก
+
+  // --- แสดง Modal ---
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+/**
+ * (ใหม่!) ฟังก์ชันสำหรับแสดง Confirm (2 ปุ่ม)
+ * @param {string} message ข้อความ
+ * @param {function} onConfirm ฟังก์ชันที่จะรันเมื่อกด "ตกลง"
+ * @param {boolean} [isDanger=false] ถ้าใช่, ปุ่ม "ตกลง" จะเป็นสีแดง
+ */
+function showCustomConfirm(message, onConfirm, isDanger = false) {
+  customAlertMessage.textContent = message;
+  alertOkCallback = onConfirm || null; // "ตกลง" จะรันฟังก์ชันนี้
+
+  // --- ตั้งค่าปุ่ม ---
+  customAlertOkBtn.textContent = "ตกลง";
+  customAlertOkBtn.style.display = 'block';
+  customAlertCancelBtn.style.display = 'block'; // (สำคัญ) แสดงปุ่มยกเลิก
+
+  if (isDanger) {
+    customAlertOkBtn.classList.add('is-danger'); // ทำให้เป็นสีแดง
+  } else {
+    customAlertOkBtn.classList.remove('is-danger'); // ทำให้เป็นสีเขียว
+  }
+
+  // --- แสดง Modal ---
+  customAlert.classList.remove('hidden');
+  setTimeout(() => {
+    customAlert.classList.add('show');
+  }, 10);
+}
+
+
+/**
+ * (อัปเดต) ฟังก์ชันสำหรับซ่อน Alert
+ * @param {boolean} [runCallback=false] - ถ้าเป็น true, จะรัน Callback (เช่น กด "ตกลง")
+ */
+function hideCustomAlert(runCallback = false) {
+  customAlert.classList.remove('show');
+  
+  setTimeout(() => {
+    customAlert.classList.add('hidden');
+    
+    // ถ้ารัน Callback และมี Callback ให้รัน
+    if (runCallback && typeof alertOkCallback === 'function') {
+      alertOkCallback();
+    }
+    alertOkCallback = null; // เคลียร์ Callback เสมอ
+    
+  }, 200);
+}
+
+// --- (อัปเดต) Event Listeners สำหรับ Modal ---
+
+// เมื่อกด "ตกลง"
+customAlertOkBtn?.addEventListener('click', () => {
+  hideCustomAlert(true); // ซ่อน และ รัน Callback
+});
+
+// เมื่อกด "ยกเลิก"
+customAlertCancelBtn?.addEventListener('click', () => {
+  hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
+});
+
+// เมื่อคลิกที่พื้นหลัง
+customAlert?.addEventListener('click', (e) => {
+  if (e.target === customAlert) {
+    hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
+  }
+});
