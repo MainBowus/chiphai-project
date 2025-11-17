@@ -766,3 +766,153 @@ header .user-menu img {
 .alert-box button:hover {
   background: #1a2332;
 }
+
+/* --- (สำหรับ Tablet) --- */
+@media (max-width: 960px) {
+  .site-header {
+    padding: 20px 24px;
+  }
+  
+  .contact-details { 
+    grid-template-columns: 1fr; /* ❗️ (จากโค้ดเดิม) */
+  }
+}
+
+/* --- (สำหรับ มือถือ) --- */
+@media (max-width: 768px) {
+  .logo {
+    font-size: 24px;
+  }
+
+  /* ❗️ (เพิ่ม) ซ่อน Nav */
+  .nav {
+    display: none;
+  }
+
+  /* ❗️ (เพิ่ม) ย่อปุ่ม Profile */
+  .profile {
+    margin-right: 25px;
+    padding: 8px;
+  }
+  .profile .profile-name {
+    display: none;
+  }
+  .profile .avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* ❗️ (เพิ่ม) ปรับ Layout */
+  .hero-visual {
+    height: 30vh; /* ย่อรูป Hero */
+  }
+
+  .contact-main {
+    margin: 20px 16px; /* ลดระยะขอบ */
+    padding: 0;
+  }
+  
+  .contact-panel {
+    margin-top: -60px; /* ขยับการ์ดขึ้นอีก */
+    padding: 20px;
+  }
+
+  .header-right {
+    position: absolute;  /* เอาออกจาก flex ของ header */
+    right: 55px;          /* ระยะห่างจากขอบซ้าย */
+    top: 50%;            /* กึ่งกลางแนวตั้ง */
+    transform: translateY(-50%);
+    justify-content: flex-start;
+  }
+
+  /* ปรับปุ่ม login ถ้า guest mode */
+  .header-right .login {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  /* ถ้าใช้ .user-menu แทนปุ่ม Login */
+  .user-menu {
+    gap: 4;
+    padding: 0;
+    max-height: 32px;
+  }
+
+  /* ซ่อนชื่อบนมือถือ */
+  .user-menu > span {
+    display: none;
+  }
+
+  /* ปรับขนาด avatar */
+  .user-menu img,
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* --- (สำหรับ Footer) --- */
+@media (max-width: 560px) {
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+  .footer-nav {
+    gap: 8px;
+  }
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.hamburger::after {
+  content: "☰"; 
+  font-size: 28px;
+  display: inline-block;
+}
+body.mobile-nav-open .hamburger::after {
+  content: "✕";
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--header-height));
+  background: var(--accent-dark);
+  padding: 30px;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.25);
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1000;
+  align-items: center;
+}
+.mobile-item {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 8px 0;
+}
+
+/* Show hamburger on tablet/mobile */
+@media (max-width: 900px) {
+  .nav { display: none; }
+  .hamburger { display: flex; }
+}
