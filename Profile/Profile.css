@@ -398,3 +398,137 @@
 #customAlertOkBtn.is-danger:hover {
   background: #dd8500; /* สีแดงเข้ม */
 }
+
+/* --- (สำหรับ Tablet และ มือถือ) --- */
+@media (max-width: 900px) {
+  .site-header {
+    padding: 20px 24px;
+  }
+  
+  .nav {
+    display: none;
+  }
+}
+
+/* --- (สำหรับ มือถือ) --- */
+@media (max-width: 768px) {
+  .logo {
+    font-size: 24px;
+  }
+
+  .profile {
+    margin-right: 35px;
+    padding: 8px;
+  }
+  .profile .profile-name {
+    display: none;
+  }
+  .profile .avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .privacy-main {
+    margin: var(--header-height) 0 40px 0;
+    padding: 24px 16px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .privacy-header h1 {
+    font-size: 28px;
+  }
+
+  .privacy-header p {
+    font-size: 15px;
+  }
+  
+  .privacy-content {
+    padding: 24px 20px;
+  }
+
+  .privacy-content h2 {
+    font-size: 20px;
+  }
+
+  .privacy-content p,
+  .privacy-content ul li {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 560px){
+  .site-footer-inner{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+  .footer-nav{
+    gap: 8px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001;
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.hamburger::after {
+  content: "☰"; 
+  font-size: 28px;
+  display: inline-block;
+}
+
+body.mobile-nav-open .hamburger::after {
+  content: "✕";
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--header-height));
+  background: var(--accent-dark);
+  padding: 30px;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.25);
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1000;
+  align-items: center;
+}
+.mobile-item {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 8px 0;
+}
+
+@media (max-width: 900px) {
+  .hamburger { display: flex; }
+}
