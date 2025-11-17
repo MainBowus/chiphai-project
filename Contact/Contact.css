@@ -318,6 +318,7 @@ body{
 
   /* ❗️ (เพิ่ม) ย่อปุ่ม Profile */
   .profile {
+    margin-right: 25px;
     padding: 8px;
   }
   .profile .profile-name {
@@ -355,4 +356,57 @@ body{
   .footer-nav {
     gap: 8px;
   }
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.hamburger::after {
+  content: "☰"; 
+  font-size: 28px;
+  display: inline-block;
+}
+body.mobile-nav-open .hamburger::after {
+  content: "✕";
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--header-height));
+  background: var(--accent-dark);
+  padding: 30px;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.25);
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1000;
+  align-items: center;
+}
+.mobile-item {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 8px 0;
+}
+
+/* Show hamburger on tablet/mobile */
+@media (max-width: 900px) {
+  .nav { display: none; }
+  .hamburger { display: flex; }
 }
