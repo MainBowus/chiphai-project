@@ -1,358 +1,352 @@
-/* ===============================================
-   MOCK DATA (ข้อมูลจำลอง)
-   Backend Dev: คุณต้องแทนที่ Array เหล่านี้
-   ด้วยการเรียก API หรือ Database จริง
-=============================================== */
-let mockTickets = [
-    { id: 't1', category: 'Spam', details: 'โพสต์นี้เป็นโฆษณาขายของครับ', email: 'user1@example.com', uid: 'uid-user-1', status: 'pending', createdAt: new Date(2025, 10, 5, 9, 30) },
-    { id: 't2', category: 'Inappropriate', details: 'ใช้คำหยาบคายในรายละเอียดโพสต์', email: 'user2@example.com', uid: 'uid-user-2', status: 'pending', createdAt: new Date(2025, 10, 4, 14, 0) },
-    { id: 't3', category: 'Other', details: 'ไม่แน่ใจว่าจริงหรือหลอกลวง', email: 'user3@example.com', uid: 'uid-user-3', status: 'resolved', createdAt: new Date(2025, 10, 3, 10, 0) },
-    { id: 't4', category: 'Spam', details: 'ข้อความซ้ำซาก', email: 'user4@example.com', uid: 'uid-user-4', status: 'pending', createdAt: new Date(2025, 10, 2, 9, 0) },
-    { id: 't5', category: 'Inappropriate', details: 'รูปภาพไม่เหมาะสม', email: 'user5@example.com', uid: 'uid-user-5', status: 'pending', createdAt: new Date(2025, 10, 1, 11, 0) },
+/* ==========================================================
+   CHIPHAI ADMIN PANEL - Firestore & Authentication
+   Version: Optimized for lost_items / tickets / users_create / users_google
+========================================================== */
+
+// --- Firebase SDK ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { 
+    getAuth, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { 
+    getFirestore, collection, getDocs, doc, updateDoc, deleteDoc 
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+// --- Firebase Config ---
+const firebaseConfig = {
+    apiKey: "AIzaSyBQlq_ZgG1eUVrMGXo178wNW7GMr6imCDk",
+    authDomain: "chiphailogin01.firebaseapp.com",
+    projectId: "chiphailogin01",
+    storageBucket: "chiphailogin01.appspot.com",
+    messagingSenderId: "122413223952",
+    appId: "1:122413223952:web:35a1f19668bf22be13fa95",
+};
+
+// --- Initialize ---
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore(app);
+
+// --- Admin UIDs ---
+const ADMIN_UIDS = [
+    "Ae2rNZQcTVUkii4716J5H1rqTOv1",
+    "6pFdq6V1O4Ye2OmZh17vY3jmnBm2",
+    "na1Q42lqsOWV99h8p8UBdXd7aLI3"
 ];
-let mockPosts = [
-    { id: 'p1', itemName: 'iPhone 15 Pro (สีไทเทเนียม)', location: 'Siam Paragon ชั้น G', createdByName: 'สมชาย ใจดี', createdBy: 'uid-user-1', createdAt: new Date(2025, 10, 5, 8, 15) },
-    { id: 'p2', itemName: 'กระเป๋าตังค์ LV สีน้ำตาล', location: 'BTS อโศก', createdByName: 'Jane Doe', createdBy: 'uid-user-2', createdAt: new Date(2025, 10, 4, 12, 0) },
-    { id: 'p3', itemName: 'กุญแจรถยนต์ Toyota', location: 'ลานจอดรถ CentralWorld', createdByName: 'Peter Parker', createdBy: 'uid-user-3', createdAt: new Date(2025, 10, 3, 18, 45) },
-];
-let mockUsers = [
-    { id: 'u1', uid: 'uid-user-1', displayName: 'สมชาย ใจดี', email: 'user1@example.com', photoURL: 'https://i.pravatar.cc/40?img=1', isBanned: false, createdAt: new Date(2025, 9, 1) },
-    { id: 'u2', uid: 'uid-user-2', displayName: 'Jane Doe', email: 'user2@example.com', photoURL: 'https://i.pravatar.cc/40?img=2', isBanned: false, createdAt: new Date(2025, 9, 2) },
-    { id: 'u3', uid: 'uid-user-3', displayName: 'Peter Parker', email: 'user3@example.com', photoURL: 'https://i.pravatar.cc/40?img=3', isBanned: true, createdAt: new Date(2025, 9, 3) },
-    { id: 'u4', uid: 'uid-user-4', displayName: 'Alice Wonder', email: 'user4@example.com', photoURL: 'https://i.pravatar.cc/40?img=4', isBanned: false, createdAt: new Date(2025, 9, 4) },
-    { id: 'u5', uid: 'uid-user-5', displayName: 'Bob Builder', email: 'user5@example.com', photoURL: 'https://i.pravatar.cc/40?img=5', isBanned: false, createdAt: new Date(2025, 9, 5) },
-];
 
-/* ===============================================
-   APP LOGIC (ปรับให้กระชับขึ้น)
-=============================================== */
+// --- Page Elements ---
+const contentTitle = document.getElementById("content-title");
+const mainContentDisplay = document.getElementById("main-content-display");
+const navItems = document.querySelectorAll(".nav-item");
+const logoutBtn = document.getElementById("nav-logout");
 
-// --- 1. DOM Elements ---
-const contentTitle = document.getElementById('content-title');
-const mainContentDisplay = document.getElementById('main-content-display');
-const searchBar = document.getElementById('search-bar');
-const navItems = document.querySelectorAll('.main-nav .nav-item');
-const logoutBtn = document.getElementById('nav-logout');
+// --- Global State ---
+let currentView = "dashboard";
+let lostItems = [];
+let tickets = [];
+let users = [];
 
-// --- 2. Global State ---
-let currentView = 'dashboard'; 
-let allPosts = [], allUsers = [], allTickets = [];
 
-// --- 3. Helper Functions ---
-const escapeHtml = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
-const formatDate = (ts) => ts ? new Date(ts).toLocaleDateString("th-TH", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : "-";
+/* ==========================================================
+   AUTH CHECK
+========================================================== */
 
-// --- 4. Main Render Function (สลับหน้า) ---
-function renderCurrentView() {
-    const searchTerm = searchBar.value.toLowerCase();
-    
-    // อัปเดต Title
-    const activeNavItem = document.querySelector(`#nav-${currentView}`);
-    if (activeNavItem) {
-        contentTitle.textContent = activeNavItem.textContent.trim();
-    }
-    
-    switch (currentView) {
-        case 'dashboard':
-            searchBar.placeholder = "Search dashboard...";
-            renderDashboardPage();
-            break;
-        case 'reports':
-            searchBar.placeholder = "Search reports (Email, Category)...";
-            renderTicketsPage(searchTerm);
-            break;
-        case 'posts':
-            searchBar.placeholder = "Search posts (Item, Location)...";
-            renderPostsPage(searchTerm);
-            break;
-        case 'users':
-            searchBar.placeholder = "Search users (Name, Email)...";
-            renderUsersPage(searchTerm);
-            break;
-    }
-}
-
-// --- 5. (REFACTOR) Generic Table Renderer ---
-/**
- * ฟังก์ชันกลางสำหรับสร้างตาราง (ช่วยประหยัดบรรทัดได้มาก)
- * @param {object} config - { title, data, columns, emptyMessage, showAddBtn, addBtnText }
- */
-function renderDataTable(config) {
-    const { title, data, columns, emptyMessage, showAddBtn = false, addBtnText = 'Add New' } = config;
-
-    // สร้าง Header (th)
-    const headers = columns.map(c => `<th class="${c.className || ''}">${c.header}</th>`).join('');
-
-    // สร้าง Body (tr > td)
-    const rows = data.length === 0
-        ? `<tr><td colspan="${columns.length}" class="empty-cell">${emptyMessage}</td></tr>`
-        : data.map(row => `
-            <tr>${columns.map(c => `<td class="${c.className || ''}">${c.cell(row)}</td>`).join('')}</tr>
-        `).join('');
-
-    const addBtnHtml = showAddBtn
-        ? `<button class="btn btn-primary-sm" data-action="add-new"><i class="fas fa-plus"></i> ${addBtnText}</button>`
-        : '';
-
-    // ประกอบร่าง
-    mainContentDisplay.innerHTML = `
-        <div class="data-list-card card">
-            <div class="data-list-header">
-                <h3>${title} (${data.length})</h3>
-                ${addBtnHtml}
-            </div>
-            <div class="data-table-wrapper">
-                <table class="data-table">
-                    <thead><tr>${headers}</tr></thead>
-                    <tbody>${rows}</tbody>
-                </table>
-            </div>
-        </div>
-    `;
-}
-
-// --- 6. Page Renderers (กระชับมาก) ---
-
-// 📊 Dashboard
-function renderDashboardPage() {
-    const pendingTickets = allTickets.filter(t => t.status === 'pending');
-    const recentTickets = [...allTickets].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
-    const newUsers = [...allUsers].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
-    
-    mainContentDisplay.innerHTML = `
-        <div class="dashboard-content-grid">
-            <div class="stats-cards-grid">
-                <div class="stat-card">
-                    <div class="stat-card-header"><div class="stat-icon blue"><i class="fas fa-ticket-alt"></i></div><h3>Pending Reports</h3></div>
-                    <div class="stat-card-value">${pendingTickets.length}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header"><div class="stat-icon green"><i class="fas fa-clipboard-list"></i></div><h3>Total Posts</h3></div>
-                    <div class="stat-card-value">${allPosts.length}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header"><div class="stat-icon purple"><i class="fas fa-users"></i></div><h3>Total Users</h3></div>
-                    <div class="stat-card-value">${allUsers.length}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-header"><div class="stat-icon red"><i class="fas fa-ban"></i></div><h3>Banned Users</h3></div>
-                    <div class="stat-card-value">${allUsers.filter(u => u.isBanned).length}</div>
-                </div>
-            </div>
-            <div class="balance-card">
-                <h3>Report Summary</h3>
-                <div class="balance-amount">${pendingTickets.length} <small>Pending</small></div>
-                <ul class="details-list">
-                    <li><span>Total Reports</span><span>${allTickets.length}</span></li>
-                    <li><span>Resolved</span><span>${allTickets.filter(t => t.status === 'resolved').length}</span></li>
-                </ul>
-                <button class="btn add-card-btn" data-nav-target="nav-reports">
-                    <i class="fas fa-arrow-right"></i> View All Reports
-                </button>
-            </div>
-            <div class="chart-card card">
-                <div class="chart-card-header"><h3>Post Activity Trend</h3><select class="chart-filter"><option>Monthly</option></select></div>
-                <div class="chart-placeholder"></div>
-            </div>
-            <div class="recent-activity-card card">
-                <h3>Recent Reports</h3>
-                <table class="activity-table">
-                    <thead><tr><th>Category</th><th>Reported By</th><th>Status</th><th>Date</th></tr></thead>
-                    <tbody>
-                        ${recentTickets.length === 0 ? `<tr><td colspan="4" class="empty-cell">ไม่มีรายงานล่าสุด</td></tr>` : ''}
-                        ${recentTickets.map(ticket => `
-                            <tr>
-                                <td>${escapeHtml(ticket.category)}</td>
-                                <td>${escapeHtml(ticket.email.split('@')[0])}</td>
-                                <td><span class="status-badge status-${ticket.status}">${ticket.status}</span></td>
-                                <td>${formatDate(ticket.createdAt)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-            <div class="upcoming-payments-card card">
-                <h3>Recent New Users</h3>
-                <ul class="payment-list">
-                    ${newUsers.length === 0 ? `<li class="empty-cell" style="padding:10px 0">ไม่มีผู้ใช้ใหม่</li>` : ''}
-                    ${newUsers.map((user, i) => `
-                        <li class="payment-item">
-                            <div class="payment-color-bar" style="background-color: ${['#007bff', '#ff9800', '#4caf50', '#9c27b0', '#f44336'][i % 5]}"></div>
-                            <div class="payment-details"><div class="name">${escapeHtml(user.displayName)}</div><div class="date">${formatDate(user.createdAt)}</div></div>
-                            <div class="payment-amount">${user.email ? 'Active' : 'Guest'}</div>
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-        </div>
-    `;
-    
-    // ทำให้ปุ่ม "View All Reports" คลิกได้
-    mainContentDisplay.querySelector('.add-card-btn')?.addEventListener('click', (e) => {
-        document.getElementById(e.currentTarget.dataset.navTarget)?.click();
-    });
-}
-
-// 🎟️ Manage Reports
-function renderTicketsPage(searchTerm) {
-    const data = allTickets.filter(t => (t.email + t.category + t.details).toLowerCase().includes(searchTerm)).sort((a, b) => b.createdAt - a.createdAt);
-    renderDataTable({
-        title: "All Reports",
-        data: data,
-        emptyMessage: "ไม่พบรายงานที่ตรงกัน",
-        columns: [
-            { header: "Category", className: "col-category", cell: row => escapeHtml(row.category) },
-            { header: "Details", className: "col-details", cell: row => `<span title="${escapeHtml(row.details)}">${escapeHtml(row.details)}</span>` },
-            { header: "Reported By", className: "col-email", cell: row => escapeHtml(row.email) },
-            { header: "Status", className: "col-status", cell: row => `<span class="status-badge status-${row.status}">${row.status}</span>` },
-            { header: "Date", className: "col-date", cell: row => formatDate(row.createdAt) },
-            { header: "Actions", className: "col-actions", cell: row => row.status === 'pending'
-                ? `<button class="btn btn-action btn-success" data-action="resolve-ticket" data-id="${row.id}"><i class="fas fa-check"></i> Resolve</button>`
-                : `<button class="btn btn-action btn-secondary" data-action="reopen-ticket" data-id="${row.id}"><i class="fas fa-undo"></i> Re-open</button>`
-            }
-        ]
-    });
-}
-
-// 📝 Manage Posts
-function renderPostsPage(searchTerm) {
-    const data = allPosts.filter(p => (p.itemName + p.location + p.createdByName).toLowerCase().includes(searchTerm)).sort((a, b) => b.createdAt - a.createdAt);
-    renderDataTable({
-        title: "All Posts",
-        data: data,
-        emptyMessage: "ไม่พบโพสต์ที่ตรงกัน",
-        showAddBtn: true,
-        addBtnText: 'Add New Post',
-        columns: [
-            { header: "Item Name", cell: row => escapeHtml(row.itemName) },
-            { header: "Location", cell: row => escapeHtml(row.location) },
-            { header: "Posted By", cell: row => escapeHtml(row.createdByName) },
-            { header: "Date", className: "col-date", cell: row => formatDate(row.createdAt) },
-            { header: "Actions", className: "col-actions", cell: row => `<button class="btn btn-action btn-danger" data-action="delete-post" data-id="${row.id}"><i class="fas fa-trash-alt"></i> Delete</button>` }
-        ]
-    });
-}
-
-// 👥 Manage Users
-function renderUsersPage(searchTerm) {
-    const data = allUsers.filter(u => (u.displayName + u.email + u.uid).toLowerCase().includes(searchTerm)).sort((a, b) => b.createdAt - a.createdAt);
-    renderDataTable({
-        title: "All Users",
-        data: data,
-        emptyMessage: "ไม่พบผู้ใช้ที่ตรงกัน",
-        columns: [
-            { header: "", className: "col-avatar", cell: row => row.photoURL ? `<img src="${row.photoURL}" alt="Avatar">` : '<div class="avatar-placeholder"><i class="fas fa-user"></i></div>' },
-            { header: "Display Name", cell: row => escapeHtml(row.displayName) },
-            { header: "Email", className: "col-email", cell: row => `<span title="${escapeHtml(row.email)}">${escapeHtml(row.email || '(No Email)')}</span>` },
-            { header: "Status", className: "col-status", cell: row => `<span class="status-badge status-${row.isBanned ? 'banned' : 'active'}">${row.isBanned ? 'Banned' : 'Active'}</span>` },
-            { header: "UID", className: "col-uid", cell: row => `<span title="${escapeHtml(row.uid)}">${escapeHtml(row.uid)}</span>` },
-            { header: "Actions", className: "col-actions", cell: row => row.isBanned
-                ? `<button class="btn btn-action btn-success" data-action="unban-user" data-id="${row.id}"><i class="fas fa-user-check"></i> Unban</button>`
-                : `<button class="btn btn-action btn-danger" data-action="ban-user" data-id="${row.id}"><i class="fas fa-user-slash"></i> Ban</button>`
-            }
-        ]
-    });
-}
-
-// --- 7. Action Handlers (Logic) ---
-mainContentDisplay.addEventListener('click', (e) => {
-    const target = e.target.closest('.btn-action, .btn-primary-sm, .add-card-btn');
-    if (!target) return;
-    
-    const action = target.dataset.action;
-    const id = target.dataset.id;
-
-    if (action === 'add-new') {
-        alert("(Mock) เปิดหน้า Add New Post!");
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        alert("กรุณาเข้าสู่ระบบก่อน");
+        window.location.href = "../login/login.html";
         return;
     }
-    
-    // หยุดถ้าไม่ใช่ปุ่มที่มี action และ id (ยกเว้นปุ่ม nav)
-    if (!target.dataset.navTarget && (!action || !id)) return;
-    
-    // (Mock) Logic
-    console.log(`(Mock) Action: ${action}, ID: ${id}`);
-    
-    // Backend Dev: นี่คือจุดที่คุณต้องยิง API
-    try {
-        switch (action) {
-            case 'resolve-ticket':
-                target.disabled = true;
-                target.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                setTimeout(() => {
-                    allTickets.find(t => t.id === id).status = "resolved";
-                    renderCurrentView();
-                }, 300);
-                break;
-            case 'reopen-ticket':
-                target.disabled = true;
-                target.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                setTimeout(() => {
-                    allTickets.find(t => t.id === id).status = "pending";
-                    renderCurrentView();
-                }, 300);
-                break;
-            case 'delete-post':
-                if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้ถาวร?")) {
-                    target.disabled = true;
-                    target.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                    setTimeout(() => {
-                        allPosts = allPosts.filter(p => p.id !== id);
-                        renderCurrentView();
-                    }, 300);
-                }
-                break;
-            case 'ban-user':
-                if (confirm("คุณแน่ใจหรือไม่ว่าต้องการแบนผู้ใช้นี้?")) {
-                    target.disabled = true;
-                    target.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                    setTimeout(() => {
-                        allUsers.find(u => u.id === id).isBanned = true;
-                        renderCurrentView();
-                    }, 300);
-                }
-                break;
-            case 'unban-user':
-                target.disabled = true;
-                target.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                setTimeout(() => {
-                    allUsers.find(u => u.id === id).isBanned = false;
-                    renderCurrentView();
-                }, 300);
-                break;
-        }
-    } catch (err) { 
-        console.error(`Action ${action} failed:`, err); 
-        renderCurrentView(); // คืนปุ่มกลับสู่สภาพเดิมหากมี error
+
+    console.log("🔥 Admin Logged:", user.uid);
+
+    if (!ADMIN_UIDS.includes(user.uid)) {
+        alert("บัญชีนี้ไม่ได้รับอนุญาตให้เข้าหน้า Admin");
+        window.location.href = "../index.html";
+        return;
     }
+
+    await loadAllData();
+    renderCurrentView();
 });
 
-// --- 8. Navigation Logic ---
-navItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = e.currentTarget;
-        if (!target.id) return;
 
-        navItems.forEach(nav => nav.classList.remove('active'));
-        target.classList.add('active');
-        currentView = target.id.replace('nav-', ''); 
+/* ==========================================================
+   LOAD DATA (โหลดตามโครงสร้างจริง Firestore)
+========================================================== */
+
+async function loadAllData() {
+    mainContentDisplay.innerHTML = `<p style="padding:20px;">⌛ กำลังโหลดข้อมูล...</p>`;
+
+    try {
+        const lostSnap = await getDocs(collection(db, "lost_items"));
+        lostItems = lostSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const ticketSnap = await getDocs(collection(db, "tickets"));
+        tickets = ticketSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const userSnap1 = await getDocs(collection(db, "users_create"));
+        const userSnap2 = await getDocs(collection(db, "users_google"));
+        users = [
+            ...userSnap1.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+            ...userSnap2.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        ];
+
+        console.log(`⭐ โหลดแล้ว: ${tickets.length} tickets / ${lostItems.length} lost_items / ${users.length} users`);
+
+    } catch (err) {
+        console.error(err);
+        alert("โหลดข้อมูลผิดพลาด: " + err.message);
+    }
+}
+
+
+/* ==========================================================
+   VIEW RENDERER
+========================================================== */
+
+function renderCurrentView() {
+
+    switch (currentView) {
+
+        /* -----------------------------------
+           DASHBOARD
+        ----------------------------------- */
+        case "dashboard":
+            contentTitle.textContent = "Dashboard";
+
+            const pending = tickets.filter(t => t.status === "pending");
+
+            mainContentDisplay.innerHTML = `
+                <div class="dashboard-content-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon blue"><i class="fas fa-ticket"></i></div>
+                            <h3>Pending Reports</h3>
+                        </div>
+                        <div class="stat-card-value">${pending.length}</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon green"><i class="fas fa-box"></i></div>
+                            <h3>Total Lost Items</h3>
+                        </div>
+                        <div class="stat-card-value">${lostItems.length}</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+                            <h3>Total Users</h3>
+                        </div>
+                        <div class="stat-card-value">${users.length}</div>
+                    </div>
+                </div>
+            `;
+            break;
+
+        /* -----------------------------------
+           MANAGE REPORTS
+        ----------------------------------- */
+        case "reports":
+            contentTitle.textContent = "Manage Reports";
+
+            mainContentDisplay.innerHTML = `
+                <div class="data-list-card card">
+                    <div class="data-list-header">
+                        <h3>Tickets (${tickets.length})</h3>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>เรื่อง</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tickets.map(t => `
+                                <tr>
+                                    <td>${t.email ?? "-"}</td>
+                                    <td>${t.details ?? "-"}</td>
+                                    <td>
+                                        <span class="status-badge status-${t.status}">
+                                            ${t.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-action btn-success" data-action="resolve" data-id="${t.id}">
+                                            ✔ Resolve
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            break;
+
+        /* -----------------------------------
+           MANAGE LOST ITEMS
+        ----------------------------------- */
+        case "posts":
+            contentTitle.textContent = "Manage Posts";
+
+            mainContentDisplay.innerHTML = `
+                <div class="data-list-card card">
+                    <div class="data-list-header">
+                        <h3>Lost Items (${lostItems.length})</h3>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ชื่อของ</th>
+                                <th>สถานที่</th>
+                                <th>คนโพสต์</th>
+                                <th>ลบ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lostItems.map(p => `
+                                <tr>
+                                    <td>${p.itemName ?? "-"}</td>
+                                    <td>${p.location ?? "-"}</td>
+                                    <td>${p.createdByName ?? "-"}</td>
+                                    <td>
+                                        <button class="btn-action btn-danger" data-action="delete-post" data-id="${p.id}">
+                                            🗑 ลบ
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            break;
+
+        /* -----------------------------------
+           MANAGE USERS
+        ----------------------------------- */
+        case "users":
+            contentTitle.textContent = "Manage Users";
+
+            mainContentDisplay.innerHTML = `
+                <div class="data-list-card card">
+                    <div class="data-list-header">
+                        <h3>Users (${users.length})</h3>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ชื่อ</th>
+                                <th>Email</th>
+                                <th>สถานะ</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(u => `
+                                <tr>
+                                    <td>${u.displayName ?? "-"}</td>
+                                    <td>${u.email ?? "-"}</td>
+                                    <td>
+                                        <span class="status-badge status-${u.isBanned ? "banned" : "active"}">
+                                            ${u.isBanned ? "Banned" : "Active"}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-action ${u.isBanned ? "btn-success" : "btn-danger"}" 
+                                                data-action="${u.isBanned ? "unban" : "ban"}"
+                                                data-id="${u.id}"
+                                                data-collection="${u.email ? "users_create" : "users_google"}">
+                                            ${u.isBanned ? "✔ Unban" : "✖ Ban"}
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            break;
+    }
+}
+
+
+/* ==========================================================
+   ACTION HANDLER
+========================================================== */
+
+mainContentDisplay.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+
+    btn.disabled = true;
+    btn.textContent = "⌛";
+
+    try {
+        if (action === "resolve") {
+            await updateDoc(doc(db, "tickets", id), { status: "resolved" });
+        }
+
+        if (action === "delete-post") {
+            await deleteDoc(doc(db, "lost_items", id));
+        }
+
+        if (action === "ban") {
+            const col = btn.dataset.collection;
+            await updateDoc(doc(db, col, id), { isBanned: true });
+        }
+
+        if (action === "unban") {
+            const col = btn.dataset.collection;
+            await updateDoc(doc(db, col, id), { isBanned: false });
+        }
+
+        await loadAllData();
+        renderCurrentView();
+
+    } catch (err) {
+        console.error(err);
+        alert("เกิดข้อผิดพลาด: " + err.message);
+    }
+
+    btn.disabled = false;
+});
+
+
+/* ==========================================================
+   NAV MENU
+========================================================== */
+
+navItems.forEach(n => {
+    n.addEventListener("click", (e) => {
+        e.preventDefault();
+        navItems.forEach(x => x.classList.remove("active"));
+        n.classList.add("active");
+
+        currentView = n.id.replace("nav-", "");
         renderCurrentView();
     });
 });
 
-logoutBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-        console.log("(Mock) Logging out...");
-        alert("ออกจากระบบ (จำลอง)");
-    }
+
+/* ==========================================================
+   LOGOUT
+========================================================== */
+
+logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "../login/login.html";
 });
-
-searchBar.addEventListener('input', renderCurrentView);
-
-// --- 9. Initial Load ---
-allPosts = [...mockPosts];
-allUsers = [...mockUsers];
-allTickets = [...mockTickets];
-renderDashboardPage(); // โหลดหน้า Dashboard เป็นหน้าแรก
