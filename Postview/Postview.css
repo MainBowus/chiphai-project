@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap');
+
 /* ===== THEME ===== */
 :root {
   --bg: #fcfdfc;
@@ -40,6 +42,12 @@ header {
   color: #fff;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   height: var(--header-height);
+  /* (เพิ่ม) ให้ Header ลอยอยู่บน */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99;
 }
 
 .logo {
@@ -78,9 +86,11 @@ main {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 80vh;
-  padding: 48px 0;
+  min-height: 100vh; /* (แก้) ให้เต็มจอ */
+  padding: 48px 24px; /* (แก้) ลด padding ซ้ายขวา */
   background: var(--bg);
+  /* (เพิ่ม) ให้ Main อยู่ใต้ Header */
+  margin-top: var(--header-height);
 }
 
 /* ===== POSTVIEW CARD ===== */
@@ -94,15 +104,6 @@ main {
   padding: 48px 64px;
   max-width: 1100px;
   width: 100%;
-}
-
-@media (max-width: 1200px) {
-  .postview-main {
-    flex-direction: column;
-    padding: 32px 20px;
-    gap: 32px;
-    max-width: 96vw;
-  }
 }
 
 /* ===== LEFT ===== */
@@ -190,6 +191,17 @@ main {
   transform: scale(1.05);
   box-shadow: 0 6px 28px rgba(67,160,71,0.22);
 }
+/* (เพิ่ม) สไตล์ปุ่มตอนปิดโพสต์ */
+.message-btn.btn-disabled {
+  background: var(--muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.message-btn.btn-disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 
 /* ===== RIGHT ===== */ 
 .postview-right {
@@ -205,7 +217,28 @@ main {
   color: var(--accent);
   margin-bottom: 10px;
   letter-spacing: 0.5px;
+  word-break: break-word; /* (เพิ่ม) */
 }
+
+/* (เพิ่ม) Status Badge */
+.status-badge {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 10px;
+}
+.status-badge.status-open {
+  background-color: #e8f5e9; /* เขียวอ่อน */
+  color: #2e7d32;
+}
+.status-badge.status-closed {
+  background-color: #fbe9e7; /* แดงอ่อน */
+  color: #c62828;
+}
+
 
 .info-group {
   margin-bottom: 18px;
@@ -228,7 +261,7 @@ main {
 }
 
 /* --- (ใหม่) Custom Alert Modal --- */
-
+/* (CSS ส่วน Modal เหมือนเดิม) */
 .custom-alert-overlay {
   position: fixed;
   top: 0;
@@ -243,12 +276,17 @@ main {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0s 0.2s linear;
+  /* (เพิ่ม) */
+  padding: 16px;
 }
 
 .custom-alert-overlay.show {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.2s ease;
+}
+.custom-alert-overlay.hidden {
+  display: none;
 }
 
 .custom-alert-box {
@@ -257,7 +295,7 @@ main {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   max-width: 410px;
-  width: 90%;
+  width: 100%; /* (แก้) 90% -> 100% */
   text-align: center;
   transform: scale(0.9);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -273,21 +311,15 @@ main {
   margin: 0 0 24px 0;
   line-height: 1.6;
 }
-
-/* (*** อัปเดต CSS สำหรับปุ่ม ***) */
-
-/* (ใหม่) Container สำหรับปุ่ม */
 .custom-alert-actions {
   display: flex;
-  justify-content: flex-end; /* จัดปุ่มไปทางขวา */
+  justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
 }
-
-/* (ใหม่) สไตล์ปุ่ม "ยกเลิก" */
 .btn-cancel {
   background: transparent;
-  color: var(--text-light);
+  color: var(--muted);
   border: 1px solid var(--border);
   padding: 12px 28px;
   border-radius: 12px;
@@ -296,15 +328,13 @@ main {
   transition: all var(--transition);
 }
 .btn-cancel:hover {
-  background: #f0f0f0; /* สีเทาอ่อนๆ */
-  border-color: var(--text-dark);
+  background: #f0f0f0; 
+  border-color: var(--muted);
   color: var(--text-dark);
 }
-
-/* ปุ่มตกลง */
 #customAlertOkBtn,
 .custom-alert-box .btn-submit {
-  background: #ff9800;
+  background: var(--accent);
   color: white;
   padding: 12px 28px;
   border: none;
@@ -314,26 +344,133 @@ main {
   transition: all 0.2s;
 }
 
-/* ปุ่มตกลงเมื่อ hover */
+.custom-alert-box .btn-submit.is-danger {
+  background: #d32f2f;
+}
+.custom-alert-box .btn-submit.is-danger:hover {
+  background: #b71c1c;
+}
+
 #customAlertOkBtn:hover,
 .custom-alert-box .btn-submit:hover {
-  background: #dd8500;
+  background: #e68900;
 }
 
-/* ปุ่มยกเลิก */
-#customAlertCancelBtn,
-.custom-alert-box .btn-cancel {
-  background: #e0e0e0;
-  color: #333;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+
+/* --- (Tablet) --- */
+@media (max-width: 1200px) {
+  .postview-main {
+    flex-direction: column;
+    padding: 32px 20px;
+    gap: 32px;
+    max-width: 96vw;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-#customAlertCancelBtn:hover,
-.custom-alert-box .btn-cancel:hover {
-  background: #c7c7c7;
+/* --- (Tablet & Mobile) --- */
+@media (max-width: 900px) {
+  header {
+    padding: 20px 24px;
+  }
+  
+  main {
+    padding: 32px 16px;
+  }
+
+  .postview-main {
+    max-width: 90vw;
+    padding: 24px;
+    gap: 24px;
+  }
+}
+
+/* --- (Mobile Only) --- */
+@media (max-width: 768px) {
+  header {
+    padding: 16px 20px;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+  
+  .back-link {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  main {
+    padding: 24px 0; 
+  }
+  
+  .postview-main {
+    max-width: 100%;
+    padding: 24px 16px;
+    gap: 24px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+  }
+
+  .postview-left {
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+  }
+  
+  .placeholder {
+    height: 280px;
+  }
+
+  .message-btn {
+    width: 100%;
+    padding: 14px;
+    justify-content: center;
+  }
+  
+  .item-name {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .status-badge {
+    align-self: center;
+  }
+
+  .info-group {
+    margin-bottom: 16px;
+  }
+  .info-label {
+    font-size: 18px; 
+  }
+  .info-value {
+    font-size: 16px;
+  }
+  
+
+  .custom-alert-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .custom-alert-box {
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    transform: translateY(100%);
+  }
+  .custom-alert-overlay.show .custom-alert-box {
+    transform: translateY(0);
+  }
+  .custom-alert-actions {
+     flex-direction: column-reverse;
+     gap: 10px;
+  }
+  .custom-alert-box .btn-cancel,
+  .custom-alert-box .btn-submit,
+  #customAlertOkBtn {
+     width: 100%; 
+  }
 }
