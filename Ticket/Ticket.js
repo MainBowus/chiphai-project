@@ -205,3 +205,15 @@ formEl?.addEventListener("submit", async (e) => {
     false
   );
 });
+
+// --- Hamburger Menu ---
+const hamburgerBtn = document.getElementById("hamburgerBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+
+hamburgerBtn?.addEventListener("click", () => {
+  const isOpen = mobileMenu.style.display === "flex";
+  mobileMenu.style.display = isOpen ? "none" : "flex";
+
+  // เพิ่ม/ลบ class บน body เพื่อเปลี่ยน icon
+  document.body.classList.toggle("mobile-nav-open", !isOpen);
+});
