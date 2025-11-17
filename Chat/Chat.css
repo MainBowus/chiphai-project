@@ -451,7 +451,7 @@ body.mobile-nav-open .mobile-nav-toggle .icon-close { display: block; }
   
   /* (อัปเดต) ย่อปุ่ม Profile */
   .profile {
-    padding: 6px;
+    padding: 0px;
     gap: 0;
   }
   .profile .profile-name {

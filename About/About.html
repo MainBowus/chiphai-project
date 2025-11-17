@@ -13,8 +13,14 @@
   <header class="site-header">
     <div class="logo" id="logoBtn">CHIPHAI</div>
 
-    <nav class="nav">
-      <a href="#" class="nav-item">About</a>
+    <!-- NEW: Mobile Toggle -->
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+      ☰
+    </button>
+
+    <!-- Main Navigation -->
+    <nav class="nav" id="navMenu">
+      <a href="#" class="nav-item active">About</a>
       <a href="../Chat/Chat.html" class="nav-item">Message</a>
       <a href="../Post/Post.html" class="nav-item">Post</a>
     </nav>
@@ -24,6 +30,15 @@
       <span class="profile-name">Guest</span>
     </button>
   </header>
+
+  <nav class="mobile-nav">
+    <nav>
+      <a href="../About/About.html" class="nav-item active">About</a>
+      <a href="../Chat/Chat.html" class="nav-item">Message</a>
+      <a href="../Post/Post.html" class="nav-item">Post</a>
+    </nav>
+  </nav>
+
 
   <main class="about-main">
     <!-- About Section -->

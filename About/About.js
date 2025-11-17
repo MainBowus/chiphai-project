@@ -148,3 +148,10 @@ particlesJS('particles-js', {
     "events": { "onhover": { "enable": false }, "onclick": { "enable": false } }
   }
 });
+
+// --- MOBILE NAV ---  
+const mobileToggle = document.getElementById("mobileNavToggle");
+
+mobileToggle?.addEventListener("click", () => {
+  document.body.classList.toggle("mobile-nav-open");
+});
