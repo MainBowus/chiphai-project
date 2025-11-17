@@ -58,7 +58,7 @@ body{
 }
 .logo:hover {
   transform: scale(1.15);
-  color: #c8e6c9;
+  color: #ff9800;
 }
 
 .nav {
@@ -72,17 +72,17 @@ body{
 
 .nav-item {
   text-decoration: none;
-  color: #e8f5e9;
+  color: #E2E8F0;
   font-size: 17px;
   font-weight: 700; 
-  padding: 8px 6px;  
+  padding: 8px 6px;
   border-bottom: 3px solid transparent; 
   transition: all 180ms ease;
 }
 .nav-item:hover,
 .nav-item.active {
   color: var(--card);
-  border-bottom-color: #c8e6c9; 
+  border-bottom-color: #ff9800; 
 }
 
 /* Profile button */
@@ -95,7 +95,7 @@ body{
   font-size: 18px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(67,160,71,0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform var(--transition);
   display: flex;
   align-items: center;
@@ -123,32 +123,34 @@ body{
   object-fit: cover;
   border-radius: 50%;
 }
- 
 /* Main content */
 .privacy-main {
   flex: 1 0 auto;
   max-width: var(--max-width);
-  margin: calc(var(--header-height) + 30px) auto 80px; /
+  margin: calc(var(--header-height) + 30px) auto 80px;
   padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; 
-  text-align: left;
+  align-items: center; 
+  text-align: center;
 }
 
-/* Section: เฉพาะหัวข้อให้อยู่ตรงกลาง */
-.privacy-main h1 {
+.privacy-header {
+  width: 100%;
+  max-width: 900px;
+}
+
+.privacy-header h1 {
   text-align: center;
   display: block;
-  width: 170%;
+  width: 100%;
   font-size: 36px;
   color: var(--accent-dark);
   margin: 20px 0 10px;
 }
-
-.privacy-main > section:first-child p {
+.privacy-header p {
   text-align: center;
-  width: 170%;
+  width: 100%;
   color: var(--muted);
   font-size: 17px;
 }
@@ -166,7 +168,7 @@ body{
   border-radius: var(--radius);
   box-shadow: 0 4px 20px rgba(67,160,71,0.05);
   animation: fadeInUp 0.5s ease;
-  margin: 0 auto; 
+  margin: 30px auto 0 auto;
   text-align: center;
 }
 
@@ -186,9 +188,19 @@ body{
 }
 
 .privacy-content ul {
-  margin-left: 24px;
+  margin: 0;
+  padding: 0;
   padding-left: 10px;
   list-style-position: inside;
+}
+
+.privacy-content a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.privacy-content a:hover {
+  text-decoration: underline;
 }
 
 /* Footer */
@@ -229,3 +241,87 @@ body{
   color: var(--accent-600);
   transform: translateY(-2px);
 }
+.footer-nav .sep {
+  color: var(--border);
+}
+
+/* --- (สำหรับ Tablet และ มือถือ) --- */
+@media (max-width: 900px) {
+  .site-header {
+    padding: 20px 24px;
+  }
+  
+  .nav {
+    display: none;
+  }
+}
+
+/* --- (สำหรับ มือถือ) --- */
+@media (max-width: 768px) {
+  .logo {
+    font-size: 24px;
+  }
+
+  .profile {
+    padding: 8px;
+  }
+  .profile .profile-name {
+    display: none;
+  }
+  .profile .avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .privacy-main {
+    margin: var(--header-height) 0 40px 0;
+    padding: 24px 16px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .privacy-header h1 {
+    font-size: 28px;
+  }
+
+  .privacy-header p {
+    font-size: 15px;
+  }
+  
+  .privacy-content {
+    padding: 24px 20px;
+  }
+
+  .privacy-content h2 {
+    font-size: 20px;
+  }
+
+  .privacy-content p,
+  .privacy-content ul li {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 560px){
+  .site-footer-inner{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+  }
+  .footer-nav{
+    gap: 8px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
