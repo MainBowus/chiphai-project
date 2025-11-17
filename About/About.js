@@ -149,9 +149,19 @@ particlesJS('particles-js', {
   }
 });
 
-// --- MOBILE NAV ---  
 const mobileToggle = document.getElementById("mobileNavToggle");
 
 mobileToggle?.addEventListener("click", () => {
   document.body.classList.toggle("mobile-nav-open");
+
+  // สลับ data-icon ระหว่าง ☰ กับ ✕
+  if (mobileToggle.getAttribute("aria-expanded") === "true") {
+    mobileToggle.setAttribute("aria-expanded", "false");
+    mobileToggle.setAttribute("data-icon", "☰");
+  } else {
+    mobileToggle.setAttribute("aria-expanded", "true");
+    mobileToggle.setAttribute("data-icon", "✕");
+  }
 });
+
+
