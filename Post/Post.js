@@ -78,12 +78,16 @@ onAuthStateChanged(auth, async (user)=>{
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> parent of 33c7fa8 (Update Post.js)
+=======
+>>>>>>> parent of 114a0e4 (Update Post.js)
     if(!user){
         await signInAnonymously(auth);
         return;
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     if (!user) {
@@ -135,6 +139,8 @@ onAuthStateChanged(auth, async (user)=>{
     window.location.href = "/chiphai-project-main/index.html";
     return;
 }
+=======
+>>>>>>> parent of 114a0e4 (Update Post.js)
     await upsertProfile(user);
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
     const photo = user.photoURL || "";
