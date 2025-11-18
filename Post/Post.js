@@ -74,10 +74,18 @@ async function upsertProfile(user){
     }, {merge:true});
 }
 onAuthStateChanged(auth, async (user)=>{
+<<<<<<< HEAD
     if(!user){
         await signInAnonymously(auth);
         return;
     }
+=======
+    if (!user) {
+    alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
+    window.location.href = "/chiphai-project-main/index.html";
+    return;
+}
+>>>>>>> parent of 2e66b81 (Update Post.js)
     await upsertProfile(user);
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
     const photo = user.photoURL || "";
