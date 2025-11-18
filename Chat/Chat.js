@@ -124,11 +124,7 @@ function pickContactUid(participants = []) {
 
 /* ---------- Auth Boot ---------- */
 onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-    alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
-    window.location.href = "/chiphai-project-main/index.html";
-    return;
-}
+  if (!user) { await signInAnonymously(auth); return; }
   currentUserId = user.uid;
 
   console.log("✅ Authenticated as:", currentUserId);
