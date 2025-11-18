@@ -33,12 +33,7 @@ logoBtn?.addEventListener("click", () => {
 profileBtn?.addEventListener("click", () => {
   window.location.href = "../Profile/Profile.html";
 });
-// --- Auth State Control ---
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    await signInAnonymously(auth);
-    return;
-  }
+
 
   // บันทึกโปรไฟล์ตัวเองเหมือน Chat.js
   const ref = doc(db, "users_create", user.uid);
