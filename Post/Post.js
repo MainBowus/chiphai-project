@@ -76,10 +76,14 @@ async function upsertProfile(user){
 onAuthStateChanged(auth, async (user)=>{
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 33c7fa8 (Update Post.js)
     if(!user){
         await signInAnonymously(auth);
         return;
     }
+<<<<<<< HEAD
 =======
     if (!user) {
     alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
@@ -107,6 +111,8 @@ onAuthStateChanged(auth, async (user)=>{
     window.location.href = "/chiphai-project-main/index.html";
     return;
 }
+=======
+>>>>>>> parent of 33c7fa8 (Update Post.js)
     await upsertProfile(user);
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
     const photo = user.photoURL || "";
