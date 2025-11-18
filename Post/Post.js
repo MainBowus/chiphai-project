@@ -76,7 +76,7 @@ async function upsertProfile(user){
 onAuthStateChanged(auth, async (user)=>{
     if (!user) {
     alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
-    window.location.href = "/chiphai-project-main/index.html";
+    window.location.href = "/index.html";
     return;
 }
     await upsertProfile(user);
