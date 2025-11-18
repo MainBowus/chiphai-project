@@ -74,11 +74,10 @@ async function upsertProfile(user){
     }, {merge:true});
 }
 onAuthStateChanged(auth, async (user)=>{
-    if (!user) {
-    alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
-    window.location.href = "/chiphai-project-main/index.html";
-    return;
-}
+    if(!user){
+        await signInAnonymously(auth);
+        return;
+    }
     await upsertProfile(user);
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
     const photo = user.photoURL || "";
