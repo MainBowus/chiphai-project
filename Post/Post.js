@@ -1,8 +1,10 @@
 import { auth, db } from "./CreataPostFirebase.js";
-import { collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  collection, addDoc, serverTimestamp, doc, getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-// 🌤️ Cloudinary config
+/* ---------- Cloudinary ---------- */
 const CLOUD_NAME = "djlilcqzd";
 const UPLOAD_PRESET = "chiphai_unsigned";
 const TRANSFORM = "f_webp,q_auto,w_1200";
@@ -17,128 +19,123 @@ const msgEl = $id("msg");
 const usernameEl = $id("username");
 const avatarEl = document.querySelector(".avatar");
 
-// (อัปเดต) Elements สำหรับ Custom Alert
+/* ---------- Custom Alert Element ---------- */
 const customAlert = document.getElementById("customAlert");
 const customAlertMessage = document.getElementById("customAlertMessage");
-const customAlertOkBtn = document.getElementById("customAlertOkBtn"); // ปุ่มตกลง
-const customAlertCancelBtn = document.getElementById("customAlertCancelBtn"); // ปุ่มยกเลิก
+const customAlertOkBtn = document.getElementById("customAlertOkBtn");
+const customAlertCancelBtn = document.getElementById("customAlertCancelBtn");
 
 let authReady = false;
 if (postBtn) postBtn.disabled = true;
 
-/* ---------- Auth + Avatar ---------- */
+/* ------------------------------------------------------
+   ⭐ 1) บันทึก users_create ให้เหมือน users_google ⭐
+------------------------------------------------------ */
+async function upsertUsersCreate(user) {
+  if (!user) return;
+
+  const ref = doc(db, "users_create", user.uid);
+  const snap = await getDoc(ref);
+
+  const data = {
+    uid: user.uid,
+    displayName: user.displayName || "",
+    email: user.email || "",
+    photoURL: user.photoURL || "",
+    providerPrimary: (user.providerData?.[0]?.providerId || "").replace(".com", ""),
+    providers: user.providerData.map(p => p.providerId),
+    lastLoginAt: new Date(),
+    createdAt: snap.exists()
+      ? (snap.data().createdAt || new Date())
+      : new Date()
+  };
+
+  await setDoc(ref, data, { merge: true });
+}
+
+/* ------------------------------------------------------
+   ⭐ 2) Auth + Avatar
+------------------------------------------------------ */
 onAuthStateChanged(auth, async (user) => {
   authReady = !!user;
   if (postBtn) postBtn.disabled = !authReady;
 
   if (!user) {
-    if (usernameEl) usernameEl.textContent = "Guest";
+    usernameEl.textContent = "Guest";
     avatarEl.textContent = "👤";
     return;
   }
 
-  const displayName = user.displayName || (user.email ? user.email.split("@")[0] : "User");
+  await upsertUsersCreate(user);
+
+  const displayName =
+    user.displayName ||
+    (user.email ? user.email.split("@")[0] : "User");
+
   usernameEl.textContent = displayName;
 
-<<<<<<< HEAD
-/* ---------- Auth & Profile (เหมือนเดิม) ---------- */
-async function upsertProfile(user){
-    if(!user) return;
-    const ref = doc(db,"users_create",user.uid);
-    const now = new Date();
-    const snap = await getDoc(ref);
-    await setDoc(ref, {
-        uid: user.uid,
-        displayName: user.displayName || (user.email ? user.email.split("@")[0] : "User"),
-        email: user.email || "",
-        photoURL: user.photoURL || "",
-        providerPrimary: (user.providerData?.[0]?.providerId || "").replace(".com",""),
-        providers: (user.providerData || []).map(p=>p.providerId),
-        lastLoginAt: now,
-        createdAt: snap.exists()? (snap.data().createdAt||now) : now
-    }, {merge:true});
-}
-onAuthStateChanged(auth, async (user)=>{
-    if (!user) {
-    alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
-    window.location.href = "/index.html";
-    return;
-}
-    await upsertProfile(user);
-    const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
-    const photo = user.photoURL || "";
-    if(profileBtn){
-        profileBtn.textContent = "";
-        const span = document.createElement("span");
-        span.className = "avatar";
-        span.innerHTML = photo ? `<img src="${photo}" alt="${name}">` : "👤";
-        profileBtn.appendChild(span);
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = name;
-        nameSpan.style.marginLeft = "8px";
-        profileBtn.appendChild(nameSpan);
-=======
-  // ลองดึงรูปจาก Firestore.users_create ก่อน
   let photoURL = user.photoURL || "";
-  try {
-    const userDoc = await getDoc(doc(db, "users_create", user.uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      if (userData.photoURL) photoURL = userData.photoURL;
->>>>>>> 2e66b8126840e3f70c33caaf5b91fe40ac13f823
-    }
-  } catch (err) {
-    console.warn("ไม่พบข้อมูลผู้ใช้ใน users_create:", err);
+
+  // ถ้ามีรูปใน users_create → ใช้รูปนั้นก่อน
+  const profileSnap = await getDoc(doc(db, "users_create", user.uid));
+  if (profileSnap.exists() && profileSnap.data().photoURL) {
+    photoURL = profileSnap.data().photoURL;
   }
 
-  // แสดง Avatar
-  if (photoURL) {
-    avatarEl.innerHTML = `<img src="${photoURL}" alt="${displayName}">`;
-  } else {
-    avatarEl.textContent = "👤";
-  }
+  avatarEl.innerHTML = photoURL
+    ? `<img src="${photoURL}" alt="${displayName}">`
+    : "👤";
 
-  // เก็บไว้ใช้ตอนโพสต์
   user._resolvedPhotoURL = photoURL;
 });
 
-/* ---------- Preview ---------- */
+/* ------------------------------------------------------
+   ⭐ 3) Preview
+------------------------------------------------------ */
 let objectUrl;
 input?.addEventListener("change", () => {
   const file = input.files?.[0];
   if (!file) return;
+
   if (file.size > 5 * 1024 * 1024) {
-    showCustomAlert("ไฟล์ใหญ่เกินไป (จำกัด 5 MB)");
+    showCustomAlert("ไฟล์ใหญ่เกินไป (สูงสุด 5MB)");
     input.value = "";
     return;
   }
+
   if (objectUrl) URL.revokeObjectURL(objectUrl);
+
   objectUrl = URL.createObjectURL(file);
   preview.src = objectUrl;
   preview.style.display = "block";
 });
 
-/* ---------- Upload to Cloudinary ---------- */
+/* ------------------------------------------------------
+   ⭐ 4) Cloudinary Upload
+------------------------------------------------------ */
 async function uploadFileToCloudinary(file, uid) {
   const fd = new FormData();
   fd.append("file", file);
   fd.append("upload_preset", UPLOAD_PRESET);
-  fd.append("folder", `lost_items/${uid || "anonymous"}`);
+  fd.append("folder", `lost_items/${uid}`);
 
   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
     method: "POST",
     body: fd
   });
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.error?.message || "Upload failed");
 
   return data.secure_url.replace("/upload/", `/upload/${TRANSFORM}/`);
 }
 
-/* ---------- Post handler ---------- */
+/* ------------------------------------------------------
+   ⭐ 5) Post Lost Item
+------------------------------------------------------ */
 postBtn?.addEventListener("click", async () => {
   if (!authReady) {
-    showCustomAlert("ระบบกำลังเตรียมล็อกอิน ลองใหม่อีกครั้ง");
+    showCustomAlert("โปรดเข้าสู่ระบบก่อนโพสต์");
     return;
   }
 
@@ -154,21 +151,16 @@ postBtn?.addEventListener("click", async () => {
   }
 
   const foundAt = new Date(`${dateStr}T${timeStr}:00`);
-  if (isNaN(foundAt.getTime())) {
-    showCustomAlert("รูปแบบวัน/เวลาไม่ถูกต้อง");
-    return;
-  }
 
   postBtn.disabled = true;
   postBtn.textContent = "Posting…";
-  msgEl.textContent = "กำลังอัปโหลดโพสต์...";
 
   try {
     const user = auth.currentUser;
-    if (!user) throw new Error("ไม่พบข้อมูลผู้ใช้");
+    if (!user) throw new Error("กรุณาเข้าสู่ระบบก่อน");
 
     let imageUrl = "";
-    const file = input?.files?.[0];
+    const file = input.files?.[0];
     if (file) imageUrl = await uploadFileToCloudinary(file, user.uid);
 
     await addDoc(collection(db, "lost_items"), {
@@ -184,112 +176,44 @@ postBtn?.addEventListener("click", async () => {
       createdByPhotoURL: user._resolvedPhotoURL || "",
       status: "open"
     });
- 
-    msgEl.style.color = "green";
-    msgEl.textContent = "สร้างโพสต์สำเร็จ!";
-    showCustomAlert("สร้างโพสต์สำเร็จ!");
-    window.location.href = "../Post/Post.html";
+
+    showCustomAlert("โพสต์สำเร็จ!", () => {
+      window.location.href = "../Post/Post.html";
+    });
+
   } catch (err) {
-    console.error("[CreatePost error]", err);
-    msgEl.style.color = "red";
-    msgEl.textContent = "เกิดข้อผิดพลาด: " + (err?.message || err);
-    showCustomAlert("เกิดข้อผิดพลาด: " + (err?.message || err));
+    console.error(err);
+    showCustomAlert("เกิดข้อผิดพลาด: " + err.message);
   } finally {
     postBtn.disabled = false;
     postBtn.textContent = "Post";
   }
 });
 
-console.log("[CreatePost.js] loaded ✅");
+/* ------------------------------------------------------
+   ⭐ 6) Custom Alert
+------------------------------------------------------ */
+let alertOkCallback = null;
 
-/* ===============================================
-  (อัปเดต) Custom Alert Modal Logic
-=============================================== */
-let alertOkCallback = null; // ตัวแปรเก็บ Callback
-
-/**
- * (อัปเดต) ฟังก์ชันสำหรับแสดง Alert (1 ปุ่ม)
- */
 function showCustomAlert(message, onClose) {
   customAlertMessage.textContent = message;
   alertOkCallback = onClose || null;
 
-  // --- ตั้งค่าปุ่ม ---
-  customAlertOkBtn.textContent = "ตกลง";
-  customAlertOkBtn.classList.add('is-danger'); // ทำให้ปุ่มเป็นสีส้ม
-  customAlertOkBtn.style.display = 'block';
-  customAlertCancelBtn.style.display = 'none'; // (สำคัญ) ซ่อนปุ่มยกเลิก
-
-  // --- แสดง Modal ---
-  customAlert.classList.remove('hidden');
-  setTimeout(() => {
-    customAlert.classList.add('show');
-  }, 10);
+  customAlert.classList.remove("hidden");
+  setTimeout(() => customAlert.classList.add("show"), 20);
 }
 
-/**
- * (ใหม่!) ฟังก์ชันสำหรับแสดง Confirm (2 ปุ่ม)
- * @param {string} message ข้อความ
- * @param {function} onConfirm ฟังก์ชันที่จะรันเมื่อกด "ตกลง"
- * @param {boolean} [isDanger=false] ถ้าใช่, ปุ่ม "ตกลง" จะเป็นสีแดง
- */
-function showCustomConfirm(message, onConfirm, isDanger = false) {
-  customAlertMessage.textContent = message;
-  alertOkCallback = onConfirm || null; // "ตกลง" จะรันฟังก์ชันนี้
-
-  // --- ตั้งค่าปุ่ม ---
-  customAlertOkBtn.textContent = "ตกลง";
-  customAlertOkBtn.style.display = 'block';
-  customAlertCancelBtn.style.display = 'block'; // (สำคัญ) แสดงปุ่มยกเลิก
-
-  if (isDanger) {
-    customAlertOkBtn.classList.add('is-danger'); // ทำให้เป็นสีแดง
-  } else {
-    customAlertOkBtn.classList.remove('is-danger'); // ทำให้เป็นสีเขียว
-  }
-
-  // --- แสดง Modal ---
-  customAlert.classList.remove('hidden');
-  setTimeout(() => {
-    customAlert.classList.add('show');
-  }, 10);
-}
-
-
-/**
- * (อัปเดต) ฟังก์ชันสำหรับซ่อน Alert
- * @param {boolean} [runCallback=false] - ถ้าเป็น true, จะรัน Callback (เช่น กด "ตกลง")
- */
 function hideCustomAlert(runCallback = false) {
-  customAlert.classList.remove('show');
-  
+  customAlert.classList.remove("show");
   setTimeout(() => {
-    customAlert.classList.add('hidden');
-    
-    // ถ้ารัน Callback และมี Callback ให้รัน
-    if (runCallback && typeof alertOkCallback === 'function') {
+    customAlert.classList.add("hidden");
+    if (runCallback && typeof alertOkCallback === "function") {
       alertOkCallback();
     }
-    alertOkCallback = null; // เคลียร์ Callback เสมอ
-    
   }, 200);
 }
 
-// --- (อัปเดต) Event Listeners สำหรับ Modal ---
+customAlertOkBtn?.addEventListener("click", () => hideCustomAlert(true));
+customAlertCancelBtn?.addEventListener("click", () => hideCustomAlert(false));
 
-// เมื่อกด "ตกลง"
-customAlertOkBtn?.addEventListener('click', () => {
-  hideCustomAlert(true); // ซ่อน และ รัน Callback
-});
-
-// เมื่อกด "ยกเลิก"
-customAlertCancelBtn?.addEventListener('click', () => {
-  hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
-});
-
-// เมื่อคลิกที่พื้นหลัง
-customAlert?.addEventListener('click', (e) => {
-  if (e.target === customAlert) {
-    hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
-  }
-});
+console.log("[CreatePost.js] loaded OK");
