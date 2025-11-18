@@ -254,3 +254,10 @@ customAlert?.addEventListener('click', (e) => {
     hideCustomAlert(false); // ซ่อน โดย *ไม่* รัน Callback
   }
 });
+
+document.getElementById('customAlertOkBtn').onclick = () => {
+  document.getElementById('customAlert').classList.add('hidden');
+};
+document.getElementById('customAlertCancelBtn').onclick = () => {
+  document.getElementById('customAlert').classList.add('hidden');
+};

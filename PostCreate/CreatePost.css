@@ -1,3 +1,4 @@
+/* ===== THEME ===== */
 :root {
   --bg: #fcfdfc;
   --card: #fff;
@@ -13,8 +14,8 @@
   --header-height: 72px;
   --transition: 180ms cubic-bezier(.4, .0, .2, 1);
 }
- 
-/* Reset / Base */
+
+/* ===== RESET & BASE ===== */
 *{box-sizing:border-box;}
 html, body{height:100%;}
 body{
@@ -29,7 +30,7 @@ body{
   min-height: 100vh;
 }
 
-/* Header */
+/* ===== HEADER ===== */
 header {
   display: flex;
   align-items: center;
@@ -39,6 +40,11 @@ header {
   color: #fff;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   height: var(--header-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99;
 }
 
 .logo {
@@ -54,14 +60,12 @@ header {
   color: #ff9800;
 }
 
-/* Header right */
 .header-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Back link */
 .back-link {
   display: flex;
   align-items: center;
@@ -79,15 +83,18 @@ header {
   transform: scale(1.07);
 }
 
-/* Main content */
+/* ===== MAIN ===== */
 main {
   display: flex;
   justify-content: center;
-  padding: calc(var(--header-height));
+  min-height: 100vh;
+  padding: 48px 24px;
+  margin-top: var(--header-height);
+  background: var(--bg);
 }
 
-/* Create main */
-.create-main { 
+/* ===== CREATE CARD ===== */
+.create-main {
   display: flex;
   gap: 90px;
   background: var(--card);
@@ -99,15 +106,7 @@ main {
   width: 100%;
 }
 
-@media (max-width: 992px) {
-  .create-main {
-    flex-direction: column;
-    gap: 32px;
-    padding: 32px 20px;
-  }
-}
-
-/* Create left */
+/* ===== LEFT ===== */
 .create-left {
   display: flex;
   flex-direction: column;
@@ -179,29 +178,33 @@ main {
   display: none;
 }
 
-/* Create right */
+/* ===== RIGHT ===== */
 .create-right {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 22px;
 }
+
 .form-title {
   margin: 0 0 12px 0;
   color: var(--accent);
   font-size: 2rem;
   font-weight: 800;
 }
+
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .form-label {
   color: #222;
   font-size: 15px;
   font-weight: 600;
 }
+
 input,
 textarea {
   padding: 12px 14px;
@@ -210,6 +213,7 @@ textarea {
   font-size: 15px;
   font-family: inherit;
 }
+
 textarea {
   min-height: 120px;
   resize: vertical;
@@ -219,8 +223,9 @@ textarea {
 .btn-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 18px;
+  margin-top: 0px;
 }
+
 .post-btn {
   display: inline-flex;
   align-items: center;
@@ -241,172 +246,111 @@ textarea {
   background: var(--accent-600);
 }
 
-.hint {
-  font-size: 12px;
-  color: #666;
-}
-
-/* Responsive */
-@media (max-width: 640px){
-  header {padding:16px 24px;}
-  .create-main {padding: 24px 16px;}
-}
-
-/* --- (ใหม่) Custom Alert Modal --- */
+/* ===== CUSTOM ALERT ===== */
 .custom-alert-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* พื้นหลังมืดลง */
+  position: fixed;           
+  inset: 0;                  
+  background: rgba(0,0,0,0.0); 
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1001; /* ให้อยู่เหนือ Header */
-  
-  /* ซ่อน/แสดง แบบมี transition */
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0s 0.2s linear;
-}
-
-.custom-alert-overlay.show {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.2s ease;
-}
-
-.custom-alert-box {
-  background: var(--card); /* ใช้สีจากตัวแปรเดิม */
-  padding: 28px 32px;
-  border-radius: var(--radius); /* ใช้ขอบมนจากตัวแปรเดิม */
-  box-shadow: var(--shadow); /* ใช้เงาจากตัวแปรเดิม */
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  
-  /* Animation ตอนเด้งขึ้นมา */
-  transform: scale(0.9);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.custom-alert-overlay.show .custom-alert-box {
-  transform: scale(1);
-}
-
-#customAlertMessage {
-  font-size: 17px;
-  color: var(--text-dark); /* ใช้สีจากตัวแปรเดิม */
-  margin: 0 0 24px 0;
-  line-height: 1.6;
-}
-
-.custom-alert-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 1001;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0s 0.2s linear;
+  z-index: 1000;
 }
 
-.custom-alert-overlay.show {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.2s ease;
-}
+.custom-alert-overlay.hidden { display: none; }
 
 .custom-alert-box {
   background: var(--card);
-  padding: 28px 32px;
+  color: var(--text-dark);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  max-width: 400px;
-  width: 90%;
+  padding: 24px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   text-align: center;
-  transform: scale(0.9);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.custom-alert-overlay.show .custom-alert-box {
-  transform: scale(1);
 }
 
 #customAlertMessage {
-  font-size: 17px;
-  color: var(--text-dark);
-  margin: 0 0 24px 0;
-  line-height: 1.6;
+  margin-bottom: 20px;
+  font-size: 16px;
 }
 
-/* (*** อัปเดต CSS สำหรับปุ่ม ***) */
-
-/* (ใหม่) Container สำหรับปุ่ม */
 .custom-alert-actions {
   display: flex;
-  justify-content: flex-end; /* จัดปุ่มไปทางขวา */
-  gap: 12px;
-  margin-top: 24px;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-/* (ใหม่) สไตล์ปุ่ม "ยกเลิก" */
-.btn-cancel {
-  background: transparent;
-  color: var(--text-light);
-  border: 1px solid var(--border);
-  padding: 12px 28px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.btn-cancel:hover {
-  background: #f0f0f0; /* สีเทาอ่อนๆ */
-  border-color: var(--text-dark);
-  color: var(--text-dark);
+.btn-cancel,
+.btn-submit {
+  flex: unset;            
+  padding: 6px 12px;      
+  font-size: 15px;         
+  border-radius: 12px;    
+  border: none;        
+  box-shadow: none;    
+  outline: none;       
 }
 
-/* ปุ่มตกลง */
-#customAlertOkBtn,
-.custom-alert-box .btn-submit {
-  background: #ff9800;
-  color: white;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
+.btn-cancel { background: #ccc; color: #222; }
+.btn-submit { background: var(--accent); color: #fff; }
 
-/* ปุ่มตกลงเมื่อ hover */
-#customAlertOkBtn:hover,
-.custom-alert-box .btn-submit:hover {
-  background: #dd8500;
-}
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  header { padding: 16px 20px; }
+  .logo { font-size: 24px; }
+  .back-link { font-size: 14px; padding: 6px 12px; }
 
-/* ปุ่มยกเลิก */
-#customAlertCancelBtn,
-.custom-alert-box .btn-cancel {
-  background: #e0e0e0;
-  color: #333;
-  padding: 12px 28px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
+  main { padding: 24px 0; }
 
-#customAlertCancelBtn:hover,
-.custom-alert-box .btn-cancel:hover {
-  background: #c7c7c7;
+  .create-main {
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 24px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+  }
+
+  .create-left {
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+  }
+
+  .upload-box { height: 280px; }
+
+  .create-right { gap: 16px; }
+  .form-title { font-size: 28px; text-align: center; }
+  input, textarea { font-size: 16px; }
+
+  .btn-wrapper { width: 100%; justify-content: center; }
+  .post-btn { width: 100%; justify-content: center; padding: 14px; }
+
+  /* Custom Alert Mobile */
+  .custom-alert-overlay {
+    align-items: center;  
+    padding: 0;
+  }
+
+  .custom-alert-box {
+    width: 90%;
+    max-width: 90%;
+    width: 300px;
+    border-radius: var(--radius);
+  }
+
+  .custom-alert-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .custom-alert-box .btn-cancel,
+  .custom-alert-box .btn-submit {
+    width: auto;        
+    padding: 6px 12px;  
+    font-size: 15px;    
+  }
 }
