@@ -140,7 +140,7 @@ onAuthStateChanged(auth, async (user)=>{
     return;
 }
 =======
->>>>>>> parent of 114a0e4 (Update Post.js)
+
     await upsertProfile(user);
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
     const photo = user.photoURL || "";
@@ -155,7 +155,7 @@ onAuthStateChanged(auth, async (user)=>{
         nameSpan.style.marginLeft = "8px";
         profileBtn.appendChild(nameSpan);
     }
->>>>>>> parent of 2e66b81 (Update Post.js)
+
 });
 
 /* ---------- Utils (เหมือนเดิม) ---------- */
