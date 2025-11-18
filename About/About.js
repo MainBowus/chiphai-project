@@ -49,6 +49,27 @@ async function upsertMyProfileFromAuth(user) {
   }, { merge: true });
 }
 
+// --- Auth State Control ---
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    await signInAnonymously(auth);
+    return;
+  }
+
+  // ดึงข้อมูลผู้ใช้
+  const photo = user.photoURL || "";
+  const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
+
+  if (avatarEl) {
+    avatarEl.innerHTML = photo ? `<img src="${photo}" alt="${name}">` : "👤";
+  }
+
+  if (nameEl) {
+    nameEl.textContent = name;
+  }
+
+});
+
 // --- Section: ทีมพัฒนา ---
 const team = [
   { name: "วรินทร แก้วสอาด", role: "Project Lead", avatar: "../image/f0b81d84a65ab018b1d05323dcb4de29_0.jpg" },
