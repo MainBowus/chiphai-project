@@ -77,6 +77,7 @@ onAuthStateChanged(auth, async (user)=>{
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> parent of 33c7fa8 (Update Post.js)
     if(!user){
@@ -113,6 +114,27 @@ onAuthStateChanged(auth, async (user)=>{
 }
 =======
 >>>>>>> parent of 33c7fa8 (Update Post.js)
+    await upsertProfile(user);
+    const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
+    const photo = user.photoURL || "";
+    if(profileBtn){
+        profileBtn.textContent = "";
+        const span = document.createElement("span");
+        span.className = "avatar";
+        span.innerHTML = photo ? `<img src="${photo}" alt="${name}">` : "👤";
+        profileBtn.appendChild(span);
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = name;
+        nameSpan.style.marginLeft = "8px";
+        profileBtn.appendChild(nameSpan);
+    }
+>>>>>>> parent of 2e66b81 (Update Post.js)
+=======
+    if (!user) {
+    alert("กรุณาเข้าสู่ระบบก่อนใช้งานหน้านี้");
+    window.location.href = "/chiphai-project-main/index.html";
+    return;
+}
     await upsertProfile(user);
     const name = user.displayName || (user.email ? user.email.split("@")[0] : "Guest");
     const photo = user.photoURL || "";
